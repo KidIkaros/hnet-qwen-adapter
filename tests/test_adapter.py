@@ -80,8 +80,8 @@ def test_first_byte_bpb_accounting():
     tok = FakeTok()
     lm = ChunkLM(model, tok, period=4, device="cpu", dtype=torch.float32)
     data = b"ABCDEFGH"                                   # chunks ABCD, EFGH -> M=2, one prediction
-    bpb, n, cov = lm.first_byte_bpb(data)
-    assert n == 1 and cov == 1.0
+    bpb, n, (cov, tcov) = lm.first_byte_bpb(data)
+    assert n == 1 and cov == 1.0 and tcov == 1.0
     # manual: chunk vectors -> logits -> CE against byte 'E' (id 5)
     pv = (model.emb.weight[torch.tensor([1, 2, 3, 4])].sum(0)).unsqueeze(0)
     logits = (pv @ model.W)[0]

@@ -55,7 +55,7 @@ class PatchEmbedder:
         if not ids:
             raise ValueError("a chunk with no mapped bytes")
         with torch.no_grad():
-            v = self.emb[ids].sum(0).float()                    # (D,) — the constructed patch vector
+            v = self.emb[ids].float().sum(0)                    # (D,) fp32 sum: ONE rounding, not five
         return v, cov
 
     def embed_all(self, chunks):
@@ -77,14 +77,15 @@ class ChunkLM:
         self.chunker = PeriodicChunker(period)
         self.embedder = PatchEmbedder(self.model, tok)
         self.period, self.device = period, device
+        self.dtype = next(model.parameters()).dtype              # the model's native dtype (bf16)
 
     def first_byte_logits(self, data):
         chunks = self.chunker.chunks(data)
         if len(chunks) < 2:
             raise ValueError(f"a sequence of {len(data)} bytes gives {len(chunks)} chunks at period {self.period}")
-        pv, cov = self.embedder.embed_all(chunks)               # (M, D)
+        pv, cov = self.embedder.embed_all(chunks)               # (M, D) fp32
         with torch.no_grad():
-            out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device))
+            out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device, self.dtype))
         return out.logits[0].float(), cov                       # (M, V_vocab)
 
     def first_byte_bpb(self, data):

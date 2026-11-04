@@ -23,7 +23,7 @@ def sh(*cmd):
 print("[setup] cloning the repos", flush=True)
 sh("git", "clone", "-q", "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)
 sh("git", "clone", "-q", "https://github.com/KidIkaros/hnet-kaggle.git", "/content/qt/hnet-kaggle")
-sys.path.insert(0, os.path.join(REPO, "src"))
+sys.path.insert(0, REPO)
 os.chdir(REPO)
 
 print("[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)", flush=True)
@@ -35,8 +35,8 @@ src = snapshot_download("Qwen/Qwen3.5-0.8B")
 print(f"[setup] done in {time.time() - t0:.0f}s", flush=True)
 
 import numpy as np                                               # noqa: E402
-from corpus import ValDocs, byte_token_map                       # noqa: E402
-from adapter import ChunkLM, qwen_byte_bpb                       # noqa: E402
+from src.corpus import ValDocs, byte_token_map                   # noqa: E402
+from src.adapter import ChunkLM, qwen_byte_bpb                   # noqa: E402
 
 tok = AutoTokenizer.from_pretrained(src)
 model = AutoModelForCausalLM.from_pretrained(src, dtype=torch.bfloat16).cuda()

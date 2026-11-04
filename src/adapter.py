@@ -89,14 +89,22 @@ class ChunkLM:
         return out.logits[0].float(), cov                       # (M, V_vocab)
 
     def first_byte_bpb(self, data):
-        """Bits per byte of the FIRST-byte predictions: position m predicts byte (m+1)*P.  Returns
-        (bpb, n_predictions, coverage)."""
+        """Bits per byte of the FIRST-byte predictions: position m predicts byte (m+1)*P.  Targets
+        without a single-byte token (unprintables, UTF-8 continuation bytes at a chunk boundary — the
+        byte-phase finding in action) are SKIPPED and counted in the target coverage.  Returns
+        (bpb, n_predictions, (input_coverage, target_coverage))."""
         logits, cov = self.first_byte_logits(data)
         chunks = self.chunker.chunks(data)
-        targets = torch.tensor([data[(m + 1) * self.period] for m in range(len(chunks) - 1)])
-        ids = torch.tensor([self.embedder.bmap[int(t)] for t in targets])
-        ce = F.cross_entropy(logits[:-1], ids, reduction="sum")
-        return float(ce / math.log(2) / len(ids)), len(ids), cov
+        ms, ts = [], []
+        for m in range(len(chunks) - 1):
+            t = self.embedder.bmap.get(int(data[(m + 1) * self.period]))
+            if t is not None:
+                ms.append(m); ts.append(t)
+        if not ms:
+            raise ValueError("no mapped target bytes in this sequence")
+        ce = F.cross_entropy(logits[ms], torch.tensor(ts, device=logits.device), reduction="sum")
+        tcov = len(ms) / max(len(chunks) - 1, 1)
+        return float(ce / math.log(2) / len(ts)), len(ts), (cov, tcov)
 
 
 def qwen_byte_bpb(model, tok, data, device="cuda"):

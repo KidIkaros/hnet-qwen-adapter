@@ -66,17 +66,17 @@ tot_a = tot_q = 0.0; n_a = n_q = 0.0; covs = []
 t0 = time.time()
 for i, d in enumerate(docs):
     try:
-        bpb, n, cov = lm.first_byte_bpb(d)
-        tot_a += bpb * n; n_a += n; covs.append(cov)
+        bpb, n, (cov, tcov) = lm.first_byte_bpb(d)
+        tot_a += bpb * n; n_a += n; covs.append((cov, tcov))
     except ValueError as e:
         print(f"[doc {i}] skipped (adapter): {e}", flush=True); continue
     qb, _, _ = qwen_byte_bpb(model, tok, d)
     tot_q += qb * len(d); n_q += len(d)
-    print(f"[doc {i}] {len(d)} bytes: adapter first-byte bpb {bpb:.4f} (n={n}, cov={cov:.3f}) | "
+    print(f"[doc {i}] {len(d)} bytes: adapter first-byte bpb {bpb:.4f} (n={n}, cov={cov:.3f}, tcov={tcov:.3f}) | "
           f"qwen full bpb {qb:.4f}", flush=True)
 print("", flush=True)
 print(f"adapter v0 (period {PERIOD}): first-byte bpb {tot_a / max(n_a, 1):.4f} over {int(n_a)} predictions "
-      f"(byte coverage {np.mean(covs):.4f})", flush=True)
+      f"(input cov {np.mean([c for c, _ in covs]):.4f}, target cov {np.mean([t for _, t in covs]):.4f})", flush=True)
 print(f"stock Qwen3.5-0.8B (BPE):      full-byte bpb {tot_q / max(n_q, 1):.4f} over {int(n_q)} bytes", flush=True)
 print(f"trained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
 print(f"[timing] {time.time() - t0:.0f}s", flush=True)

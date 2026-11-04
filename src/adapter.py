@@ -22,6 +22,41 @@ import torch.nn.functional as F
 from .corpus import byte_token_map
 
 
+def _bytes_to_unicode():
+    """GPT-2's byte-unicode table (byte value -> the printable char the tokenizer's vocab strings use)."""
+    bs = list(range(ord("!"), ord("~") + 1)) + list(range(ord("¡"), ord("¬") + 1)) + list(range(ord("®"), ord("ÿ") + 1))
+    cs = bs[:]
+    n = 0
+    for b in range(256):
+        if b not in bs:
+            bs.append(b); cs.append(256 + n); n += 1
+    return dict(zip(bs, [chr(c) for c in cs]))
+
+
+class ByteHead:
+    """The LM head marginalized to BYTES: P(byte b | prefix) = the summed mass of every token whose
+    FIRST byte is b.  A BPE head's mass sits on multi-byte tokens (its native task), so the honest
+    byte-level readout of the adapter is this marginalization — scoring single-byte tokens directly
+    reads ~3 bits worse than uniform, a metric artifact, not a system property."""
+
+    def __init__(self, tok):
+        strings = tok.convert_ids_to_tokens(range(len(tok)))
+        u2b = {c: b for b, c in _bytes_to_unicode().items()}
+        first = np.full(len(strings), -1, dtype=np.int64)
+        for i, s in enumerate(strings):
+            if s and s[0] in u2b:
+                first[i] = u2b[s[0]]
+        self.first = torch.tensor(first)
+
+    def byte_probs(self, logits):
+        """(M, V_vocab) logits -> (M, 256) byte probabilities (tokens with no first byte excluded)."""
+        p = logits.softmax(-1)
+        out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=logits.dtype)
+        mask = self.first >= 0
+        out.index_add_(1, self.first[mask].to(logits.device), p[:, mask.to(logits.device)])
+        return out
+
+
 class PeriodicChunker:
     """Boundaries every `period` bytes at phase 0: chunks are [0:P), [P:2P), ...  The last partial chunk
     is dropped (the model predicts the next chunk's first byte; a partial chunk has none)."""
@@ -76,6 +111,7 @@ class ChunkLM:
         self.tok = tok
         self.chunker = PeriodicChunker(period)
         self.embedder = PatchEmbedder(self.model, tok)
+        self.byte_head = ByteHead(tok)
         self.period, self.device = period, device
         self.dtype = next(model.parameters()).dtype              # the model's native dtype (bf16)
 
@@ -89,22 +125,25 @@ class ChunkLM:
         return out.logits[0].float(), cov                       # (M, V_vocab)
 
     def first_byte_bpb(self, data):
-        """Bits per byte of the FIRST-byte predictions: position m predicts byte (m+1)*P.  Targets
-        without a single-byte token (unprintables, UTF-8 continuation bytes at a chunk boundary — the
-        byte-phase finding in action) are SKIPPED and counted in the target coverage.  Returns
-        (bpb, n_predictions, (input_coverage, target_coverage))."""
+        """Bits per byte of the FIRST-byte predictions: position m predicts byte (m+1)*P, scored on
+        the BYTE-MARGINALIZED head (ByteHead).  Targets without a single-byte token (unprintables,
+        UTF-8 continuation bytes at a chunk boundary — the byte-phase finding in action) are SKIPPED
+        and counted in the target coverage.  Returns (bpb, n_predictions, (input_coverage,
+        target_coverage))."""
         logits, cov = self.first_byte_logits(data)
         chunks = self.chunker.chunks(data)
-        ms, ts = [], []
+        ms, bs = [], []
         for m in range(len(chunks) - 1):
-            t = self.embedder.bmap.get(int(data[(m + 1) * self.period]))
-            if t is not None:
-                ms.append(m); ts.append(t)
+            b = int(data[(m + 1) * self.period])
+            if b in self.embedder.bmap:
+                ms.append(m); bs.append(b)
         if not ms:
             raise ValueError("no mapped target bytes in this sequence")
-        ce = F.cross_entropy(logits[ms], torch.tensor(ts, device=logits.device), reduction="sum")
+        pb = self.byte_head.byte_probs(logits[ms])               # (M', 256)
+        tb = torch.tensor(bs, device=pb.device)
+        nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12))
         tcov = len(ms) / max(len(chunks) - 1, 1)
-        return float(ce / math.log(2) / len(ts)), len(ts), (cov, tcov)
+        return float(nll.sum() / len(ms)), len(ms), (cov, tcov)
 
 
 def qwen_byte_bpb(model, tok, data, device="cuda"):

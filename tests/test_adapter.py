@@ -15,7 +15,10 @@ from src.corpus import byte_token_map, bytes_to_token_ids                       
 
 class FakeTok:
     """A tokenizer stub: bytes 65..90 ('A'..'Z') are single-byte tokens with id = b - 64; everything
-    else splits into TWO tokens (so it is not a single-byte token -> unmapped)."""
+    else splits into TWO tokens (so it is not a single-byte token -> unmapped).  convert_ids_to_tokens
+    speaks the GPT-2 byte-unicode dialect: printable ASCII chars map to themselves."""
+
+    VOCAB = 768
 
     def encode(self, s, add_special_tokens=False):
         out = []
@@ -31,11 +34,25 @@ class FakeTok:
         inv = {b - 64: chr(b) for b in range(65, 91)}
         return "".join(inv.get(i, "?") for i in ids)
 
+    def convert_ids_to_tokens(self, ids):
+        out = []
+        for i in ids:
+            if 1 <= i <= 26:
+                out.append(chr(64 + i))          # 'A'..'Z': first byte 65..90
+            elif 256 <= i < 512:
+                out.append(chr((i - 256) if 32 <= i - 256 < 127 else 0x100 + (i - 256)))
+            else:
+                out.append("")                   # no first byte -> excluded from the byte head
+        return out
+
+    def __len__(self):
+        return self.VOCAB
+
 
 class FakeModel(torch.nn.Module):
     """get_input_embeddings -> a (V, D) embedding; forward(inputs_embeds=...) -> logits = pv @ W."""
 
-    def __init__(self, V=300, D=8, seed=0):
+    def __init__(self, V=768, D=8, seed=0):
         super().__init__()
         torch.manual_seed(seed)
         self.emb = torch.nn.Embedding(V, D)
@@ -82,12 +99,13 @@ def test_first_byte_bpb_accounting():
     data = b"ABCDEFGH"                                   # chunks ABCD, EFGH -> M=2, one prediction
     bpb, n, (cov, tcov) = lm.first_byte_bpb(data)
     assert n == 1 and cov == 1.0 and tcov == 1.0
-    # manual: chunk vectors -> logits -> CE against byte 'E' (id 5)
+    # manual: chunk vector -> logits -> softmax -> the BYTE-MARGINALIZED prob of 'E' (byte 69):
+    # tokens with first byte 69 are id 5 ('E') and id 256+69=325 (the stub's junk token for 'E')
     pv = (model.emb.weight[torch.tensor([1, 2, 3, 4])].sum(0)).unsqueeze(0)
     logits = (pv @ model.W)[0]
-    want = float(torch.nn.functional.cross_entropy(
-        logits.unsqueeze(0), torch.tensor([model.emb.weight.shape[0] and 5]), reduction="sum") / math.log(2))
-    assert abs(bpb - want) < 1e-6
+    p = logits.softmax(-1)
+    want = float(-torch.log2(p[5] + p[325]))
+    assert abs(bpb - want) < 1e-4          # fp32 summation-order noise; the accounting is what's tested
 
 
 def test_qwen_byte_bpb_accounting():

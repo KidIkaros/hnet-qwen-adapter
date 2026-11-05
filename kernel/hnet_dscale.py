@@ -68,7 +68,7 @@ def harvest(d):
     hsl = o.hidden_states
     # subsampled pair rows — coverage over volume
     rows = (emb[::2].float(), hsl[dec_start][0][::2].float(),
-            text.norm(hsl[-1][0])[::2].float(), hsl[main_start][0][::2].float())
+            text.norm(hsl[-1][0])[::2].float(), hsl[main_start][0].float())
     del o, hsl
     torch.cuda.empty_cache()
     return emb, rows

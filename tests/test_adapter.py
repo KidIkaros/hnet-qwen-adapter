@@ -217,6 +217,17 @@ def test_effective_bpb_period1_is_byte_level():
     assert abs(effective_bpb(data, pos, cnll, nll_b) - nll_b.mean()) < 1e-9
 
 
+def test_byte_decoder_shapes():
+    from src.decoder import ByteDecoder, chunk_batch, SOS
+    dec = ByteDecoder(d_trunk=8, max_len=4, d_dec=16, n_layers=1, n_heads=2)
+    spans = [(0, b"ABCD"), (4, b"EF")]
+    x, y, pad = chunk_batch(b"ABCDEF", spans, max_len=4)
+    assert x[0].tolist() == [SOS, ord("A"), ord("B"), ord("C")]
+    assert y[1].tolist()[:2] == [ord("E"), ord("F")] and pad[1].tolist() == [False, False, True, True]
+    logits = dec(torch.randn(2, 8), x, pad)
+    assert logits.shape == (2, 4, 256)
+
+
 def test_qwen_byte_bpb_accounting():
     """The same-weights reference: token CE weighted by each token's byte length, over total bytes."""
     model = FakeModel()

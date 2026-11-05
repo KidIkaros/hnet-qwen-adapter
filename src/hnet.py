@@ -71,6 +71,8 @@ class HNetQwen(nn.Module):
         self.dechunk = nn.Linear(text.config.hidden_size,
                                  text.config.hidden_size, bias=False)
         self.hidden = text.config.hidden_size
+        self.w_in = None                                        # (D, D) input adapter
+        self.w_out = None                                       # (D, D) output adapter
         dt = self.emb.weight.dtype                              # match checkpoint dtype
         self.boundary.to(dt); self.dechunk.to(dt)
 
@@ -169,11 +171,13 @@ class HNetQwen(nn.Module):
             for ci, (a, b) in enumerate(spans):
                 if ci > 0:
                     x[0, a:b] += ctx_v[ci - 1]
-        hs_dec = x
+        hs_dec = x if self.w_in is None else (x @ self.w_in.T)
         for layer in self.dec:
             hs_dec = layer(hs_dec, position_embeddings=None,
                            attention_mask=None, position_ids=None)
         out = self.norm(hs_dec)
+        if self.w_out is not None:
+            out = out @ self.w_out.T
         if head_first is not None:                            # chunked byte log-probs
             from .learned import byte_logprobs
             bp = torch.cat([byte_logprobs(self.lm_head(

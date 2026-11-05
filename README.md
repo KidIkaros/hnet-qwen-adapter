@@ -71,10 +71,25 @@ Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an un
   metric artifact. `ByteHead` (P(byte) = mass of all tokens whose first byte is b) is the honest
   readout.
 
-Papers: MEGABYTE (2305.07185, the frozen-chunking shape), BLT (2412.09871, §2.3 entropy patching — the
-v1 chunker), H-Net (2507.07955, the mechanism), the companion report
-(`~/Documents/HNet_Qwen_Companion_Research_20261104/`), the weight-space-programming post
-(rikiyat.github.io/blog/weight-space-programming/).
+**v1 — the learned glue (the ZHA recipe):** a rank-32 residual projection on the patch sum (~160k
+params, identity at init) trained 156 steps on the byte-marginalized task loss, trunk frozen:
+
+| system (3 held-out eval docs) | bpb |
+|---|---|
+| **v1 learned projection** | **2.4940** |
+| constructed sum (same chunker/docs) | 4.1579 |
+| stock BPE on eval docs | 4.9226 |
+| byte-level adapter on eval docs | 5.5730 |
+
+Training only the patch interface recovers **−1.66 bits** over the best construction — the ZHA
+indexer pattern works at our scale (~2 min A100). Caveats: same-domain eval, boundary-byte task,
+interior-byte decoding untouched. Full writeup: `docs/DECISION.md`.
+
+Papers: MEGABYTE (2305.07185, the frozen-chunking shape), BLT (2412.09871, §2.3 entropy patching),
+H-Net (2507.07955, the mechanism), ZHA (2610.42112, the train-only-the-indexer recipe + recursive
+summaries), LSA (2610.42147, the centroid construction + training-free Ward clustering), the
+companion report (`~/Documents/HNet_Qwen_Companion_Research_20261104/`), the weight-space-programming
+post (rikiyat.github.io/blog/weight-space-programming/).
 
 ## Layout
 

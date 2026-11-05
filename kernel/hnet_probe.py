@@ -63,7 +63,10 @@ print(f"[forward] logits {tuple(logits.shape)} | {len(spans)} chunks "
 head = ByteHead(tok)
 from src.learned import byte_logprobs                          # noqa: E402
 bp = byte_logprobs(logits[0].float(), head.first)               # (T, 256)
-nll = -bp[:-1, byte_ids[1:]]
+tgt = byte_ids[1:].long()
+nll = -bp[:-1].gather(1, tgt.unsqueeze(1)).squeeze(1)
+print(f"[debug] bp {tuple(bp.shape)} nll mean {float(nll.mean()):.3f} nats "
+      f"max {float(nll.max()):.1f}", flush=True)
 print(f"[score] byte bpb {float(nll.sum()) / np.log(2) / (T - 1):.4f}", flush=True)
 
 # random-init learned boundaries: span stats

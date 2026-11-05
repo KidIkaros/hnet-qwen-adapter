@@ -1,46 +1,9 @@
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
-Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
-  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [slice] 24 layers -> enc 4 + main 6 + dec 4  (DeltaNet 18 / attn 6)
 [probe] doc 3520 bytes
-[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
-[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [forward] logits (1, 3520, 248320) | 587 chunks (mean 6.0 B)
-[0;31m---------------------------------------------------------------------------[0m[0;31mIndexError[0m                                Traceback (most recent call last)[0;32m/tmp/ipykernel_515/843651512.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m     65[0m [0mfirst[0m [0;34m=[0m [0mhead[0m[0;34m.[0m[0mfirst[0m[0;34m.[0m[0mcuda[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     66[0m [0mprobs[0m [0;34m=[0m [0mlp[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0mfirst[0m[0;34m][0m[0;34m.[0m[0mlogsumexp[0m[0;34m([0m[0;34m-[0m[0;36m1[0m[0;34m)[0m                              [0;31m# (T, 256)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 67[0;31m [0mnll[0m [0;34m=[0m [0;34m-[0m[0mprobs[0m[0;34m[[0m[0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     68[0m [0mprint[0m[0;34m([0m[0;34mf"[score] byte bpb {float(nll.sum()) / np.log(2) / (T - 1):.4f}"[0m[0;34m,[0m [0mflush[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     69[0m [0;34m[0m[0m
-[0;31mIndexError[0m: too many indices for tensor of dimension 1
-  │
-│   356 │   │   url = self._build_assign_url(notebook_hash, variant,           │
-│       accelerator, shape)                                                    │
-│   357 │   │   headers = {COLAB_XSRF_TOKEN_HEADER["key"]: xsrf_token}         │
-│ ❱ 358 │   │   return self._issue_request(                                    │
-│   359 │   │   │   url, method="POST", headers=headers,                       │
-│       schema=PostAssignmentResponse                                          │
-│   360 │   │   )                                                              │
-│   361                                                                        │
-│                                                                              │
-│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
-│ kages/colab_cli/client.py:238 in _issue_request                              │
-│                                                                              │
-│   235 │   │   self.logger.debug(f"Response Headers: {response.headers}")     │
-│   236 │   │   self.logger.debug(f"Response Body: {response.text}")           │
-│   237 │   │   if not response.ok:                                            │
-│ ❱ 238 │   │   │   raise ColabRequestError(                                   │
-│   239 │   │   │   │   f"Failed to issue request {method} {endpoint}:         │
-│       {response.reason}",                                                    │
-│   240 │   │   │   │   request=response.request,                              │
-│   241 │   │   │   │   response=response,                                     │
-╰──────────────────────────────────────────────────────────────────────────────╯
-ColabRequestError: Failed to issue request POST 
-https://colab.research.google.com/tun/m/assign?nbh=d8ba412b_46a0_4901_93ba_304cc
-0b96181........&variant=GPU&accelerator=A100: Service Unavailable
+[score] byte bpb 23968.8198
+[random-route] 1498 chunks (mean span 2.3 B)

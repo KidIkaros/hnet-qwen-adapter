@@ -34,8 +34,9 @@ from huggingface_hub import snapshot_download                    # noqa: E402
 from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
 src = snapshot_download("Qwen/Qwen3.5-0.8B")
 
-from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker, SimChunker  # noqa: E402
-from src.corpus import byte_token_map                             # noqa: E402
+from src.adapter import (ByteHead, ChunkLM, PatchEmbedder, PeriodicChunker,  # noqa: E402
+                         SimChunker)
+from src.corpus import byte_token_map, ValDocs                    # noqa: E402
 from src.construct import identity, norm_match, cov_recolor, ridge_to_bpe  # noqa: E402
 from src.learned import PatchProjection, byte_logprobs            # noqa: E402
 
@@ -73,20 +74,24 @@ def run_staircase(chunker, P, label):
                     ids[m, i] = bmap[b]
         base = emb_ext[ids.cuda()].sum(1)
         ms, bs, tgt_ids = [], [], []
+        pos = []
         for m in range(len(spans) - 1):
             b = int(spans[m + 1][1][0])
             if b in bmap:
-                ms.append(m); bs.append(b)
+                ms.append(m); bs.append(b); pos.append(spans[m + 1][0])
         for _, c in spans:
             tids = tok.encode(c.decode("latin-1"), add_special_tokens=False)
             tgt_ids.append(tids if tids else [0])
         tgt = torch.stack([emb[torch.tensor(t, device="cuda")].mean(0) for t in tgt_ids])
-        return base, torch.tensor(ms, device="cuda"), torch.tensor(bs, device="cuda"), tgt
+        return (base, torch.tensor(ms, device="cuda"), torch.tensor(bs, device="cuda"), tgt,
+                np.array(pos))
 
     train = [prep(d) for d in train_docs]
     evals = [prep(d) for d in eval_docs]
     X = torch.cat([t[0] for t in train])
     Y = torch.cat([t[3] for t in train])
+    lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=head)
+    fb_nll_eval = [lm1.byte_nll(d) for d in eval_docs]         # interior fallback, zero training
     print(f"\n=== {label}: {X.shape[0]} fit chunks ===", flush=True)
 
     maps = {
@@ -97,25 +102,30 @@ def run_staircase(chunker, P, label):
     }
 
     def eval_map(apply):
-        tot, n = 0.0, 0
+        """boundary bpb AND the fully-constructed effective bpb (interior = byte-level fallback)."""
+        tot, n = 0.0, 0; eff_bits = eff_bytes = 0.0
         with torch.no_grad():
-            for base, ms, bs, _ in evals:
+            for j, (base, ms, bs, _, pos) in enumerate(evals):
                 patch = apply(base).to(torch.bfloat16).unsqueeze(0)
                 logits = model(inputs_embeds=patch).logits[0].float()
                 lp = byte_logprobs(logits, head.first)
                 nll = -lp[ms, bs]
                 tot += float(nll.sum()); n += len(bs)
-        return tot / max(n, 1)
+                fb = fb_nll_eval[j]
+                eff_bits += 8.0 + float(fb.sum() - fb[pos].sum() + float(nll.sum()))
+                eff_bytes += len(eval_docs[j])
+        return tot / max(n, 1), eff_bits / max(eff_bytes, 1)
 
-    print(f"{'map':>14} {'boundary bpb':>13}", flush=True)
+    print(f"{'map':>14} {'boundary bpb':>13} {'EFF (constructed)':>18}", flush=True)
     for name, f in maps.items():
-        print(f"{name:>14} {eval_map(f):>13.4f}", flush=True)
+        b, e = eval_map(f)
+        print(f"{name:>14} {b:>13.4f} {e:>18.4f}", flush=True)
 
     proj = PatchProjection(emb.shape[1], rank=32).cuda()
     opt = torch.optim.AdamW(proj.parameters(), lr=3e-3)
     for ep in range(12):
-        for base, ms, bs, _ in [train[i] for i in
-                                np.random.RandomState(ep).permutation(len(train))]:
+        for base, ms, bs, _, _ in [train[i] for i in
+                                   np.random.RandomState(ep).permutation(len(train))]:
             patch = proj(base).to(torch.bfloat16).unsqueeze(0)
             logits = model(inputs_embeds=patch).logits[0].float()
             lp = byte_logprobs(logits, head.first)
@@ -123,7 +133,8 @@ def run_staircase(chunker, P, label):
             opt.zero_grad(); loss.backward(); opt.step()
     for p in proj.parameters():
         p.requires_grad_(False)
-    print(f"{'sgd_rank32':>14} {eval_map(proj):>13.4f}", flush=True)
+    sb, se = eval_map(proj)
+    print(f"{'sgd_rank32':>14} {sb:>13.4f} {se:>18.4f}", flush=True)
 
     dW = (proj.A @ proj.B).detach().float()
     s = torch.linalg.svdvals(dW)
@@ -144,3 +155,62 @@ def run_staircase(chunker, P, label):
 
 run_staircase(PeriodicChunker(6), 6, "periodic-6")
 run_staircase(SimChunker(pe, target_mean=6.0), 16, "sim~6")
+
+# ---- the fully-constructed system on the val split: ridge boundaries + byte-level interior,
+# zero gradients anywhere.  Fits still come from the markdown train docs (cross-domain).
+if os.path.isdir("/content/val"):
+    vdocs = ValDocs("/content/val").docs(8, min_len=4096)
+    eval_docs = vdocs
+
+    def _vprep():
+        chunker = PeriodicChunker(6)
+        ev = []
+        for d in vdocs:
+            spans = chunker.spans(d)
+            ids = torch.full((len(spans), 6), PAD, dtype=torch.long)
+            for m, (_, c) in enumerate(spans):
+                for i, b in enumerate(c[:6]):
+                    if b in bmap:
+                        ids[m, i] = bmap[b]
+            base = emb_ext[ids.cuda()].sum(1)
+            ms, bs, pos = [], [], []
+            for m in range(len(spans) - 1):
+                b = int(spans[m + 1][1][0])
+                if b in bmap:
+                    ms.append(m); bs.append(b); pos.append(spans[m + 1][0])
+            ev.append((base, torch.tensor(ms, device="cuda"),
+                       torch.tensor(bs, device="cuda"), None, np.array(pos)))
+        return ev
+
+    evals = _vprep()
+    lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=head)
+    fb_nll_eval = [lm1.byte_nll(d) for d in vdocs]
+    # refit ridge on the periodic-6 markdown train set — markdown-fit map evaluated cross-domain
+    ch = PeriodicChunker(6)
+    Xs, Ys = [], []
+    for d in train_docs:
+        spans = ch.spans(d)
+        ids = torch.full((len(spans), 6), PAD, dtype=torch.long)
+        for m, (_, c) in enumerate(spans):
+            for i, b in enumerate(c[:6]):
+                if b in bmap:
+                    ids[m, i] = bmap[b]
+        Xs.append(emb_ext[ids.cuda()].sum(1))
+        for _, c in spans:
+            tids = tok.encode(c.decode("latin-1"), add_special_tokens=False) or [0]
+            Ys.append(emb[torch.tensor(tids, device="cuda")].mean(0))
+    ridge = ridge_to_bpe(torch.cat(Xs), torch.stack(Ys))
+    for name, f in (("identity", identity()), ("ridge_bpe", ridge)):
+        tot, n = 0.0, 0; eff_bits = eff_bytes = 0.0
+        with torch.no_grad():
+            for j, (base, ms, bs, _, pos) in enumerate(evals):
+                patch = f(base).to(torch.bfloat16).unsqueeze(0)
+                logits = model(inputs_embeds=patch).logits[0].float()
+                lp = byte_logprobs(logits, head.first)
+                nll = -lp[ms, bs]
+                tot += float(nll.sum()); n += len(bs)
+                fb = fb_nll_eval[j]
+                eff_bits += 8.0 + float(fb.sum() - fb[pos].sum() + float(nll.sum()))
+                eff_bytes += len(vdocs[j])
+        print(f"[val periodic-6 {name}] boundary {tot / n:.4f} | "
+              f"EFF (constructed, zero-training) {eff_bits / eff_bytes:.4f}", flush=True)

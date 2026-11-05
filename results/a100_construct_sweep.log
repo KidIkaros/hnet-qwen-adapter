@@ -1,0 +1,29 @@
+[colab] Creating session 'run-12ad7f'...
+[colab] Session READY (run-12ad7f). Executing kernel/construct_sweep.py...
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[corpus] 13 train + 3 eval
+[fit] 17745 chunks for closed-form fits
+
+           map  boundary bpb
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+      identity        6.5483
+    norm_match        5.9277
+   cov_recolor        6.9935
+     ridge_bpe        4.5760
+    sgd_rank32        3.6838
+
+[autopsy] ||dW||_F 9.611 ||dW||/||I|| 0.3003 top sv [9.295 2.231 0.778 0.388 0.29  0.169]
+    cos(dW, norm_match-I) = 0.002
+    cos(dW, cov_recolor-I) = 0.004
+    cos(dW, ridge_bpe-I) = 0.002
+[colab] Stopping session 'run-12ad7f'...
+[colab] Session terminated.

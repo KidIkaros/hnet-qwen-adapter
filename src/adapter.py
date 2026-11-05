@@ -105,7 +105,7 @@ class PatchEmbedder:
             # A chunk where EVERY byte is unmappable (a single UTF-8 continuation byte at period 1,
             # or a 2-byte UTF-8 char aligned to a period-2 chunk) becomes a zero vector — a "hole"
             # the model sees at that position.  The coverage reports it; the doc is not dropped.
-            return torch.zeros(self.D), 0.0
+            return torch.zeros(self.D, dtype=torch.float32, device=self.emb.device), 0.0
         with torch.no_grad():
             v = self.emb[ids].float().sum(0)                    # (D,) fp32 sum: ONE rounding, not five
             if self.agg == "mean":

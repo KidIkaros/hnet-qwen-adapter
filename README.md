@@ -32,25 +32,37 @@ honest stress case), period-6 chunks, Qwen3.5-0.8B on Colab A100 (`results/a100_
 | system | what it predicts | bpb |
 |---|---|---|
 | trained 18.6M H-Net (the reference) | every byte | 1.4177 (published, its val split) |
-| stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **4.2560** |
-| **adapter v0, period 6** | each chunk's first byte, byte-marginalized head | **9.1890** (10,848 preds) |
+| stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **4.2567** |
 
-Coverage: 221/256 bytes have a single-token row (input cov 0.994); 0.6% of targets are unmappable
-bytes and are skipped (target cov 0.994).
+Period × aggregation sweep (`results/a100_sweep.log`), byte-marginalized head throughout:
 
-**Reading the number honestly:**
-- 9.19 bits is ~1.2 bits *better than uniform* (8 bits): the frozen stack extracts weak-but-real
-  signal from summed patch embeddings.
-- The tasks differ by construction — the adapter predicts one byte per six (chunk onsets; it has no
-  mechanism for interior bytes); Qwen's 4.26 covers every byte. The fair summary: the zero-training
-  patch interface is **dramatically lossy** — the distribution-shift wall (report Finding 4)
-  measured.
-- The readout matters: scoring the head on single-byte *tokens* directly reads 12.58 (worse than
-  uniform — a metric artifact); the byte-marginalized head (`ByteHead`, P(byte) = mass of all tokens
-  whose first byte is b) is the honest readout.
+| period | sum | mean | n_preds (sum) | the task |
+|---|---|---|---|---|
+| **1** | **5.2250** | — | 65,132 | every next byte — the byte-level-Qwen control |
+| 2 | 7.7184 | 9.2854 | 32,558 | every 2nd byte |
+| 3 | **6.4325** | 8.9436 | 21,701 | every 3rd byte |
+| 6 | 9.1890 | 8.9554 | 10,848 | every 6th byte |
+| 12 | 8.5120 | 8.9565 | 5,421 | every 12th byte |
 
-**Untested cheap knobs (v0.x):** mean vs sum patch aggregation (the patch norm is ~√6× a token row —
-pre-norm helps but the direction is off-manifold), patch-vector length correction, period sweep.
+Coverage: 221/256 bytes have a single-token row; ~0.6% of chunks contain an unmappable byte (the hole
+positions embed as zero vectors, counted in input cov 0.994) and ~0.6% of targets are skipped
+(target cov 0.994).
+
+**Reading the numbers honestly:**
+- **Granularity cost is small — the surprise**: period 1 degenerates the adapter to "Qwen as a
+  byte-level model" (byte-token rows in, marginalized head out) at **5.23 bits vs stock 4.26 — only
+  +0.97**. The frozen stack handles byte-granular input far better than the distribution-shift
+  prediction suggested.
+- **The patch construction is the lossy part**: summing multiple byte rows pushes boundary-byte
+  prediction to 6.4–9.2. The shift lives in the patch interface, not the byte granularity.
+- **sum > mean at small periods** (up to +2.5 bits @3): the larger norm seems to mark patch vectors
+  as non-token — a useful signal the mean destroys.
+- **Cross-period comparisons are task-confounded**: each period scores a different byte subset
+  (boundary alignment vs UTF-8/word structure differs), so the non-monotonicity (3 < 2, 12 < 6) is
+  not pure chunking cost. A same-target-set comparison is future work.
+- The readout matters: scoring single-byte *tokens* directly reads ~3 bits worse than uniform — a
+  metric artifact. `ByteHead` (P(byte) = mass of all tokens whose first byte is b) is the honest
+  readout.
 
 Papers: MEGABYTE (2305.07185, the frozen-chunking shape), BLT (2412.09871, §2.3 entropy patching — the
 v1 chunker), H-Net (2507.07955, the mechanism), the companion report

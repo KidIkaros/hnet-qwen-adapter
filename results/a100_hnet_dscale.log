@@ -3,21 +3,6 @@ Reconstructing (incomplete total...): |          |  0.00B /  0.00B
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [dscale] fit pool 24 | held-out 6
-[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_14754/2738137133.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    157[0m [0;34m[0m[0m
-[1;32m    158[0m [0;32mfor[0m [0mn[0m [0;32min[0m [0;34m([0m[0;36m4[0m[0;34m,[0m [0;36m12[0m[0;34m,[0m [0;36m24[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 159[0;31m     [0mgp[0m [0;34m=[0m [0mfit[0m[0;34m([0m[0mn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    160[0m     [0mrow[0m [0;34m=[0m [0;34m[[0m[0meval_bpb[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mtensor[0m[0;34m([0m[0mlist[0m[0;34m([0m[0md[0m[0;34m)[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0;34m"cuda"[0m[0;34m)[0m[0;34m)[0m [0;32mfor[0m [0md[0m [0;32min[0m [0meval_docs[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    161[0m     print(f"  fit_docs={n:<3} pairs={gp:<6} held-out bpb {np.mean(row):.4f} "
-[0;32m/tmp/ipykernel_14754/2738137133.py[0m in [0;36mfit[0;34m(n_docs)[0m
-[1;32m    120[0m     hn.w_out = ridge_to_bpe(Xout[:200_000].to(torch.bfloat16),
-[1;32m    121[0m                             Yout[:len(Xout)].to(torch.bfloat16))
-[0;32m--> 122[0;31m     hn.w_main = ridge_to_bpe(Xmain[:200_000].to(torch.bfloat16),
-[0m[1;32m    123[0m                              Ymain_p[:200_000].to(torch.bfloat16))
-[1;32m    124[0m     [0menc_resid[0m [0;34m=[0m [0;34m([0m[0mYin[0m[0;34m[[0m[0;34m:[0m[0mlen[0m[0;34m([0m[0mXenc[0m[0;34m)[0m[0;34m][0m [0;34m-[0m [0mXin[0m[0;34m[[0m[0;34m:[0m[0mlen[0m[0;34m([0m[0mXenc[0m[0;34m)[0m[0;34m][0m[0;34m)[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mbfloat16[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/construct.py[0m in [0;36mridge_to_bpe[0;34m(patch_sums, targets, lam)[0m
-[1;32m     44[0m     [0mX[0m[0;34m,[0m [0mY[0m [0;34m=[0m [0mpatch_sums[0m[0;34m.[0m[0mdouble[0m[0;34m([0m[0;34m)[0m[0;34m,[0m [0mtargets[0m[0;34m.[0m[0mdouble[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     45[0m     [0mXtX[0m [0;34m=[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mX[0m [0;34m+[0m [0mlam[0m [0;34m*[0m [0mtorch[0m[0;34m.[0m[0meye[0m[0;34m([0m[0mX[0m[0;34m.[0m[0mshape[0m[0;34m[[0m[0;36m1[0m[0;34m][0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdtype[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 46[0;31m     [0mW[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mlinalg[0m[0;34m.[0m[0msolve[0m[0;34m([0m[0mXtX[0m[0;34m,[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mY[0m[0;34m)[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mpatch_sums[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     47[0m     [0;32mreturn[0m [0;32mlambda[0m [0mbase[0m[0;34m:[0m [0mbase[0m [0;34m@[0m [0mW[0m[0;34m[0m[0;34m[0m[0m
-[0;31mRuntimeError[0m: mat1 and mat2 shapes cannot be multiplied (1024x5460 and 2730x1024)
+  fit_docs=4   pairs=16368  held-out bpb 7.4587 (['6.684', '7.716', '8.200', '7.010', '6.761', '8.381'])
+  fit_docs=12  pairs=32736  held-out bpb 7.4756 (['6.762', '7.759', '8.132', '7.022', '6.790', '8.388'])
+  fit_docs=24  pairs=32736  held-out bpb 7.5271 (['6.777', '7.833', '8.299', '6.970', '6.845', '8.439'])

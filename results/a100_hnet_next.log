@@ -8,10 +8,10 @@ Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
   n_ctx=2: 7.1368 (['7.120', '7.153'])
   n_ctx=4: 7.3957 (['7.391', '7.401'])
 [B] enc/dec fraction sweep — retr +w_main
-  enc=6 dec=8: 6.1932 (['6.159', '6.227'])
-  enc=8 dec=10: 7.0298 (['7.032', '7.028'])
-  enc=6 dec=12: 6.2883 (['6.256', '6.320'])
-  enc=10 dec=6: 7.3119 (['7.256', '7.368'])
+  enc=6 dec=8: 6.4371 (['6.395', '6.479'])
+  enc=6 dec=10: 6.9558 (['6.946', '6.965'])
+  enc=5 dec=10: 6.9406 (['6.932', '6.949'])
+  enc=7 dec=7: 7.3014 (['7.289', '7.314'])
 [C] generation — greedy byte decode, (4,14) slice
   prompt: b'The H-Net of Qwen routes bytes through '
   output: b'  aa   aa   aa k bco- -u -  aa    aakca-ou-   oo    a    oo    a    o    a    o    a    a cgg a     a    a    a cgg a   '

@@ -1,0 +1,55 @@
+[colab] Creating session 'run-ad992b'...
+[colab] Session READY (run-ad992b). Executing kernel/colab_run.py...
+[setup] cloning the repos
+[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[setup] done in 33s
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[setup] byte-token map: 221/256 bytes mapped
+[corpus] hnet-kaggle markdown (OOD): 8 docs, 65536 bytes
+[entropy] byte-level scores + fallback NLLs from the period-1 model
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+stock Qwen3.5-0.8B (native BPE): full-byte bpb 4.2560 over 65536 bytes
+[control] byte-level adapter effective bpb (its own fallback): 5.2940
+
+   chunker   agg mean_len  first-b bpb  EFF bpb   n_preds  in_cov  tg_cov  skip
+  period=1   sum     1.00       5.2250   5.2940     65132  0.9940  0.9940     0
+  period=2   sum     2.00       7.7184   6.5407     32558  0.9940  0.9938     0
+  period=2  mean     2.00       9.2854   7.3191     32558  0.9940  0.9938     0
+  period=2  last     2.00       9.5093   7.4304     32558  0.9940  0.9938     0
+  period=3   sum     3.00       6.4325   5.6991     21701  0.9940  0.9940     0
+  period=3  mean     3.00       8.9436   6.5306     21701  0.9940  0.9940     0
+  period=3  last     3.00       9.4592   6.7014     21701  0.9940  0.9940     0
+  period=6   sum     6.00       9.1890   5.9533     10848  0.9940  0.9941     0
+  period=6  mean     6.00       8.9554   5.9147     10848  0.9940  0.9941     0
+  period=6  last     6.00       8.7607   5.8824     10848  0.9940  0.9941     0
+ period=12   sum    12.01       8.5120   5.5665      5421  0.9940  0.9950     0
+ period=12  mean    12.01       8.9565   5.6032      5421  0.9940  0.9950     0
+ period=12  last    12.01       8.6820   5.5805      5421  0.9940  0.9950     0
+ entropy~6   sum     5.58       7.3157   5.6526     11489  0.9917  0.9786     0
+     sim~6   sum     5.55       6.3867   5.5614     11400  0.9665  0.9664     0
+ entropy~6  mean     5.58       9.4434   6.0256     11489  0.9917  0.9786     0
+     sim~6  mean     5.55       7.3099   5.7220     11400  0.9665  0.9664     0
+ entropy~6  last     5.58      10.1961   6.1575     11489  0.9917  0.9786     0
+     sim~6  last     5.55       7.1615   5.6961     11400  0.9665  0.9664     0
+ entropy~3   sum     2.99       8.4232   6.2461     21597  0.9925  0.9863     0
+     sim~3   sum     3.00       7.2685   6.0038     21454  0.9819  0.9819     0
+ entropy~4   sum     3.97       7.9113   5.9211     16214  0.9922  0.9836     0
+     sim~4   sum     3.99       7.0656   5.7992     16012  0.9759  0.9759     0
+ entropy~8   sum     7.56       7.6370   5.5940      8414  0.9910  0.9721     0
+     sim~8   sum     7.47       7.6625   5.5903      8371  0.9550  0.9549     0
+entropy~12   sum    10.36       8.2420   5.5725      6095  0.9897  0.9645     0
+    sim~12   sum     9.97       9.7409   5.6661      6171  0.9400  0.9399     0
+
+trained 18.6M H-Net (published, full-byte): 1.4177
+[timing] 169s
+[colab] Stopping session 'run-ad992b'...
+[colab] Session terminated.

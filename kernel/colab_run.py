@@ -58,25 +58,46 @@ else:
     corpus_name = "hnet-kaggle markdown (OOD)"
 print(f"[corpus] {corpus_name}: {len(docs)} docs, {sum(len(d) for d in docs)} bytes", flush=True)
 
-# ---- the measurement
-PERIOD = 6
-lm = ChunkLM(model, tok, period=PERIOD)
-rows = []
-tot_a = tot_q = 0.0; n_a = n_q = 0.0; covs = []
+# ---- the measurement: the same-position control, then the period x aggregation sweep
+# Period 1 is the control: each chunk IS one byte, so the adapter degenerates to "Qwen as a byte-level
+# model through the byte-fallback rows" — decomposing the v0 loss into granularity cost (period 1 vs
+# stock) + chunking cost (period >1 vs period 1).
+NDOCS = int(os.environ.get("NDOCS", "8"))
+docs = docs[:NDOCS]
+
+print("[control] stock Qwen, same first-byte positions (byte-marginalized head at the byte-token that ENDS the chunk)", flush=True)
+
+
+from src.adapter import ByteHead                                    # noqa: E402
+_shared_head = ByteHead(tok)
+
+
+def adapter_score(period, agg):
+    lm = ChunkLM(model, tok, period=period, agg=agg, byte_head=_shared_head)
+    tot = n = 0.0; covs = []
+    for d in docs:
+        try:
+            bpb, k, c = lm.first_byte_bpb(d)
+            tot += bpb * k; n += k; covs.append(c)
+        except ValueError:
+            continue
+    return tot / max(n, 1), int(n), float(np.mean([c for c, _ in covs])), float(np.mean([t for _, t in covs]))
+
+
 t0 = time.time()
-for i, d in enumerate(docs):
-    try:
-        bpb, n, (cov, tcov) = lm.first_byte_bpb(d)
-        tot_a += bpb * n; n_a += n; covs.append((cov, tcov))
-    except ValueError as e:
-        print(f"[doc {i}] skipped (adapter): {e}", flush=True); continue
+qb_tot = qb_n = 0.0
+for d in docs:
     qb, _, _ = qwen_byte_bpb(model, tok, d)
-    tot_q += qb * len(d); n_q += len(d)
-    print(f"[doc {i}] {len(d)} bytes: adapter first-byte bpb {bpb:.4f} (n={n}, cov={cov:.3f}, tcov={tcov:.3f}) | "
-          f"qwen full bpb {qb:.4f}", flush=True)
-print("", flush=True)
-print(f"adapter v0 (period {PERIOD}): first-byte bpb {tot_a / max(n_a, 1):.4f} over {int(n_a)} predictions "
-      f"(input cov {np.mean([c for c, _ in covs]):.4f}, target cov {np.mean([t for _, t in covs]):.4f})", flush=True)
-print(f"stock Qwen3.5-0.8B (BPE):      full-byte bpb {tot_q / max(n_q, 1):.4f} over {int(n_q)} bytes", flush=True)
-print(f"trained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
+    qb_tot += qb * len(d); qb_n += len(d)
+print(f"stock Qwen3.5-0.8B (native BPE): full-byte bpb {qb_tot / max(qb_n, 1):.4f} over {int(qb_n)} bytes", flush=True)
+
+print(f"\n{'period':>6} {'agg':>5} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7}", flush=True)
+for period in (1, 2, 3, 6, 12):
+    for agg in ("sum", "mean"):
+        if period == 1 and agg == "mean":
+            continue                                    # sum == mean for one-byte chunks
+        bpb, n, ci, ct = adapter_score(period, agg)
+        print(f"{period:>6} {agg:>5} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f}", flush=True)
+
+print(f"\ntrained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
 print(f"[timing] {time.time() - t0:.0f}s", flush=True)

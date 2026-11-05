@@ -91,10 +91,12 @@ class PatchEmbedder:
     ones are unprintable controls).
     """
 
-    def __init__(self, model, tok):
+    def __init__(self, model, tok, agg="sum"):
+        assert agg in ("sum", "mean")
         self.bmap = byte_token_map(tok)
         self.emb = model.get_input_embeddings().weight          # (V_vocab, D), frozen
         self.D = self.emb.shape[1]
+        self.agg = agg
 
     def embed(self, chunk):
         ids = [self.bmap[b] for b in chunk if b in self.bmap]
@@ -103,6 +105,8 @@ class PatchEmbedder:
             raise ValueError("a chunk with no mapped bytes")
         with torch.no_grad():
             v = self.emb[ids].float().sum(0)                    # (D,) fp32 sum: ONE rounding, not five
+            if self.agg == "mean":
+                v = v / len(ids)
         return v, cov
 
     def embed_all(self, chunks):
@@ -118,12 +122,13 @@ class ChunkLM:
     byte a token, so the head IS a byte head for mapped bytes).
     """
 
-    def __init__(self, model, tok, period=6, device="cuda", dtype=torch.bfloat16):
+    def __init__(self, model, tok, period=6, agg="sum", device="cuda", dtype=torch.bfloat16,
+                 byte_head=None):
         self.model = model.eval().to(device, dtype)
         self.tok = tok
         self.chunker = PeriodicChunker(period)
-        self.embedder = PatchEmbedder(self.model, tok)
-        self.byte_head = ByteHead(tok)
+        self.embedder = PatchEmbedder(self.model, tok, agg=agg)
+        self.byte_head = byte_head if byte_head is not None else ByteHead(tok)
         self.period, self.device = period, device
         self.dtype = next(model.parameters()).dtype              # the model's native dtype (bf16)
 

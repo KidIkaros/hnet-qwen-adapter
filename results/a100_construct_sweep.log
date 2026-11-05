@@ -1,5 +1,5 @@
-[colab] Creating session 'run-12ad7f'...
-[colab] Session READY (run-12ad7f). Executing kernel/construct_sweep.py...
+[colab] Creating session 'run-0f9c06'...
+[colab] Session READY (run-0f9c06). Executing kernel/construct_sweep.py...
 /usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
 Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
   warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
@@ -10,8 +10,8 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
 WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [corpus] 13 train + 3 eval
-[fit] 17745 chunks for closed-form fits
 
+=== periodic-6: 17745 fit chunks ===
            map  boundary bpb
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
@@ -19,11 +19,22 @@ Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
     norm_match        5.9277
    cov_recolor        6.9935
      ridge_bpe        4.5760
-    sgd_rank32        3.6838
+    sgd_rank32        3.6181
+  [autopsy] ||dW||/||I|| 0.2761 top sv [7.83  3.366 1.657 1.424]
+    cos(dW, norm_match-I) = -0.001
+    cos(dW, cov_recolor-I) = -0.007
+    cos(dW, ridge_bpe-I) = -0.001
 
-[autopsy] ||dW||_F 9.611 ||dW||/||I|| 0.3003 top sv [9.295 2.231 0.778 0.388 0.29  0.169]
+=== sim~6: 19137 fit chunks ===
+           map  boundary bpb
+      identity        4.1574
+    norm_match        4.8373
+   cov_recolor        3.5747
+     ridge_bpe        3.7443
+    sgd_rank32        2.6101
+  [autopsy] ||dW||/||I|| 0.2289 top sv [4.752 3.676 2.659 1.875]
     cos(dW, norm_match-I) = 0.002
-    cos(dW, cov_recolor-I) = 0.004
-    cos(dW, ridge_bpe-I) = 0.002
-[colab] Stopping session 'run-12ad7f'...
+    cos(dW, cov_recolor-I) = 0.015
+    cos(dW, ridge_bpe-I) = 0.000
+[colab] Stopping session 'run-0f9c06'...
 [colab] Session terminated.

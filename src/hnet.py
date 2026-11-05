@@ -173,6 +173,12 @@ class HNetQwen(nn.Module):
             hs_dec = layer(hs_dec, position_embeddings=None,
                            attention_mask=None, position_ids=None)
         out = self.norm(hs_dec)
+        if head_first is not None:                            # chunked byte log-probs
+            from .learned import byte_logprobs
+            bp = torch.cat([byte_logprobs(self.lm_head(
+                out[:, i:i + 2048]).float()[0], head_first)
+                for i in range(0, T, 2048)])
+            return bp[None], boundaries, spans
         logits = self.lm_head(out)                            # (1, T, V)
         return logits, boundaries, spans
 

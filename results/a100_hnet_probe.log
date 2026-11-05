@@ -1,14 +1,25 @@
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
-Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
 [probe] 8192 real bytes
-  periodic-6 full|prev    byte bpb 13.1110 (1366 ch, 6.0B)
-  periodic-6 full|retr    byte bpb 13.1110 (1366 ch, 6.0B)
-  periodic-6 sparse|retr  byte bpb 13.1110 (1366 ch, 6.0B)
-  spacelike  full|prev    byte bpb 13.1110 (2374 ch, 3.5B)
-  spacelike  full|retr    byte bpb 13.1110 (2374 ch, 3.5B)
-  spacelike  sparse|retr  byte bpb 13.1110 (2374 ch, 3.5B)
-  sim        full|prev    byte bpb 13.1110 (2984 ch, 2.7B)
-  sim        full|retr    byte bpb 13.1110 (2984 ch, 2.7B)
-  sim        sparse|retr  byte bpb 13.1110 (2984 ch, 2.7B)
+[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_4589/1955911972.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    106[0m             [0mlogits[0m[0;34m,[0m [0m_[0m[0;34m,[0m [0mspans[0m [0;34m=[0m [0mhn[0m[0;34m([0m[0mbyte_ids[0m[0;34m,[0m [0mboundaries[0m[0;34m=[0m[0mbnd[0m[0;34m,[0m [0msparse[0m[0;34m=[0m[0msparse[0m[0;34m,[0m [0mctx[0m[0;34m=[0m[0mctx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    107[0m         [0mml[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m[[0m[0mb[0m [0;34m-[0m [0ma[0m [0;32mfor[0m [0ma[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 108[0;31m         print(f"  {rname:<10} {tag:<12} byte bpb {score(logits):.4f} "
+[0m[1;32m    109[0m               f"({len(spans)} ch, {ml:.1f}B)", flush=True)
+[0;32m/tmp/ipykernel_4589/1955911972.py[0m in [0;36mscore[0;34m(logits)[0m
+[1;32m     54[0m [0;34m[0m[0m
+[1;32m     55[0m [0;32mdef[0m [0mscore[0m[0;34m([0m[0mlogits[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 56[0;31m     [0mbp[0m [0;34m=[0m [0mbyte_logprobs[0m[0;34m([0m[0mlogits[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m.[0m[0mfloat[0m[0;34m([0m[0;34m)[0m[0;34m,[0m [0mhead[0m[0;34m.[0m[0mfirst[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     57[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     58[0m     [0;32mreturn[0m [0mfloat[0m[0;34m([0m[0mnll[0m[0;34m.[0m[0msum[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m/[0m [0mnp[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;36m2[0m[0;34m)[0m [0;34m/[0m [0;34m([0m[0mT[0m [0;34m-[0m [0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/learned.py[0m in [0;36mbyte_logprobs[0;34m(logits, first)[0m
+[1;32m     54[0m     [0mp[0m [0;34m=[0m [0mlogits[0m[0;34m.[0m[0msoftmax[0m[0;34m([0m[0;34m-[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     55[0m     [0mout[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mM[0m[0;34m,[0m [0;36m256[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mlogits[0m[0;34m.[0m[0mdevice[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mp[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 56[0;31m     [0mout[0m[0;34m.[0m[0mindex_add_[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mdst[0m[0;34m,[0m [0mp[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0msrc[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     57[0m     [0;32mreturn[0m [0mout[0m[0;34m.[0m[0mclamp_min[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mfinfo[0m[0;34m([0m[0mp[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m.[0m[0mtiny[0m[0;34m)[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;34m)[0m      [0;31m# ~-inf for empty buckets, no nan grads[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     58[0m [0;34m[0m[0m
+[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 7.57 GiB. GPU 0 has a total capacity of 39.49 GiB of which 7.01 GiB is free. Including non-PyTorch memory, this process has 32.47 GiB memory in use. Of the allocated memory 26.90 GiB is allocated by PyTorch, and 5.08 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

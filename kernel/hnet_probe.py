@@ -52,9 +52,8 @@ T = len(byte_ids)
 print(f"[probe] {T} real bytes", flush=True)
 
 
-def score(logits):
-    bp = byte_logprobs(logits[0].float(), head.first)
-    nll = -bp[:-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
+def score(bp):
+    nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
     return float(nll.sum()) / np.log(2) / (T - 1)
 
 
@@ -103,7 +102,8 @@ modes = [(None, "prev", "full|prev"), (None, "retrieve", "full|retr"),
 for rname, bnd in rules.items():
     for sparse, ctx, tag in modes:
         with torch.no_grad():
-            logits, _, spans = hn(byte_ids, boundaries=bnd, sparse=sparse, ctx=ctx)
+            bp, _, spans = hn(byte_ids, boundaries=bnd, sparse=sparse, ctx=ctx,
+                              head_first=head.first)
         ml = np.mean([b - a for a, b in spans])
-        print(f"  {rname:<10} {tag:<12} byte bpb {score(logits):.4f} "
+        print(f"  {rname:<10} {tag:<12} byte bpb {score(bp):.4f} "
               f"({len(spans)} ch, {ml:.1f}B)", flush=True)

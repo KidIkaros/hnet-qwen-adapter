@@ -170,14 +170,14 @@ for nc in (1, 2, 4):
 
 # ============ B) enc/dec fraction sweep ============
 print("[B] enc/dec fraction sweep — retr +w_main", flush=True)
-for enc_l, dec_l in ((6, 8), (8, 10), (6, 12), (10, 6)):
+for enc_l, dec_l in ((6, 8), (6, 10), (5, 10), (7, 7)):
     hn = HNetQwen(model, tok, bmap, enc_layers=enc_l, dec_layers=dec_l).cuda()
     fit(hn, cache, bmap)
     row = []
     for d in eval_docs[:2]:
         T = len(d); byte_ids = torch.tensor(list(d), device="cuda")
         b6 = torch.zeros(T, device="cuda"); b6[::P] = 1.0
-        row.append(eval_bpb(hn, byte_ids, b6, hn.w_main, "retrieve"))
+        row.append(eval_bpb(hn, byte_ids, b6, hn.w_main, "retrieve", n_ctx=2))
     print(f"  enc={enc_l} dec={dec_l}: {np.mean(row):.4f} "
           f"({['%.3f' % r for r in row]})", flush=True)
 

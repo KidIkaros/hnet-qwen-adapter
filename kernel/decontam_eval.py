@@ -9,8 +9,8 @@ memorization.  Models: the interesting axis only (0.8B, 0.8B-Base, 4B-Base).
 import os, subprocess, sys, glob
 
 REPO = "/content/qt/hnet-qwen-adapter"
-MODELS = ["Qwen/Qwen3.5-0.8B", "Qwen/Qwen3.5-0.8B-Base", "Qwen/Qwen3.5-4B-Base",
-          "Qwen/Qwen3.5-9B-Base"]
+MODELS = ["Qwen/Qwen3.5-0.8B", "Qwen/Qwen3.5-0.8B-Base", "Qwen/Qwen3.5-2B-Base",
+          "Qwen/Qwen3.5-4B-Base", "Qwen/Qwen3.5-9B-Base"]
 
 
 def sh(*cmd):

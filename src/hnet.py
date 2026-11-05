@@ -60,6 +60,8 @@ class HNetQwen(nn.Module):
         self.norm = text.norm
         self.lm_head = model.lm_head
         self.byte_map = byte_map                              # {byte: vocab id}
+        self.register_buffer("_byte_lut", torch.tensor(
+            [byte_map.get(b, 0) for b in range(256)], dtype=torch.long))
         lin = [l for l in self.layers if l.block_type == "linear_attention"]
         full = [l for l in self.layers if l.block_type == "full_attention"]
         assert len(lin) >= enc_layers + dec_layers, \
@@ -110,9 +112,9 @@ class HNetQwen(nn.Module):
         return hs
 
     def decoder_attn_pass(self, x_bytes, ctx, spans, n_ctx_layers=1):
-        """ZHA-style chunk retrieval: one checkpoint attention layer over the
-        interleaved [ctx_1..ctx_C, byte tokens] sequence — every byte attends to
-        ALL past chunk states (not just the previous one) + causal bytes."""
+        """BLT-style chunk retrieval: one checkpoint attention layer over the
+        interleaved [ctx_1..ctx_C, byte tokens] sequence — bytes attend to
+        chunk states STRICTLY before their own chunk (causal, no leakage)."""
         T = x_bytes.shape[1]; C = len(spans)
         seq = torch.cat([ctx[None], x_bytes], dim=1)               # (1, C+T, D)
         neg = torch.finfo(torch.float32).min
@@ -120,8 +122,11 @@ class HNetQwen(nn.Module):
         allow = torch.zeros(N, N, dtype=torch.bool, device=x_bytes.device)
         allow[:C, :C] = torch.tril(torch.ones(C, C, dtype=torch.bool,
                                               device=x_bytes.device))
-        bi = torch.arange(T, device=x_bytes.device)
-        allow[C:, :C] = True                                       # bytes -> all ctx
+        chunk_of = torch.zeros(T, dtype=torch.long, device=x_bytes.device)
+        for ci, (a, b) in enumerate(spans):
+            chunk_of[a:b] = ci
+        ctx_pos = torch.arange(C, device=x_bytes.device)
+        allow[C:, :C] = ctx_pos[None, :] < chunk_of[:, None]       # past ctx only
         allow[C:, C:] = torch.tril(torch.ones(T, T, dtype=torch.bool,
                                               device=x_bytes.device))
         mask = torch.where(allow, 0.0, neg)[None, None].to(x_bytes.dtype)
@@ -132,7 +137,7 @@ class HNetQwen(nn.Module):
                         attention_mask=mask, position_ids=pos)
         return seq[:, C:]                                          # byte part
 
-    def chunks(self, hs_bytes, boundaries):
+    def chunks(self, boundaries):
         """Group byte positions into chunk spans given a 0/1 boundary vector."""
         bounds = boundaries.nonzero().flatten().tolist() + [len(boundaries)]
         return [(a, b) for a, b in zip(bounds, bounds[1:])]
@@ -147,9 +152,7 @@ class HNetQwen(nn.Module):
              "retrieve" = ZHA-style — bytes attend to ALL past chunk states
              through one checkpoint attention layer."""
         T = len(byte_ids)
-        tok_ids = torch.tensor([self.byte_map.get(int(b), 0) for b in byte_ids],
-                               device=byte_ids.device)
-        hs = self.emb(tok_ids)[None]                          # (1, T, D)
+        hs = self.emb(self._byte_lut[byte_ids.long()])[None]  # (1, T, D)
         hs_enc = hs
         for layer in self.enc:
             hs_enc = layer(hs_enc, position_embeddings=None,
@@ -157,7 +160,7 @@ class HNetQwen(nn.Module):
         enc = hs_enc[0]                                       # (T, D)
         if boundaries is None:
             boundaries = self.boundary.route(enc, hard=True)  # (T,)
-        spans = self.chunks(hs, boundaries)
+        spans = self.chunks(boundaries)
         # pool: encoder hidden state at each chunk's LAST byte
         patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
         if self.w_main is not None:
@@ -166,20 +169,17 @@ class HNetQwen(nn.Module):
         ctx_v = self.dechunk(glob)                            # (C, D)
         # encoder-state residual — H-Net residual_proj: byte-local detail
         # crosses the chunk bottleneck into the decoder input
+        if ctx not in ("prev", "own", "retrieve"):
+            raise ValueError(f"unknown ctx mode {ctx!r}")
         x = hs.clone() if self.w_enc is None else hs + self.w_enc(enc[None])
         if ctx == "retrieve":
-            x = x + self.decoder_attn_pass(torch.zeros_like(hs), ctx_v, spans)
-            for ci, (a, b) in enumerate(spans):
-                if ci > 0:
-                    x[0, a:b] += ctx_v[ci - 1]
-        elif ctx == "own":
-            # H-Net-faithful: each byte gets its OWN chunk's main output
-            for ci, (a, b) in enumerate(spans):
-                x[0, a:b] += ctx_v[ci]
+            # bytes attend past-chunk ctx with their OWN queries — no broadcast
+            x = x + self.decoder_attn_pass(x, ctx_v, spans)
         else:
             for ci, (a, b) in enumerate(spans):
-                if ci > 0:
-                    x[0, a:b] += ctx_v[ci - 1]
+                src = ci if ctx == "own" else ci - 1
+                if src >= 0:
+                    x[0, a:b] += ctx_v[src]
         hs_dec = x if self.w_in is None else self.w_in(x)
         for layer in self.dec:
             hs_dec = layer(hs_dec, position_embeddings=None,
@@ -195,12 +195,3 @@ class HNetQwen(nn.Module):
             return bp[None], boundaries, spans
         logits = self.lm_head(out)                            # (1, T, V)
         return logits, boundaries, spans
-
-
-def byte_bpb(logits, byte_ids, head_first_rows):
-    """Marginalize vocab logits to byte probabilities, then bpb."""
-    lp = torch.log_softmax(logits[0].float(), -1)
-    first = head_first_rows                                   # (256, V_byte1)
-    probs = lp[:, first].logsumexp(-1)                        # (T, 256) byte-1
-    nll = -probs[:-1, byte_ids[1:].long()]
-    return float(nll.sum() / torch.log(torch.tensor(2.0)) / (len(byte_ids) - 1))

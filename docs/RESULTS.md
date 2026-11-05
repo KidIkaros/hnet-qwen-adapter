@@ -103,3 +103,17 @@ scorer-grade artifact.  Weights: `results/byte_decoder.pt`.
 
 `results/a100_v0_period6.log` · `a100_sweep.log` · `a100_construction_sweep.log` ·
 `a100_compression_curve.log` · `a100_effective.log` · `a100_v1_seeds.log` · `a100_val_eval.log`
+
+## Decontaminated eval (`results/a100_decontam.log`, post-cutoff arxiv+GitHub)
+
+| model | stock | byte-level | ridge-eff | val stock |
+|---|---|---|---|---|
+| 0.8B | 1.0890 | 5.5675 | 5.4656 | 0.82 |
+| 0.8B-Base | 1.0227 | 5.0275 | 4.9674 | 0.77 |
+| 4B-Base | 0.8517 | 4.5341 | 4.5775 | 0.65 |
+
+- Stock stays ~1.0 on post-cutoff data → **most of the stock advantage is real modeling, not
+  memorization** (val-vs-decontam delta only ~0.2 bits).  Qwen3.5's BPE pathway is genuinely
+  ~1.0 bpb on technical text; the byte interface costs ~4 bits through Qwen.
+- The **instruct tax replicates on clean data** (~0.5 bits: Base 5.03 vs instruct 5.57 byte-level).
+- ridge-constructed ≈ byte-level on clean data — chunking is neutral, the interface is the cost.

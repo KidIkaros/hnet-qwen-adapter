@@ -1,0 +1,19 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[merge] Qwen/Qwen3.5-0.8B x Qwen/Qwen3.5-0.8B-Base
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+alpha=0.00  md: stock 1.1405 byte 4.6115 | decontam: 1.0042 4.5991 | val: 0.8158 4.3318
+alpha=0.25  md: stock 1.1069 byte 4.4286 | decontam: 0.9763 4.4103 | val: 0.7923 4.1454
+alpha=0.50  md: stock 1.0913 byte 4.2693 | decontam: 0.9609 4.2413 | val: 0.7795 3.9972
+alpha=0.75  md: stock 1.0855 byte 4.1376 | decontam: 0.9527 4.0948 | val: 0.7725 3.8765
+alpha=1.00  md: stock 1.0859 byte 4.0513 | decontam: 0.9491 4.0031 | val: 0.7692 3.7989

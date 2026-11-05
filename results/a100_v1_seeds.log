@@ -17,3 +17,16 @@ Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [chunker] sim~6: realized mean_len 5.56
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[control] stock BPE on eval docs: 4.9226 | byte-level period-1: 5.5730
+[v1] training 3 seeds x 12 epochs
+[seed 0] baseline 4.1579 (eff 5.5558) -> eval 2.6310 (eff 5.2856) | train 2.0042 (156 steps, 4349 eval targets)
+    [autopsy] ||dW||_F 7.2260 ||dW||/||I|| 0.2258 | top sv [5.134 3.544 2.543 1.927 0.972 0.752]
+[seed 1] baseline 4.1579 (eff 5.5558) -> eval 2.5271 (eff 5.2672) | train 1.7766 (156 steps, 4349 eval targets)
+    [autopsy] ||dW||_F 9.3308 ||dW||/||I|| 0.2916 | top sv [6.189 3.968 3.09  2.79  2.052 1.778]
+[seed 2] baseline 4.1579 (eff 5.5558) -> eval 2.5173 (eff 5.2655) | train 1.7717 (156 steps, 4349 eval targets)
+    [autopsy] ||dW||_F 9.0910 ||dW||/||I|| 0.2841 | top sv [5.675 4.139 3.25  2.577 2.177 1.831]
+
+[v1] eval bpb 2.5585 +- 0.0515 | EFFECTIVE bpb 5.2728 +- 0.0091 (baseline eff 5.5558; 418s total)
+[refs] constructed sim~6+sum 6.3867 (8 shared docs) | byte-level 5.2250 | stock BPE 4.2560 | H-Net 1.4177
+[colab] Stopping session 'run-82c1e8'...
+[colab] Session terminated.

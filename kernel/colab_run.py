@@ -21,8 +21,12 @@ def sh(*cmd):
 
 
 print("[setup] cloning the repos", flush=True)
-sh("git", "clone", "-q", "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)
-sh("git", "clone", "-q", "https://github.com/KidIkaros/hnet-kaggle.git", "/content/qt/hnet-kaggle")
+for url, path in (("https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO),
+                  ("https://github.com/KidIkaros/hnet-kaggle.git", "/content/qt/hnet-kaggle")):
+    if os.path.exists(path):
+        sh("git", "-C", path, "pull", "-q")          # persistent sessions keep the old clone
+    else:
+        sh("git", "clone", "-q", url, path)
 sys.path.insert(0, REPO)
 os.chdir(REPO)
 

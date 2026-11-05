@@ -1,36 +1,9 @@
 [setup] cloning the repos
-[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
-Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
-  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
-Downloading bytes:           |  0.00B            
-Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
-Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-[setup] done in 28s
-Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
-[setup] byte-token map: 221/256 bytes mapped
-[corpus] hnet val split (the published protocol's data): 8 docs, 85796 bytes
-[entropy] byte-level scores + fallback NLLs from the period-1 model
-[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
-[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
-[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_863/3613960829.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m     76[0m [0mlm1[0m [0;34m=[0m [0mChunkLM[0m[0;34m([0m[0mmodel[0m[0;34m,[0m [0mtok[0m[0;34m,[0m [0mperiod[0m[0;34m=[0m[0;36m1[0m[0;34m,[0m [0magg[0m[0;34m=[0m[0;34m"sum"[0m[0;34m,[0m [0mbyte_head[0m[0;34m=[0m[0m_shared_head[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     77[0m [0mprint[0m[0;34m([0m[0;34m"[entropy] byte-level scores + fallback NLLs from the period-1 model"[0m[0;34m,[0m [0mflush[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 78[0;31m [0mentropy[0m [0;34m=[0m [0;34m[[0m[0mlm1[0m[0;34m.[0m[0mbyte_entropy[0m[0;34m([0m[0md[0m[0;34m)[0m [0;32mfor[0m [0md[0m [0;32min[0m [0mdocs[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     79[0m [0mfb_nll[0m [0;34m=[0m [0;34m[[0m[0mlm1[0m[0;34m.[0m[0mbyte_nll[0m[0;34m([0m[0md[0m[0;34m)[0m [0;32mfor[0m [0md[0m [0;32min[0m [0mdocs[0m[0;34m][0m                 [0;31m# the byte-level fallback per position[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     80[0m [0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/adapter.py[0m in [0;36mbyte_entropy[0;34m(self, data)[0m
-[1;32m    230[0m         consumes.  scores[t] = entropy of predicting byte t."""
-[1;32m    231[0m         [0mlogits[0m[0;34m,[0m [0m_[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mfirst_byte_logits[0m[0;34m([0m[0mdata[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 232[0;31m         [0mpb[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mbyte_head[0m[0;34m.[0m[0mbyte_probs[0m[0;34m([0m[0mlogits[0m[0;34m)[0m                   [0;31m# (T, 256): pos m predicts byte m+1[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    233[0m         [0ment[0m [0;34m=[0m [0;34m-[0m[0;34m([0m[0mpb[0m[0;34m.[0m[0mclamp_min[0m[0;34m([0m[0;36m1e-12[0m[0;34m)[0m[0;34m.[0m[0mlog2[0m[0;34m([0m[0;34m)[0m [0;34m*[0m [0mpb[0m[0;34m)[0m[0;34m.[0m[0msum[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m.[0m[0mcpu[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mnumpy[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    234[0m         [0mscores[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mfull[0m[0;34m([0m[0mlen[0m[0;34m([0m[0mdata[0m[0;34m)[0m[0;34m,[0m [0;34m-[0m[0mnp[0m[0;34m.[0m[0minf[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/adapter.py[0m in [0;36mbyte_probs[0;34m(self, logits)[0m
-[1;32m     66[0m             [0mself[0m[0;34m.[0m[0m_width[0m [0;34m=[0m [0mlogits[0m[0;34m.[0m[0mshape[0m[0;34m[[0m[0;36m1[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m     67[0m         [0msrc[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_src[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mlogits[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 68[0;31m         [0mout[0m[0;34m.[0m[0mindex_add_[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0m_dst[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mlogits[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m,[0m [0mp[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0msrc[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     69[0m         [0;32mreturn[0m [0mout[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     70[0m [0;34m[0m[0m
-[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 15.61 GiB. GPU 0 has a total capacity of 39.49 GiB of which 6.21 GiB is free. Including non-PyTorch memory, this process has 33.27 GiB memory in use. Of the allocated memory 32.71 GiB is allocated by PyTorch, and 63.96 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+fatal: destination path '/content/qt/hnet-qwen-adapter' already exists and is not an empty directory.
+
+An exception has occurred, use %tb to see the full traceback.
+[0;31mSystemExit[0m[0;31m:[0m FAILED: git clone -q https://github.com/KidIkaros/hnet-qwen-adapter.git /content/qt/hnet-qwen-adapter
+
+/usr/local/lib/python3.13/dist-packages/IPython/core/interactiveshell.py:3561: UserWarning: To exit: use 'exit', 'quit', or Ctrl-D.
+  warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)

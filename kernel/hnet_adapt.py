@@ -58,7 +58,9 @@ text = model.model if hasattr(model, "model") else model.language_model
 if not hasattr(text, "layers"):
     text = text.language_model
 
-Xin, Yin, Xout, Yout = [], [], [], []
+attn_idx = [i for i, l in enumerate(hn.layers) if l.block_type == "full_attention"]
+main_start = attn_idx[0]                                       # first attn layer
+Xin, Yin, Xout, Yout, Ymain = [], [], [], [], []
 for d in docs:
     tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
     with torch.no_grad():
@@ -67,12 +69,13 @@ for d in docs:
     emb_in = text.embed_tokens(tids).float()                   # byte embs (T, D)
     Xin.append(emb_in)
     Yin.append(hs_layers[dec_start][0].float())                # dec-slice input
-    # w_out target: final hidden state (post all layers, pre-norm lm_head space)
     Yout.append(text.norm(hs_layers[-1][0]).float())
+    Ymain.append(hs_layers[main_start][0].float())             # attn-layer input
     del o, hs_layers
     torch.cuda.empty_cache()
 
-Xin, Yin, Yout = torch.cat(Xin), torch.cat(Yin), torch.cat(Yout)
+Xin, Yin, Yout, Ymain = (torch.cat(Xin), torch.cat(Yin),
+                         torch.cat(Yout), torch.cat(Ymain))
 # decoder output under the re-sliced path: run dec on REAL dec inputs (paired)
 dec_out = []
 for d in docs[:4]:
@@ -88,17 +91,50 @@ for d in docs[:4]:
     torch.cuda.empty_cache()
 Xout = torch.cat(dec_out)
 
-print(f"[adapt] pairs {len(Xin)} | dec_start layer {dec_start}", flush=True)
+# encoder outputs at chunk-boundary (last-byte) positions -> attn input target
+P = 6
+Xmain = []
+for d in docs[:4]:
+    tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
+    hs = text.embed_tokens(tids[None])
+    for layer in hn.enc:
+        hs = layer(hs, position_embeddings=None, attention_mask=None,
+                   position_ids=None)
+    enc = hs[0]
+    bounds = [b - 1 for b in range(P, len(d) + 1, P)]
+    Xmain.append(enc[torch.tensor(bounds, device="cuda")].float())
+Xmain = torch.cat(Xmain)
+Ymain_p = []
+off = 0
+for d in docs[:4]:
+    n = len(d) // P
+    Ymain_p.append(Ymain[off + P - 1:off + n * P:P])
+    off += len(d)
+Ymain_p = torch.cat(Ymain_p)
+
+print(f"[adapt] pairs {len(Xin)} | dec_start {dec_start} main_start {main_start} "
+      f"| w_main pairs {len(Xmain)}", flush=True)
 hn.w_in = ridge_to_bpe(Xin[:200_000], Yin[:200_000])
 hn.w_out = ridge_to_bpe(Xout[:200_000], Yout[:len(Xout)])
+hn.w_main = ridge_to_bpe(Xmain[:200_000], Ymain_p[:200_000])
 
-# ---- eval with adapters
+# ---- eval grid: adapters on/off x ctx prev/retrieve
 T = 8192
 byte_ids = torch.tensor(list(docs[0]), device="cuda")
 b6 = torch.zeros(T, device="cuda"); b6[::6] = 1.0
 from src.learned import byte_logprobs                          # noqa: E402
-with torch.no_grad():
-    bp, _, _ = hn(byte_ids, boundaries=b6, head_first=head.first)
-nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
-print(f"[adapt] byte bpb WITH adapters {float(nll.sum()) / np.log(2) / (T - 1):.4f}",
-      flush=True)
+
+
+def eval_bpb(w_main, ctx):
+    hn.w_main = w_main
+    with torch.no_grad():
+        bp, _, _ = hn(byte_ids, boundaries=b6, ctx=ctx,
+                      head_first=head.first)
+    nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
+    return float(nll.sum()) / np.log(2) / (T - 1)
+
+
+for wm, tag_m in ((None, "no w_main"), (hn.w_main, "+w_main")):
+    for ctx, tag_c in (("prev", "prev"), ("retrieve", "retrieve")):
+        print(f"[adapt] {tag_m:<10} | {tag_c:<8} byte bpb {eval_bpb(wm, ctx):.4f}",
+              flush=True)

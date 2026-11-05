@@ -71,8 +71,9 @@ class HNetQwen(nn.Module):
         self.dechunk = nn.Linear(text.config.hidden_size,
                                  text.config.hidden_size, bias=False)
         self.hidden = text.config.hidden_size
-        self.w_in = None                                        # (D, D) input adapter
-        self.w_out = None                                       # (D, D) output adapter
+        self.w_in = None                                        # (D, D) dec input adapter
+        self.w_out = None                                       # (D, D) dec output adapter
+        self.w_main = None                                      # (D, D) main-input adapter
         dt = self.emb.weight.dtype                              # match checkpoint dtype
         self.boundary.to(dt); self.dechunk.to(dt)
 
@@ -158,6 +159,8 @@ class HNetQwen(nn.Module):
         spans = self.chunks(hs, boundaries)
         # pool: encoder hidden state at each chunk's LAST byte
         patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
+        if self.w_main is not None:
+            patch = patch @ self.w_main.T
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
         ctx_v = self.dechunk(glob)                            # (C, D)
         x = hs.clone()

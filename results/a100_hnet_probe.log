@@ -8,22 +8,12 @@ Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
 [probe] 8192 real bytes
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
-[0;31m---------------------------------------------------------------------------[0m[0;31mTypeError[0m                                 Traceback (most recent call last)[0;32m/tmp/ipykernel_5989/1225258136.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    103[0m     [0;32mfor[0m [0msparse[0m[0;34m,[0m [0mctx[0m[0;34m,[0m [0mtag[0m [0;32min[0m [0mmodes[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    104[0m         [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 105[0;31m             bp, _, spans = hn(byte_ids, boundaries=bnd, sparse=sparse, ctx=ctx,
-[0m[1;32m    106[0m                               head_first=head.first)
-[1;32m    107[0m         [0mml[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m[[0m[0mb[0m [0;34m-[0m [0ma[0m [0;32mfor[0m [0ma[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1780[0m [0;34m[0m[0m
-[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
-[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1791[0m [0;34m[0m[0m
-[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
-[0;31mTypeError[0m: HNetQwen.forward() got an unexpected keyword argument 'head_first'
+  periodic-6 full|prev    byte bpb 13.6892 (1366 ch, 6.0B)
+  periodic-6 full|retr    byte bpb 13.6892 (1366 ch, 6.0B)
+  periodic-6 sparse|retr  byte bpb 13.6892 (1366 ch, 6.0B)
+  spacelike  full|prev    byte bpb 13.6892 (2374 ch, 3.5B)
+  spacelike  full|retr    byte bpb 13.6892 (2374 ch, 3.5B)
+  spacelike  sparse|retr  byte bpb 13.6892 (2374 ch, 3.5B)
+  sim        full|prev    byte bpb 13.6892 (2512 ch, 3.3B)
+  sim        full|retr    byte bpb 13.6892 (2512 ch, 3.3B)
+  sim        sparse|retr  byte bpb 13.6892 (2512 ch, 3.3B)

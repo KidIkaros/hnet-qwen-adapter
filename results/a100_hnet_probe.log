@@ -5,5 +5,6 @@ Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [slice] 24 layers -> enc 4 + main 6 + dec 4  (DeltaNet 18 / attn 6)
 [probe] doc 3520 bytes
 [forward] logits (1, 3520, 248320) | 587 chunks (mean 6.0 B)
-[score] byte bpb 23968.8198
-[random-route] 1498 chunks (mean span 2.3 B)
+[debug] bp (3520, 256) nll mean 4.614 nats max 13.4
+[score] byte bpb 6.6573
+[random-route] 718 chunks (mean span 4.9 B)

@@ -1,30 +1,35 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [eval] fit 6 | held-out 4 docs
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [eval] adapters fit | dechunk pairs 32736
-  doc0 no_main  prev  periodic 7.786 | spacelike 7.600
-  doc0 no_main  retr  periodic 7.715 | spacelike 7.546
-  doc0 no_main  own   periodic 7.786 | spacelike 7.600
-  doc0 +w_main  prev  periodic 7.717 | spacelike 7.616
-  doc0 +w_main  retr  periodic 7.643 | spacelike 7.556
-  doc0 +w_main  own   periodic 7.717 | spacelike 7.616
-  doc1 no_main  prev  periodic 7.820 | spacelike 7.604
-  doc1 no_main  retr  periodic 7.694 | spacelike 7.542
-  doc1 no_main  own   periodic 7.820 | spacelike 7.604
-  doc1 +w_main  prev  periodic 7.808 | spacelike 7.636
-  doc1 +w_main  retr  periodic 7.685 | spacelike 7.532
-  doc1 +w_main  own   periodic 7.808 | spacelike 7.636
-  doc2 no_main  prev  periodic 7.840 | spacelike 7.650
-  doc2 no_main  retr  periodic 7.752 | spacelike 7.624
-  doc2 no_main  own   periodic 7.840 | spacelike 7.650
-  doc2 +w_main  prev  periodic 7.796 | spacelike 7.649
-  doc2 +w_main  retr  periodic 7.665 | spacelike 7.546
-  doc2 +w_main  own   periodic 7.796 | spacelike 7.649
-  doc3 no_main  prev  periodic 7.846 | spacelike 7.785
-  doc3 no_main  retr  periodic 7.830 | spacelike 7.729
-  doc3 no_main  own   periodic 7.846 | spacelike 7.785
-  doc3 +w_main  prev  periodic 7.797 | spacelike 7.793
-  doc3 +w_main  retr  periodic 7.799 | spacelike 7.636
-  doc3 +w_main  own   periodic 7.797 | spacelike 7.793
+  doc0 no_main  prev  periodic 7.226 | spacelike 7.227
+  doc0 no_main  retr  periodic 7.220 | spacelike 7.219
+  doc0 no_main  own   periodic 7.223 | spacelike 7.215
+  doc0 +w_main  prev  periodic 7.247 | spacelike 7.228
+  doc0 +w_main  retr  periodic 7.216 | spacelike 7.217
+  doc0 +w_main  own   periodic 7.238 | spacelike 7.222
+  doc1 no_main  prev  periodic 7.296 | spacelike 7.263
+  doc1 no_main  retr  periodic 7.246 | spacelike 7.246
+  doc1 no_main  own   periodic 7.291 | spacelike 7.246
+  doc1 +w_main  prev  periodic 7.290 | spacelike 7.279
+  doc1 +w_main  retr  periodic 7.243 | spacelike 7.245
+  doc1 +w_main  own   periodic 7.288 | spacelike 7.275
+  doc2 no_main  prev  periodic 7.254 | spacelike 7.248
+  doc2 no_main  retr  periodic 7.217 | spacelike 7.215
+  doc2 no_main  own   periodic 7.250 | spacelike 7.234
+  doc2 +w_main  prev  periodic 7.285 | spacelike 7.240
+  doc2 +w_main  retr  periodic 7.214 | spacelike 7.214
+  doc2 +w_main  own   periodic 7.276 | spacelike 7.237
+  doc3 no_main  prev  periodic 7.352 | spacelike 7.401
+  doc3 no_main  retr  periodic 7.275 | spacelike 7.271
+  doc3 no_main  own   periodic 7.348 | spacelike 7.391
+  doc3 +w_main  prev  periodic 7.369 | spacelike 7.403
+  doc3 +w_main  retr  periodic 7.270 | spacelike 7.269
+  doc3 +w_main  own   periodic 7.358 | spacelike 7.394

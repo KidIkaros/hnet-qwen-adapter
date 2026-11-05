@@ -1,0 +1,21 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[next] harvest cached for 4 docs
+[A] n_ctx sweep — (4,14) slice, retrieve
+  n_ctx=1: 7.2297 (['7.216', '7.243'])
+  n_ctx=2: 7.1368 (['7.120', '7.153'])
+  n_ctx=4: 7.3957 (['7.391', '7.401'])
+[B] enc/dec fraction sweep — retr +w_main
+  enc=4 dec=14: 7.2297 (['7.216', '7.243'])
+  enc=6 dec=8: 6.1932 (['6.159', '6.227'])
+  enc=8 dec=6: 7.3348 (['7.272', '7.398'])
+[C] generation — greedy byte decode, (4,14) slice
+  prompt: b'The H-Net of Qwen routes bytes through '
+  output: b'  aa   aa   aa k bco- -u -  aa    aakca-ou-   oo    a    oo    a    o    a    o    a    a cgg a     a    a    a cgg a   '

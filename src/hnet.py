@@ -134,7 +134,8 @@ class HNetQwen(nn.Module):
         return [(a, b) for a, b in zip(bounds, bounds[1:])]
 
     # ---- the H-Net forward --------------------------------------------------
-    def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev"):
+    def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev",
+                head_first=None):
         """byte_ids (T,) -> (logits, boundaries, spans).
 
         sparse=(w, stride, sinks): LSA-style mask on the main attention stack.

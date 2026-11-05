@@ -1,25 +1,29 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
 [probe] 8192 real bytes
-[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_4589/1955911972.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    106[0m             [0mlogits[0m[0;34m,[0m [0m_[0m[0;34m,[0m [0mspans[0m [0;34m=[0m [0mhn[0m[0;34m([0m[0mbyte_ids[0m[0;34m,[0m [0mboundaries[0m[0;34m=[0m[0mbnd[0m[0;34m,[0m [0msparse[0m[0;34m=[0m[0msparse[0m[0;34m,[0m [0mctx[0m[0;34m=[0m[0mctx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[0;31m---------------------------------------------------------------------------[0m[0;31mTypeError[0m                                 Traceback (most recent call last)[0;32m/tmp/ipykernel_5989/1225258136.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    103[0m     [0;32mfor[0m [0msparse[0m[0;34m,[0m [0mctx[0m[0;34m,[0m [0mtag[0m [0;32min[0m [0mmodes[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    104[0m         [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 105[0;31m             bp, _, spans = hn(byte_ids, boundaries=bnd, sparse=sparse, ctx=ctx,
+[0m[1;32m    106[0m                               head_first=head.first)
 [1;32m    107[0m         [0mml[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m[[0m[0mb[0m [0;34m-[0m [0ma[0m [0;32mfor[0m [0ma[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 108[0;31m         print(f"  {rname:<10} {tag:<12} byte bpb {score(logits):.4f} "
-[0m[1;32m    109[0m               f"({len(spans)} ch, {ml:.1f}B)", flush=True)
-[0;32m/tmp/ipykernel_4589/1955911972.py[0m in [0;36mscore[0;34m(logits)[0m
-[1;32m     54[0m [0;34m[0m[0m
-[1;32m     55[0m [0;32mdef[0m [0mscore[0m[0;34m([0m[0mlogits[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 56[0;31m     [0mbp[0m [0;34m=[0m [0mbyte_logprobs[0m[0;34m([0m[0mlogits[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m.[0m[0mfloat[0m[0;34m([0m[0;34m)[0m[0;34m,[0m [0mhead[0m[0;34m.[0m[0mfirst[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     57[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     58[0m     [0;32mreturn[0m [0mfloat[0m[0;34m([0m[0mnll[0m[0;34m.[0m[0msum[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m/[0m [0mnp[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;36m2[0m[0;34m)[0m [0;34m/[0m [0;34m([0m[0mT[0m [0;34m-[0m [0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/learned.py[0m in [0;36mbyte_logprobs[0;34m(logits, first)[0m
-[1;32m     54[0m     [0mp[0m [0;34m=[0m [0mlogits[0m[0;34m.[0m[0msoftmax[0m[0;34m([0m[0;34m-[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     55[0m     [0mout[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mM[0m[0;34m,[0m [0;36m256[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mlogits[0m[0;34m.[0m[0mdevice[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mp[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 56[0;31m     [0mout[0m[0;34m.[0m[0mindex_add_[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mdst[0m[0;34m,[0m [0mp[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0msrc[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     57[0m     [0;32mreturn[0m [0mout[0m[0;34m.[0m[0mclamp_min[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mfinfo[0m[0;34m([0m[0mp[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m.[0m[0mtiny[0m[0;34m)[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;34m)[0m      [0;31m# ~-inf for empty buckets, no nan grads[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     58[0m [0;34m[0m[0m
-[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 7.57 GiB. GPU 0 has a total capacity of 39.49 GiB of which 7.01 GiB is free. Including non-PyTorch memory, this process has 32.47 GiB memory in use. Of the allocated memory 26.90 GiB is allocated by PyTorch, and 5.08 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;31mTypeError[0m: HNetQwen.forward() got an unexpected keyword argument 'head_first'

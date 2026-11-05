@@ -1,0 +1,33 @@
+[corpus] 13 train + 3 eval + 8 val
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+           Qwen/Qwen3.5-0.8B  md: stock 17908.7117 byte 5.6087 ridge-eff 5.4466 | val: 11378.5541 4.3318 4.3183
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+      Qwen/Qwen3.5-0.8B-Base  md: stock 17030.7304 byte 4.9245 ridge-eff 4.8293 | val: 11060.5241 3.7989 3.8211
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+             Qwen/Qwen3.5-2B  md: stock 18188.4236 byte 4.6307 ridge-eff 4.6794 | val: 11564.1089 3.4326 3.6482
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
+             Qwen/Qwen3.5-4B  md: stock 18066.8268 byte 4.6095 ridge-eff 4.6122 | val: 11612.7319 3.5897 3.7113
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 16 files:   0%|          | 0/16 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]
+             Qwen/Qwen3.5-9B  OOM

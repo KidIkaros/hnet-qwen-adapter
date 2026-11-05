@@ -11,7 +11,8 @@ import os, subprocess, sys, gc
 
 REPO = "/content/qt/hnet-qwen-adapter"
 MODELS = ["Qwen/Qwen3.5-0.8B", "Qwen/Qwen3.5-0.8B-Base", "Qwen/Qwen3.5-2B",
-          "Qwen/Qwen3.5-4B", "Qwen/Qwen3.5-9B"]
+          "Qwen/Qwen3.5-4B", "Qwen/Qwen3.5-9B", "Qwen/Qwen3.5-2B-Base",
+          "Qwen/Qwen3.5-4B-Base"]
 
 
 def sh(*cmd):
@@ -101,8 +102,9 @@ def eval_model(name):
                                                 add_special_tokens=False))
                 with torch.no_grad():
                     lg = model(input_ids=ids[None].cuda()).logits[0].float()
-                stock_bits += float(-lg.log_softmax(-1)[:-1, ids[1:].cuda()].sum())
-                del lg
+                nll = -lg.log_softmax(-1)[:-1].gather(1, ids[1:].cuda().unsqueeze(1))
+                stock_bits += float(nll.sum())
+                del lg, nll
                 fb = lm1.byte_nll(d)                           # byte-level per-position NLL
                 byte_eff += 8.0 + float(fb.sum())
                 sp = chunker.spans(d)

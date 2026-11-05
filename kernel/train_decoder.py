@@ -43,6 +43,7 @@ from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker  # noqa: E402
 from src.corpus import byte_token_map, ValDocs                    # noqa: E402
 from src.construct import ridge_to_bpe                            # noqa: E402
 from src.decoder import ByteDecoder, chunk_batch, pair_batch, SOS  # noqa: E402
+from src.generate import generate                                 # noqa: E402
 from src.learned import PatchProjection, byte_logprobs            # noqa: E402
 
 tok = AutoTokenizer.from_pretrained(src)
@@ -145,31 +146,8 @@ if True:
         p.requires_grad_(False)
     print("[v2] patch projection trained inline (6 epochs)", flush=True)
 
-# ---- decoder training
-dec = ByteDecoder(D, max_len=P, d_dec=256, n_layers=4, n_heads=4).cuda()
-opt = torch.optim.AdamW(dec.parameters(), lr=float(os.environ.get("LR", "1e-3")))
-EPOCHS = int(os.environ.get("EPOCHS", "8"))
-
-t0 = time.time(); step = 0
-for ep in range(EPOCHS):
-    ep_tot = ep_n = 0.0
-    for i in np.random.RandomState(ep).permutation(len(train_docs)):
-        d = train_docs[i]
-        sp = spans_of(d)
-        base = base_sums(sp)
-        ctx, hs, lg = trunk_ctx(proj(base))
-        ctx2 = ctx_pairs(ctx, dec.ctx0)
-        x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
-        logits = dec(ctx2, x, pad)
-        loss = F.cross_entropy(logits[lm].float(), y[lm])
-        opt.zero_grad(); loss.backward(); opt.step()
-        ep_tot += float(loss) * int(lm.sum()); ep_n += int(lm.sum()); step += 1
-    print(f"[epoch {ep:02d}] interior-byte train bpb {ep_tot / ep_n / np.log(2):.4f} ({step} steps)",
-          flush=True)
-print(f"[timing] decoder training {time.time() - t0:.0f}s", flush=True)
-
-# ---- the real full-byte eval
-def full_byte_bpb(ds, label):
+# ---- decoder training: the scaling ablation runs both capacities in one session
+def full_byte_bpb(dec, ds, label):
     tot_bits = tot_bytes = 0.0
     for d in ds:
         sp = spans_of(d)
@@ -187,16 +165,50 @@ def full_byte_bpb(ds, label):
         bits += float(-lsm[lm, y[lm]].sum())
         tot_bits += bits; tot_bytes += len(d)
     bpb = tot_bits / np.log(2) / tot_bytes
-    print(f"[v2] FULL-BYTE bpb on {label}: {bpb:.4f} ({tot_bytes:.0f} bytes)", flush=True)
+    print(f"    [v2] FULL-BYTE bpb on {label}: {bpb:.4f} ({tot_bytes:.0f} bytes)", flush=True)
     return bpb
 
 
-full_byte_bpb(eval_docs, "eval docs (markdown)")
-if os.path.isdir("/content/val"):                             # cross-domain: trained on markdown,
-    vdocs = ValDocs("/content/val").docs(8, min_len=4096)       # eval on the published val split
-    full_byte_bpb(vdocs, "hnet val split (cross-domain)")
+vdocs = ValDocs("/content/val").docs(8, min_len=4096) if os.path.isdir("/content/val") else []
+
+DECS = {}
+for d_dec, n_layers, epn in ((256, 4, 8), (384, 6, 12)):
+    name = f"d{d_dec}x{n_layers}"
+    dec = ByteDecoder(D, max_len=P, d_dec=d_dec, n_layers=n_layers, n_heads=4).cuda()
+    opt = torch.optim.AdamW(dec.parameters(), lr=1e-3)
+    t0 = time.time(); step = 0
+    for ep in range(epn):
+        ep_tot = ep_n = 0.0
+        for i in np.random.RandomState(ep).permutation(len(train_docs)):
+            d = train_docs[i]
+            sp = spans_of(d)
+            base = base_sums(sp)
+            ctx, hs, lg = trunk_ctx(proj(base))
+            ctx2 = ctx_pairs(ctx, dec.ctx0)
+            x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
+            logits = dec(ctx2, x, pad)
+            loss = F.cross_entropy(logits[lm].float(), y[lm])
+            opt.zero_grad(); loss.backward(); opt.step()
+            ep_tot += float(loss) * int(lm.sum()); ep_n += int(lm.sum()); step += 1
+    tr = ep_tot / ep_n / np.log(2)
+    print(f"[{name}] interior train bpb {tr:.4f} | {sum(p.numel() for p in dec.parameters()) / 1e6:.2f}M "
+          f"params | {time.time() - t0:.0f}s", flush=True)
+    full_byte_bpb(dec, eval_docs, "eval docs (markdown)")
+    if vdocs:
+        full_byte_bpb(dec, vdocs, "hnet val split (cross-domain)")
+    DECS[name] = dec
+    torch.save(dec.state_dict(), f"/content/byte_decoder_{name}.pt")
+
+dec = DECS["d384x6"]
 
 print("[refs] byte-level 5.57 | constructed-sum eff 5.56 | v1 eff 5.27 | stock BPE 4.92 "
       "(eval docs)", flush=True)
+
+# ---- generation: the sampler, not just the scorer
+for seed_text, tag in ((b"# Report\n\n## Introduction\n\n", "markdown"),
+                       (b"The history of the", "english")):
+    g = generate(model, dec, proj, head, emb_ext, bmap, trunk_ctx, ctx_pairs,
+                 seed=seed_text, n_chunks=8, P=P, pad_id=PAD)
+    print(f"\n[generate:{tag}] {g.decode('latin-1')!r}", flush=True)
 torch.save(dec.state_dict(), "/content/byte_decoder.pt")
 print("[save] /content/byte_decoder.pt", flush=True)

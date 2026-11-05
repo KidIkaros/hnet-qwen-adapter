@@ -57,6 +57,21 @@ target_ratio=6. sim: 7.27/7.07/6.39/7.66/9.74 at means 3/4/6/8/12; entropy: 8.42
 - **qwentensor stays the hosting instrument**: none of this changed the in-substrate story — the
   learned projection is host-side glue either way.
 
+## Round 1 results (2026-11-05, `results/a100_effective.log`, `a100_v1_seeds.log`, `a100_val_eval.log`)
+
+**The effective metric changed the story.** With a byte-level fallback covering unpredicted
+positions, every constructed chunker lands ~5.56-5.95 on markdown — and none beats byte-level alone
+(5.29). Chunking never helps *prediction*; it can only help *compute*. The learned projection flips
+the sign: eval 2.5585±0.0515 boundary bpb → effective 5.2728±0.0091, now below its own fallback —
+chunking goes net-positive once the interface is trained.
+
+**Cross-domain holds.** On the H-Net val split (85,796 bytes English): stock 3.7560, byte-level
+4.3310, best constructed chunked ~4.59 — same ordering, same adaptive>periodic margin, compression
+optimum drifting toward 8-12 on natural text.
+
+**W autopsy**: ||dW||/||I|| ≈ 0.23-0.29, top singular values 5-6 decaying — a real structured
+correction, not a perturbation. Weights saved for the WSP question.
+
 ## Open questions parked
 
 - Can a WSP-style construction produce what the rank-32 map learned? (The falsifiable WSP question —

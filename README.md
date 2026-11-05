@@ -50,7 +50,12 @@ comparison; sim/entropy targets are *harder* bytes (boundaries land on transitio
 Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an unmappable byte
 (zero-vector holes, counted in input cov) and ~0.6-3% of targets are skipped (target cov).
 
-**Reading the numbers honestly:**
+**Cross-domain check — the H-Net val split** (85,796 bytes, `results/a100_val_eval.log`): the ordering
+survives on real English. Stock BPE 3.7560, byte-level 4.3310, best constructed chunked EFF ~4.59
+(entropy~12) — adaptive still beats periodic at matched compression, coverage rises to 0.998. The
+compression optimum drifts toward ~8-12 on natural text vs ~6 on markdown.
+
+**v1 — the learned glue (the ZHA recipe):**
 - **Granularity cost is small — the surprise**: period 1 degenerates the adapter to "Qwen as a
   byte-level model" (byte-token rows in, marginalized head out) at **5.23 bits vs stock 4.26 — only
   +0.97**. The frozen stack handles byte-granular input far better than the distribution-shift
@@ -74,12 +79,12 @@ Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an un
 **v1 — the learned glue (the ZHA recipe):** a rank-32 residual projection on the patch sum (~160k
 params, identity at init) trained 156 steps on the byte-marginalized task loss, trunk frozen:
 
-| system (3 held-out eval docs) | bpb |
-|---|---|
-| **v1 learned projection** | **2.4940** |
-| constructed sum (same chunker/docs) | 4.1579 |
-| stock BPE on eval docs | 4.9226 |
-| byte-level adapter on eval docs | 5.5730 |
+| system (3 held-out eval docs) | bpb | effective |
+|---|---|---|
+| **v1 learned projection (3 seeds)** | **2.5585 ± 0.0515** | **5.2728 ± 0.0091** |
+| constructed sum (same chunker/docs) | 4.1579 | 5.5558 |
+| stock BPE on eval docs | 4.9226 | — |
+| byte-level adapter on eval docs | 5.5730 | 5.5730 |
 
 Training only the patch interface recovers **−1.66 bits** over the best construction — the ZHA
 indexer pattern works at our scale (~2 min A100). Caveats: same-domain eval, boundary-byte task,

@@ -145,7 +145,7 @@ class HNetQwen(nn.Module):
 
     # ---- the H-Net forward --------------------------------------------------
     def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev",
-                head_first=None):
+                head_first=None, n_ctx=1):
         """byte_ids (T,) -> (logits, boundaries, spans).
 
         sparse=(w, stride, sinks): LSA-style mask on the main attention stack.
@@ -178,7 +178,7 @@ class HNetQwen(nn.Module):
         x = hs.clone() if self.w_enc is None else hs + self.w_enc(enc[None])
         if ctx == "retrieve":
             # bytes attend past-chunk ctx with their OWN queries — no broadcast
-            x = x + self.decoder_attn_pass(x, ctx_v, chunk_of)
+            x = x + self.decoder_attn_pass(x, ctx_v, chunk_of, n_ctx)
         else:
             src = chunk_of if ctx == "own" else (chunk_of - 1)
             valid = src >= 0

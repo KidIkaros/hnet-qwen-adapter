@@ -75,22 +75,56 @@ class HNetQwen(nn.Module):
         self.boundary.to(dt); self.dechunk.to(dt)
 
     # ---- stage helpers -----------------------------------------------------
-    def run_stack(self, layers, hs, causal=True):
-        """Run a stack of decoder layers on (1, T, D) hidden states.
-        DeltaNet ignores rotary/mask specifics; attention gets a causal mask."""
+    def causal_mask(self, T, sparse=None):
+        """(1,1,T,T) additive mask.  sparse=(w, stride, sinks): sliding window w,
+        every stride-th position globally visible, first `sinks` always visible —
+        the LSA-style {sink + window + strided} pattern, O(T*(w + T/stride))."""
+        neg = torch.finfo(torch.float32).min
+        if sparse is None:
+            return torch.triu(torch.full((T, T), neg, device=self.emb.weight.device),
+                              diagonal=1)[None, None]
+        w, stride, sinks = sparse
+        idx = torch.arange(T, device=self.emb.weight.device)
+        vis = (idx[None, :] <= idx[:, None])                       # causal
+        win = (idx[:, None] - idx[None, :]) < w                    # within window
+        glob = (idx[None, :] % stride == 0) | (idx[None, :] < sinks)
+        allow = vis & (win | glob)
+        return torch.where(allow, 0.0, neg)[None, None].to(self.emb.weight.dtype)
+
+    def run_stack(self, layers, hs, causal=True, sparse=None):
+        """Run a stack of decoder layers on (1, T, D) hidden states."""
         T = hs.shape[1]
         pos = torch.arange(T, device=hs.device).unsqueeze(0)
         pos_emb = self.rotary(hs, pos) if self.rotary is not None else None
-        mask = torch.full((1, 1, T, T), torch.finfo(hs.dtype).min,
-                          device=hs.device, dtype=hs.dtype)
-        if causal:
-            mask = torch.triu(mask, diagonal=1)
-        else:
-            mask = mask * 0
+        mask = self.causal_mask(T, sparse) if causal else torch.zeros(
+            1, 1, T, T, device=hs.device, dtype=hs.dtype)
         for layer in layers:
             hs = layer(hs, position_embeddings=pos_emb, attention_mask=mask,
                        position_ids=pos)
         return hs
+
+    def decoder_attn_pass(self, x_bytes, ctx, spans, n_ctx_layers=1):
+        """ZHA-style chunk retrieval: one checkpoint attention layer over the
+        interleaved [ctx_1..ctx_C, byte tokens] sequence — every byte attends to
+        ALL past chunk states (not just the previous one) + causal bytes."""
+        T = x_bytes.shape[1]; C = len(spans)
+        seq = torch.cat([ctx[None], x_bytes], dim=1)               # (1, C+T, D)
+        neg = torch.finfo(torch.float32).min
+        N = C + T
+        allow = torch.zeros(N, N, dtype=torch.bool, device=x_bytes.device)
+        allow[:C, :C] = torch.tril(torch.ones(C, C, dtype=torch.bool,
+                                              device=x_bytes.device))
+        bi = torch.arange(T, device=x_bytes.device)
+        allow[C:, :C] = True                                       # bytes -> all ctx
+        allow[C:, C:] = torch.tril(torch.ones(T, T, dtype=torch.bool,
+                                              device=x_bytes.device))
+        mask = torch.where(allow, 0.0, neg)[None, None].to(x_bytes.dtype)
+        pos = torch.arange(N, device=x_bytes.device).unsqueeze(0)
+        pos_emb = self.rotary(seq, pos) if self.rotary is not None else None
+        for layer in list(self.main)[:n_ctx_layers]:
+            seq = layer(seq, position_embeddings=pos_emb,
+                        attention_mask=mask, position_ids=pos)
+        return seq[:, C:]                                          # byte part
 
     def chunks(self, hs_bytes, boundaries):
         """Group byte positions into chunk spans given a 0/1 boundary vector."""
@@ -98,8 +132,13 @@ class HNetQwen(nn.Module):
         return [(a, b) for a, b in zip(bounds, bounds[1:])]
 
     # ---- the H-Net forward --------------------------------------------------
-    def forward(self, byte_ids, boundaries=None):
-        """byte_ids (T,) -> byte logits (T, 256)."""
+    def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev"):
+        """byte_ids (T,) -> (logits, boundaries, spans).
+
+        sparse=(w, stride, sinks): LSA-style mask on the main attention stack.
+        ctx: "prev" = dechunk broadcast of previous chunk (baseline);
+             "retrieve" = ZHA-style — bytes attend to ALL past chunk states
+             through one checkpoint attention layer."""
         T = len(byte_ids)
         tok_ids = torch.tensor([self.byte_map.get(int(b), 0) for b in byte_ids],
                                device=byte_ids.device)
@@ -114,13 +153,19 @@ class HNetQwen(nn.Module):
         spans = self.chunks(hs, boundaries)
         # pool: encoder hidden state at each chunk's LAST byte
         patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
-        glob = self.run_stack(self.main, patch)[0]            # (C, D)
-        ctx = self.dechunk(glob)                              # (C, D)
-        # decoder: byte emb + dechunked ctx of the PREVIOUS chunk
+        glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
+        ctx_v = self.dechunk(glob)                            # (C, D)
         x = hs.clone()
-        for ci, (a, b) in enumerate(spans):
-            if ci > 0:
-                x[0, a:b] += ctx[ci - 1]
+        if ctx == "retrieve":
+            # bytes see all past chunk ctx via one attention layer
+            x = hs + self.decoder_attn_pass(torch.zeros_like(hs), ctx_v, spans)
+            for ci, (a, b) in enumerate(spans):
+                if ci > 0:
+                    x[0, a:b] += ctx_v[ci - 1]
+        else:
+            for ci, (a, b) in enumerate(spans):
+                if ci > 0:
+                    x[0, a:b] += ctx_v[ci - 1]
         hs_dec = x
         for layer in self.dec:
             hs_dec = layer(hs_dec, position_embeddings=None,

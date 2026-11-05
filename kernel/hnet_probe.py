@@ -52,25 +52,22 @@ byte_ids = torch.tensor(list(data), device="cuda")
 T = len(byte_ids)
 print(f"[probe] doc {T} bytes", flush=True)
 
-# periodic boundaries every 6 bytes as the control route
-b6 = torch.zeros(T, device="cuda"); b6[::6] = 1.0
-with torch.no_grad():
-    logits, bnd, spans = hn(byte_ids, boundaries=b6)
-print(f"[forward] logits {tuple(logits.shape)} | {len(spans)} chunks "
-      f"(mean {np.mean([b - a for a, b in spans]):.1f} B)", flush=True)
-
-# byte-bpb via marginalized head (same path as the other kernels)
 head = ByteHead(tok)
 from src.learned import byte_logprobs                          # noqa: E402
-bp = byte_logprobs(logits[0].float(), head.first)               # (T, 256)
-tgt = byte_ids[1:].long()
-nll = -bp[:-1].gather(1, tgt.unsqueeze(1)).squeeze(1)
-print(f"[debug] bp {tuple(bp.shape)} nll mean {float(nll.mean()):.3f} nats "
-      f"max {float(nll.max()):.1f}", flush=True)
-print(f"[score] byte bpb {float(nll.sum()) / np.log(2) / (T - 1):.4f}", flush=True)
 
-# random-init learned boundaries: span stats
-with torch.no_grad():
-    logits2, bnd2, spans2 = hn(byte_ids, boundaries=None)
-print(f"[random-route] {len(spans2)} chunks "
-      f"(mean span {np.mean([b - a for a, b in spans2]):.1f} B)", flush=True)
+
+def score(logits):
+    bp = byte_logprobs(logits[0].float(), head.first)
+    nll = -bp[:-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
+    return float(nll.sum()) / np.log(2) / (T - 1)
+
+
+b6 = torch.zeros(T, device="cuda"); b6[::6] = 1.0
+print("[sweep] full/sparse main x prev/retrieve ctx, periodic-6 route", flush=True)
+for sparse, tag_s in ((None, "full"), ((32, 8, 4), "sparse w32 s8 k4")):
+    for ctx, tag_c in (("prev", "prev-chunk"), ("retrieve", "retrieve-all")):
+        with torch.no_grad():
+            logits, bnd, spans = hn(byte_ids, boundaries=b6,
+                                    sparse=sparse, ctx=ctx)
+        print(f"  {tag_s:>14} | {tag_c:<14} byte bpb {score(logits):.4f} "
+              f"({len(spans)} chunks)", flush=True)

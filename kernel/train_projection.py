@@ -78,7 +78,7 @@ def prep(data):
 
 train = [prep(d) for d in train_docs]
 evals = [prep(d) for d in eval_docs]
-ml = np.mean([len(d) / (b.shape[0]) for d, (b, _, _) in zip(docs, train + evals)])
+ml = np.mean([len(d) / (b.shape[0]) for d, (b, _, _, _) in zip(docs, train + evals)])
 print(f"[chunker] sim~{TM:g}: realized mean_len {ml:.2f}", flush=True)
 
 D = emb.shape[1]

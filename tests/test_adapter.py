@@ -165,6 +165,29 @@ def test_variable_length_targets():
     assert n == 2 and tcov == 1.0                           # targets: 'C' (start 2) and 'F' (start 5)
 
 
+def test_projection_identity_at_init():
+    from src.learned import PatchProjection
+    proj = PatchProjection(8, rank=4)
+    base = torch.randn(5, 8)
+    assert torch.equal(proj(base), base)                    # A=0 -> the v0 sum baseline exactly
+
+
+def test_byte_logprobs_match_byte_head():
+    from src.learned import byte_logprobs
+    lm = ChunkLM(FakeModel(), FakeTok(), period=1, device="cpu", dtype=torch.float32)
+    logits = lm.first_byte_logits(b"ABCD")[0]
+    lp = byte_logprobs(logits, lm.byte_head.first)
+    pb = lm.byte_head.byte_probs(logits)
+    assert torch.allclose(lp.exp(), pb, atol=1e-5)
+
+
+def test_pad_chunk_ids():
+    from src.learned import pad_chunk_ids
+    tok = FakeTok()
+    ids = pad_chunk_ids([b"AB", b"\x80C"], byte_token_map(tok), pad_id=999)
+    assert ids.tolist() == [[1, 2], [999, 3]]               # 0x80 unmappable -> pad
+
+
 def test_qwen_byte_bpb_accounting():
     """The same-weights reference: token CE weighted by each token's byte length, over total bytes."""
     model = FakeModel()

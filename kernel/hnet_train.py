@@ -138,7 +138,8 @@ print("[fit] w_in/w_out/w_enc ridges fit (frozen during training)", flush=True)
 for layer in list(hn.enc) + list(hn.dec):
     layer.gradient_checkpointing = True
 trainable = list(hn.enc.parameters()) + list(hn.dec.parameters()) + \
-    list(hn.dechunk.parameters()) + list(hn.boundary.parameters())
+    list(hn.dechunk.parameters()) + list(hn.boundary.parameters()) + \
+    list(hn.w_sup.parameters())
 for p in trainable:
     p.requires_grad_(True)
 n_train = sum(p.numel() for p in trainable)
@@ -150,7 +151,7 @@ def doc_loss(byte_ids):
     T = len(byte_ids)
     b6 = torch.zeros(T, device="cuda"); b6[::P] = 1.0
     bp, _, _ = hn(byte_ids, boundaries=b6, ctx="retrieve", n_ctx=1,
-                  head_first=head.first)
+                  head_first=head.first, super_k=4)
     nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
     return nll.mean()
 
@@ -174,4 +175,25 @@ for step, d in enumerate(train_docs):
               f"| held bpb {hb:.4f}", flush=True)
     del byte_ids, loss
     torch.cuda.empty_cache()
+# ---- RSI-lite round: self-targeted hard-example retraining
+scored = []
+for d in train_docs:
+    bids = torch.tensor(list(d), device="cuda")
+    scored.append((eval_bpb(bids), d))
+    del bids
+scored.sort(key=lambda x: -x[0])
+hard = scored[:len(scored) // 2]
+print(f"[rsi] round-2 on worst {len(hard)} docs "
+      f"(worst bpb {scored[0][0]:.3f})", flush=True)
+for d, _ in zip([h[1] for h in hard], range(len(hard))):
+    byte_ids = torch.tensor(list(d), device="cuda")
+    loss = doc_loss(byte_ids)
+    opt.zero_grad(); loss.backward()
+    torch.nn.utils.clip_grad_norm_(trainable, 1.0)
+    opt.step()
+    del byte_ids, loss
+final = [eval_bpb(torch.tensor(list(hd), device="cuda"))
+         for hd in held_docs]
+print(f"[rsi] round-2 held bpb {np.mean(final):.4f} "
+      f"({['%.3f' % v for v in final]})", flush=True)
 print("[train] dry-run complete", flush=True)

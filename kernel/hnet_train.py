@@ -114,7 +114,7 @@ print("[fit] w_in/w_out/w_enc ridges fit (frozen during training)", flush=True)
 
 # ---- trainable: enc, dec, dechunk, boundary — with grad checkpointing
 for layer in list(hn.enc) + list(hn.dec):
-    layer.gradient_checkpointing_enable()
+    layer.gradient_checkpointing = True
 trainable = list(hn.enc.parameters()) + list(hn.dec.parameters()) + \
     list(hn.dechunk.parameters()) + list(hn.boundary.parameters())
 for p in trainable:

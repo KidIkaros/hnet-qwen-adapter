@@ -1,105 +1,25 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [train] Qwen/Qwen3.5-2B-Base | 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
 [data] 34 train + 6 held + 4 adapter-fit docs
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [fit] w_in/w_out/w_enc ridges fit (frozen during training)
-[train] 827.9M trainable params (rest frozen)
-[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_14754/2738788325.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    137[0m [0;32mfor[0m [0mstep[0m[0;34m,[0m [0md[0m [0;32min[0m [0menumerate[0m[0;34m([0m[0mtrain_docs[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    138[0m     [0mbyte_ids[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mtensor[0m[0;34m([0m[0mlist[0m[0;34m([0m[0md[0m[0;34m)[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0;34m"cuda"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 139[0;31m     [0mloss[0m [0;34m=[0m [0mdoc_loss[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    140[0m     [0mopt[0m[0;34m.[0m[0mzero_grad[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    141[0m     [0mloss[0m[0;34m.[0m[0mbackward[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/tmp/ipykernel_14754/2738788325.py[0m in [0;36mdoc_loss[0;34m(byte_ids)[0m
-[1;32m    124[0m     [0mT[0m [0;34m=[0m [0mlen[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    125[0m     [0mb6[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mT[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0;34m"cuda"[0m[0;34m)[0m[0;34m;[0m [0mb6[0m[0;34m[[0m[0;34m:[0m[0;34m:[0m[0mP[0m[0;34m][0m [0;34m=[0m [0;36m1.0[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 126[0;31m     bp, _, _ = hn(byte_ids, boundaries=b6, ctx="retrieve", n_ctx=1,
-[0m[1;32m    127[0m                   head_first=head.first)
-[1;32m    128[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;36m0[0m[0;34m,[0m [0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1780[0m [0;34m[0m[0m
-[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
-[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1791[0m [0;34m[0m[0m
-[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries, sparse, ctx, head_first, n_ctx)[0m
-[1;32m    188[0m         [0mhs_dec[0m [0;34m=[0m [0mx[0m [0;32mif[0m [0mself[0m[0;34m.[0m[0mw_in[0m [0;32mis[0m [0;32mNone[0m [0;32melse[0m [0mself[0m[0;34m.[0m[0mw_in[0m[0;34m([0m[0mx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    189[0m         [0;32mfor[0m [0mlayer[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mdec[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 190[0;31m             hs_dec = layer(hs_dec, position_embeddings=None,
-[0m[1;32m    191[0m                            attention_mask=None, position_ids=None)
-[1;32m    192[0m         [0mout[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mnorm[0m[0;34m([0m[0mhs_dec[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/modeling_layers.py[0m in [0;36m__call__[0;34m(self, *args, **kwargs)[0m
-[1;32m    109[0m [0;34m[0m[0m
-[1;32m    110[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_gradient_checkpointing_func[0m[0;34m([0m[0mpartial[0m[0;34m([0m[0msuper[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0m__call__[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m,[0m [0;34m*[0m[0margs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 111[0;31m         [0;32mreturn[0m [0msuper[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0m__call__[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    112[0m [0;34m[0m[0m
-[1;32m    113[0m [0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1780[0m [0;34m[0m[0m
-[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1883[0m [0;34m[0m[0m
-[1;32m   1884[0m         [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1885[0;31m             [0;32mreturn[0m [0minner[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1886[0m         [0;32mexcept[0m [0mException[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1887[0m             [0;31m# run always called hooks if they have not already been run[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36minner[0;34m()[0m
-[1;32m   1831[0m                 [0margs[0m [0;34m=[0m [0mbw_hook[0m[0;34m.[0m[0msetup_input_hook[0m[0;34m([0m[0margs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1832[0m [0;34m[0m[0m
-[0;32m-> 1833[0;31m             [0mresult[0m [0;34m=[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1834[0m             [0;32mif[0m [0m_global_forward_hooks[0m [0;32mor[0m [0mself[0m[0;34m.[0m[0m_forward_hooks[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1835[0m                 for hook_id, hook in (
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mforward[0;34m(self, hidden_states, position_embeddings, attention_mask, position_ids, past_key_values, **kwargs)[0m
-[1;32m    874[0m         [0;31m# Token Mixer[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    875[0m         [0;32mif[0m [0mself[0m[0;34m.[0m[0mblock_type[0m [0;34m==[0m [0;34m"linear_attention"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 876[0;31m             hidden_states = self.linear_attn(
-[0m[1;32m    877[0m                 [0mhidden_states[0m[0;34m=[0m[0mhidden_states[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    878[0m                 [0mcache_params[0m[0;34m=[0m[0mpast_key_values[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1780[0m [0;34m[0m[0m
-[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
-[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1791[0m [0;34m[0m[0m
-[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/integrations/accelerate.py[0m in [0;36mwrapped[0;34m(self, *args, **kwargs)[0m
-[1;32m   1010[0m                     [0mhook[0m[0;34m.[0m[0mpre_forward[0m[0;34m([0m[0mhooked_module[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1011[0m [0;34m[0m[0m
-[0;32m-> 1012[0;31m             [0moutput[0m [0;34m=[0m [0mforward_func[0m[0;34m([0m[0mself[0m[0;34m,[0m [0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1013[0m [0;34m[0m[0m
-[1;32m   1014[0m             [0;32mfor[0m [0mhooked_module[0m[0;34m,[0m [0mhook[0m [0;32min[0m [0mreversed[0m[0;34m([0m[0mhooked_modules[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mforward[0;34m(self, hidden_states, cache_params, attention_mask, **kwargs)[0m
-[1;32m    624[0m             )
-[1;32m    625[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 626[0;31m             core_attn_out, last_recurrent_state = torch_chunk_gated_delta_rule(
-[0m[1;32m    627[0m                 [0mquery[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    628[0m                 [0mkey[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/integrations/hub_kernels.py[0m in [0;36mwrapped[0;34m(*args, **kwargs)[0m
-[1;32m   1049[0m [0;34m[0m[0m
-[1;32m   1050[0m             [0mkwargs[0m [0;34m=[0m [0;34m{[0m[0mk[0m[0;34m:[0m [0mv[0m [0;32mfor[0m [0mk[0m[0;34m,[0m [0mv[0m [0;32min[0m [0mkwargs[0m[0;34m.[0m[0mitems[0m[0;34m([0m[0;34m)[0m [0;32mif[0m [0mk[0m [0;32min[0m [0mapplicable_params[0m[0;34m}[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1051[0;31m             [0;32mreturn[0m [0mimplementation[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1052[0m [0;34m[0m[0m
-[1;32m   1053[0m         [0;32mreturn[0m [0mkernel_wrapper_decorator[0m[0;34m([0m[0mwrapped[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mtorch_chunk_gated_delta_rule[0;34m(query, key, value, g, beta, chunk_size, initial_state, output_final_state, use_qk_l2norm_in_kernel, **kwargs)[0m
-[1;32m    414[0m     [0mlast_recurrent_state[0m [0;34m=[0m [0;32mNone[0m [0;32mif[0m [0;32mnot[0m [0moutput_final_state[0m [0;32melse[0m [0mlast_recurrent_state[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    415[0m     [0;31m# Reshape the output to the orignal shape: flatten the chunk dimension, then drop padding[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 416[0;31m     [0mcore_attn_out[0m [0;34m=[0m [0mcore_attn_out[0m[0;34m.[0m[0mreshape[0m[0;34m([0m[0mpadded_output_shape[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    417[0m     [0mcore_attn_out[0m [0;34m=[0m [0mcore_attn_out[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m [0;34m:[0m[0;34m,[0m [0;34m:[0m[0msequence_length[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    418[0m     [0;31m# Convert back to the original shape [batch_size, sequence_length, num_v_heads, v_head_dim] and dtype[0m[0;34m[0m[0;34m[0m[0m
-[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 64.00 MiB. GPU 0 has a total capacity of 39.49 GiB of which 25.44 MiB is free. Including non-PyTorch memory, this process has 39.46 GiB memory in use. Of the allocated memory 38.58 GiB is allocated by PyTorch, and 376.91 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[0;31m---------------------------------------------------------------------------[0m[0;31mAttributeError[0m                            Traceback (most recent call last)[0;32m/tmp/ipykernel_19766/957471679.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    115[0m [0;31m# ---- trainable: enc, dec, dechunk, boundary — with grad checkpointing[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    116[0m [0;32mfor[0m [0mlayer[0m [0;32min[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0menc[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdec[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 117[0;31m     [0mlayer[0m[0;34m.[0m[0mgradient_checkpointing_enable[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    118[0m [0mtrainable[0m [0;34m=[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0menc[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdec[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m[0;31m [0m[0;31m\[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    119[0m     [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdechunk[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mboundary[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m__getattr__[0;34m(self, name)[0m
+[1;32m   1966[0m             [0;32mif[0m [0mname[0m [0;32min[0m [0mmodules[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1967[0m                 [0;32mreturn[0m [0mmodules[0m[0;34m[[0m[0mname[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1968[0;31m         raise AttributeError(
+[0m[1;32m   1969[0m             [0;34mf"'{type(self).__name__}' object has no attribute '{name}'"[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1970[0m         )
+[0;31mAttributeError[0m: 'Qwen3_5DecoderLayer' object has no attribute 'gradient_checkpointing_enable'

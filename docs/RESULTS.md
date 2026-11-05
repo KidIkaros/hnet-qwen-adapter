@@ -64,6 +64,21 @@ length signal under variable-length chunking, so uniformizing it destroys inform
 `cov_recolor` likewise flips (helps under sim, hurts under periodic) — whitening assumptions are
 chunker-dependent.
 
+## The composed system (v2) — a real tokenizer-free LM
+
+Frozen Qwen trunk + ridge-initialized patch map (~160k, 6 SGD epochs) + 4-layer byte decoder
+(~3M, 8 epochs, pair-window cross-patch context), trained on 13 markdown docs (~2 min A100):
+
+| corpus | stock BPE | byte-level | best constructed | **v2 composed** |
+|---|---|---|---|---|
+| markdown eval docs | 4.9226 | 5.5730 | 5.5558 | **5.0074** |
+| **hnet val split (cross-domain)** | **3.7560** | **4.3310** | **~4.59** | **4.1443** |
+
+Trained on markdown, the system transfers to English: it beats byte-level and every constructed
+chunker on the published val split, and sits within **0.39 bits of stock BPE** on data it never
+trained on — a working tokenizer-free LM at ~3.3M glue parameters over a frozen 0.8B trunk.
+Decoder weights: `results/byte_decoder.pt`.
+
 ## Caveats
 
 - v1 trained/eval'd on same-domain markdown docs; its val-split transfer is unmeasured.

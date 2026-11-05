@@ -79,7 +79,7 @@ for d in docs[:4]:
     tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
     with torch.no_grad():
         o = text(input_ids=tids[None], output_hidden_states=True)
-    hs = o.hidden_states[dec_start][0][None].float()           # real dec input
+    hs = o.hidden_states[dec_start][0][None].to(torch.bfloat16)
     for layer in hn.dec:
         hs = layer(hs, position_embeddings=None, attention_mask=None,
                    position_ids=None)

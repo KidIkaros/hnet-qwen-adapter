@@ -1,0 +1,49 @@
+[colab] Creating session 'run-812b97'...
+[colab] Session READY (run-812b97). Executing kernel/colab_run.py...
+[setup] cloning the repos
+[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[setup] done in 31s
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[setup] byte-token map: 221/256 bytes mapped
+[corpus] hnet-kaggle markdown (OOD): 8 docs, 65536 bytes
+[entropy] byte-level scores from the period-1 model (BLT's estimator is our own adapter)
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+stock Qwen3.5-0.8B (native BPE): full-byte bpb 4.2560 over 65536 bytes
+
+   chunker   agg mean_len  first-byte bpb   n_preds  in_cov  tg_cov  skip
+  period=1   sum     1.00          5.2250     65132  0.9940  0.9940     0
+  period=2   sum     2.00          7.7184     32558  0.9940  0.9938     0
+  period=2  mean     2.00          9.2854     32558  0.9940  0.9938     0
+  period=2  last     2.00          9.5093     32558  0.9940  0.9938     0
+  period=3   sum     3.00          6.4325     21701  0.9940  0.9940     0
+  period=3  mean     3.00          8.9436     21701  0.9940  0.9940     0
+  period=3  last     3.00          9.4592     21701  0.9940  0.9940     0
+  period=6   sum     6.00          9.1890     10848  0.9940  0.9941     0
+  period=6  mean     6.00          8.9554     10848  0.9940  0.9941     0
+  period=6  last     6.00          8.7607     10848  0.9940  0.9941     0
+ period=12   sum    12.01          8.5120      5421  0.9940  0.9950     0
+ period=12  mean    12.01          8.9565      5421  0.9940  0.9950     0
+ period=12  last    12.01          8.6820      5421  0.9940  0.9950     0
+ entropy~6   sum     5.58          7.3175     11489  0.9917  0.9786     0
+/content/qt/hnet-qwen-adapter/src/adapter.py:146: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  scores[t] = float((a @ b) / (a.norm() * b.norm() + 1e-12))
+     sim~6   sum     5.55          6.3867     11400  0.9665  0.9664     0
+ entropy~6  mean     5.58          9.4454     11489  0.9917  0.9786     0
+     sim~6  mean     5.55          7.3099     11400  0.9665  0.9664     0
+ entropy~6  last     5.58         10.1968     11489  0.9917  0.9786     0
+     sim~6  last     5.55          7.1615     11400  0.9665  0.9664     0
+
+trained 18.6M H-Net (published, full-byte): 1.4177
+[timing] 142s
+[colab] Stopping session 'run-812b97'...
+[colab] Session terminated.

@@ -34,32 +34,39 @@ honest stress case), period-6 chunks, Qwen3.5-0.8B on Colab A100 (`results/a100_
 | trained 18.6M H-Net (the reference) | every byte | 1.4177 (published, its val split) |
 | stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **4.2567** |
 
-Period × aggregation sweep (`results/a100_sweep.log`), byte-marginalized head throughout:
+Construction sweep (`results/a100_construction_sweep.log`), byte-marginalized head throughout.
+Adaptive chunkers calibrate to mean_len ≈ 6 — the same compression ratio as period 6, the fair
+comparison; sim/entropy targets are *harder* bytes (boundaries land on transitions/surprises):
 
-| period | sum | mean | n_preds (sum) | the task |
-|---|---|---|---|---|
-| **1** | **5.2250** | — | 65,132 | every next byte — the byte-level-Qwen control |
-| 2 | 7.7184 | 9.2854 | 32,558 | every 2nd byte |
-| 3 | **6.4325** | 8.9436 | 21,701 | every 3rd byte |
-| 6 | 9.1890 | 8.9554 | 10,848 | every 6th byte |
-| 12 | 8.5120 | 8.9565 | 5,421 | every 12th byte |
+| chunker | sum | mean | last | n_preds (sum) | task |
+|---|---|---|---|---|---|
+| period=1 | **5.2250** | — | — | 65,132 | every byte — byte-level-Qwen control |
+| period=3 | 6.4325 | 8.9436 | 9.4592 | 21,701 | every 3rd byte |
+| period=6 | 9.1890 | 8.9554 | **8.7607** | 10,848 | every 6th byte |
+| period=12 | 8.5120 | 8.9565 | 8.6820 | 5,421 | every 12th byte |
+| **sim~6** | **6.3867** | 7.3099 | 7.1615 | 11,400 | boundary bytes, mean_len 5.55 |
+| **entropy~6** | **7.3175** | 9.4454 | 10.1968 | 11,489 | boundary bytes, mean_len 5.58 |
 
-Coverage: 221/256 bytes have a single-token row; ~0.6% of chunks contain an unmappable byte (the hole
-positions embed as zero vectors, counted in input cov 0.994) and ~0.6% of targets are skipped
-(target cov 0.994).
+Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an unmappable byte
+(zero-vector holes, counted in input cov) and ~0.6-3% of targets are skipped (target cov).
 
 **Reading the numbers honestly:**
 - **Granularity cost is small — the surprise**: period 1 degenerates the adapter to "Qwen as a
   byte-level model" (byte-token rows in, marginalized head out) at **5.23 bits vs stock 4.26 — only
   +0.97**. The frozen stack handles byte-granular input far better than the distribution-shift
   prediction suggested.
-- **The patch construction is the lossy part**: summing multiple byte rows pushes boundary-byte
-  prediction to 6.4–9.2. The shift lives in the patch interface, not the byte granularity.
-- **sum > mean at small periods** (up to +2.5 bits @3): the larger norm seems to mark patch vectors
-  as non-token — a useful signal the mean destroys.
-- **Cross-period comparisons are task-confounded**: each period scores a different byte subset
-  (boundary alignment vs UTF-8/word structure differs), so the non-monotonicity (3 < 2, 12 < 6) is
-  not pure chunking cost. A same-target-set comparison is future work.
+- **Boundary placement is where the information lives**: at matched ~6× compression, content-aware
+  boundaries beat periodic by 1.9-2.8 bits — and sim~6 (6.39 at mean 5.55) even beats period-3
+  (6.43) on ~2× fewer positions. Chunk quality beats quantity. This rhymes with the frozen-router
+  result from the trained H-Net: the router's learned decisions carry real information — but a
+  training-free similarity rule captures most of it.
+- **sum dominates mean everywhere** — consistent with LSA keeping unnormalized sums for centroids.
+- **Boundary-weighting is conditional**: "last" helps under arbitrary periodic boundaries (the last
+  byte carries position info) but hurts under semantic boundaries (the chunk is a coherent unit best
+  served whole). ZHA's query-answerability insight confirmed — with a caveat.
+- **Cross-config comparisons are task-confounded**: each chunker scores a different byte subset;
+  adaptive boundaries predict *harder* bytes by construction, which makes their wins more
+  meaningful, not less.
 - The readout matters: scoring single-byte *tokens* directly reads ~3 bits worse than uniform — a
   metric artifact. `ByteHead` (P(byte) = mass of all tokens whose first byte is b) is the honest
   readout.

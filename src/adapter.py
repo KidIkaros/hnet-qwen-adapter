@@ -135,7 +135,7 @@ class SimChunker:
         self.target_mean, self.min_len, self.max_len = target_mean, min_len, max_len
 
     def spans(self, data, aux=None):
-        emb = self.embedder.emb.float()
+        emb = self.embedder.emb.detach().float()
         n = len(data)
         scores = np.full(n, 0.0, dtype=np.float64)           # cos(e_{t-1}, e_t); low -> cut
         prev = None

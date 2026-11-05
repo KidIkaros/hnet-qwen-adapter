@@ -100,6 +100,21 @@ def evaluate(split):
     return tot / max(n, 1), n
 
 
+from src.adapter import ChunkLM, qwen_byte_bpb                    # noqa: E402
+
+# the fair controls: stock Qwen and the byte-level adapter scored on the SAME eval docs
+qb_tot = qb_n = 0.0
+for d in eval_docs:
+    qb, _, nb = qwen_byte_bpb(model, tok, d)
+    qb_tot += qb * nb; qb_n += nb
+lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=head)
+b1_tot = b1_n = 0.0
+for d in eval_docs:
+    b1, k1, _ = lm1.first_byte_bpb(d)
+    b1_tot += b1 * k1; b1_n += k1
+print(f"[control] stock BPE on eval docs: {qb_tot / qb_n:.4f} | byte-level period-1: "
+      f"{b1_tot / b1_n:.4f}", flush=True)
+
 eb0, en0 = evaluate(evals)
 print(f"[v1] BEFORE: eval bpb {eb0:.4f} over {en0} targets (identity map = constructed-sum baseline)", flush=True)
 

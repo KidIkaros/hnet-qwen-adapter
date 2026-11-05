@@ -1,0 +1,41 @@
+[colab] Creating session 'run-659941'...
+[colab] Session READY (run-659941). Executing kernel/train_projection.py...
+[setup] cloning the repos
+[setup] downloading Qwen/Qwen3.5-0.8B
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[setup] done in 29s
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[setup] byte-token map: 221/256
+[corpus] 13 train + 3 eval docs
+[chunker] sim~6: realized mean_len 5.56
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[v1] BEFORE: eval bpb 4.1574 over 4349 targets (identity map = constructed-sum baseline)
+/tmp/ipykernel_2243/374254251.py:122: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  ep_tot += float(loss) * len(bs); ep_n += len(bs); step += 1
+[epoch 00] train bpb 3.6053 (13 steps)
+[epoch 01] train bpb 2.6602 (26 steps)
+[epoch 02] train bpb 2.4589 (39 steps)
+[epoch 03] train bpb 2.3264 (52 steps)
+[epoch 04] train bpb 2.2532 (65 steps)
+[epoch 05] train bpb 2.1720 (78 steps)
+[epoch 06] train bpb 2.1105 (91 steps)
+[epoch 07] train bpb 2.0472 (104 steps)
+[epoch 08] train bpb 2.0015 (117 steps)
+[epoch 09] train bpb 1.9596 (130 steps)
+[epoch 10] train bpb 1.9350 (143 steps)
+[epoch 11] train bpb 1.9009 (156 steps)
+[timing] training 138s (156 steps)
+
+[v1] AFTER:  eval bpb 2.5027 over 4349 targets | train bpb 1.8541 over 18531
+[refs] constructed sim~6+sum 6.3867 (8 shared docs) | byte-level 5.2250 | stock BPE 4.2560 | H-Net 1.4177
+[colab] Stopping session 'run-659941'...
+[colab] Session terminated.

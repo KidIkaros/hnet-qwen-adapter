@@ -35,7 +35,7 @@ from src.corpus import byte_token_map                             # noqa: E402
 from src.adapter import ByteHead                                  # noqa: E402
 from src.hnet import HNetQwen                                     # noqa: E402
 
-src = snapshot_download("Qwen/Qwen3.5-0.8B")
+src = snapshot_download("Qwen/Qwen3.5-4B-Base")
 tok = AutoTokenizer.from_pretrained(src)
 model = AutoModelForCausalLM.from_pretrained(src, dtype=torch.bfloat16).cuda().eval()
 for p in model.parameters():

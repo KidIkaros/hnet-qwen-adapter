@@ -3,12 +3,12 @@ Reconstructing (incomplete total...): |          |  0.00B /  0.00B
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [probe] 8192 real bytes
-  periodic-6 full|prev    byte bpb 14.1989 (1366 ch, 6.0B)
-  periodic-6 full|retr    byte bpb 14.1989 (1366 ch, 6.0B)
-  periodic-6 sparse|retr  byte bpb 14.1989 (1366 ch, 6.0B)
-  spacelike  full|prev    byte bpb 14.1989 (2374 ch, 3.5B)
-  spacelike  full|retr    byte bpb 14.1989 (2374 ch, 3.5B)
-  spacelike  sparse|retr  byte bpb 14.1989 (2374 ch, 3.5B)
-  sim        full|prev    byte bpb 14.1989 (2984 ch, 2.7B)
-  sim        full|retr    byte bpb 14.1989 (2984 ch, 2.7B)
-  sim        sparse|retr  byte bpb 14.1989 (2984 ch, 2.7B)
+  periodic-6 full|prev    byte bpb 13.1110 (1366 ch, 6.0B)
+  periodic-6 full|retr    byte bpb 13.1110 (1366 ch, 6.0B)
+  periodic-6 sparse|retr  byte bpb 13.1110 (1366 ch, 6.0B)
+  spacelike  full|prev    byte bpb 13.1110 (2374 ch, 3.5B)
+  spacelike  full|retr    byte bpb 13.1110 (2374 ch, 3.5B)
+  spacelike  sparse|retr  byte bpb 13.1110 (2374 ch, 3.5B)
+  sim        full|prev    byte bpb 13.1110 (2984 ch, 2.7B)
+  sim        full|retr    byte bpb 13.1110 (2984 ch, 2.7B)
+  sim        sparse|retr  byte bpb 13.1110 (2984 ch, 2.7B)

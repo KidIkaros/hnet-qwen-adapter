@@ -1,67 +1,40 @@
 [setup] cloning
 [setup] model
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
-[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_553/1010541541.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m     49[0m [0;34m[0m[0m
-[1;32m     50[0m [0mtok[0m [0;34m=[0m [0mAutoTokenizer[0m[0;34m.[0m[0mfrom_pretrained[0m[0;34m([0m[0msrc[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 51[0;31m [0mmodel[0m [0;34m=[0m [0mAutoModelForCausalLM[0m[0;34m.[0m[0mfrom_pretrained[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mtorch[0m[0;34m.[0m[0mbfloat16[0m[0;34m)[0m[0;34m.[0m[0mcuda[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0meval[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     52[0m [0;32mfor[0m [0mp[0m [0;32min[0m [0mmodel[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     53[0m     [0mp[0m[0;34m.[0m[0mrequires_grad_[0m[0;34m([0m[0;32mFalse[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py[0m in [0;36mcuda[0;34m(self, *args, **kwargs)[0m
-[1;32m   3647[0m                     [0;34m" Please use the model as it is, since the model has already been set to the correct devices."[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3648[0m                 )
-[0;32m-> 3649[0;31m         [0;32mreturn[0m [0msuper[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mcuda[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   3650[0m [0;34m[0m[0m
-[1;32m   3651[0m     [0;34m@[0m[0mwraps[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mnn[0m[0;34m.[0m[0mModule[0m[0;34m.[0m[0mto[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36mcuda[0;34m(self, device)[0m
-[1;32m   1095[0m             [0mModule[0m[0;34m:[0m [0mself[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1096[0m         """
-[0;32m-> 1097[0;31m         [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0;32mlambda[0m [0mt[0m[0;34m:[0m [0mt[0m[0;34m.[0m[0mcuda[0m[0;34m([0m[0mdevice[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1098[0m [0;34m[0m[0m
-[1;32m   1099[0m     [0;32mdef[0m [0mipu[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mdevice[0m[0;34m:[0m [0mint[0m [0;34m|[0m [0mdevice[0m [0;34m|[0m [0;32mNone[0m [0;34m=[0m [0;32mNone[0m[0;34m)[0m [0;34m->[0m [0mSelf[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    932[0m         [0;32mif[0m [0mrecurse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    933[0m             [0;32mfor[0m [0mmodule[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mchildren[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 934[0;31m                 [0mmodule[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0mfn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    935[0m [0;34m[0m[0m
-[1;32m    936[0m         [0;32mfrom[0m [0mtorch[0m[0;34m.[0m[0m_subclasses[0m[0;34m.[0m[0mfake_tensor[0m [0;32mimport[0m [0mFakeTensor[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    932[0m         [0;32mif[0m [0mrecurse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    933[0m             [0;32mfor[0m [0mmodule[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mchildren[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 934[0;31m                 [0mmodule[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0mfn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    935[0m [0;34m[0m[0m
-[1;32m    936[0m         [0;32mfrom[0m [0mtorch[0m[0;34m.[0m[0m_subclasses[0m[0;34m.[0m[0mfake_tensor[0m [0;32mimport[0m [0mFakeTensor[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    932[0m         [0;32mif[0m [0mrecurse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    933[0m             [0;32mfor[0m [0mmodule[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mchildren[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 934[0;31m                 [0mmodule[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0mfn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    935[0m [0;34m[0m[0m
-[1;32m    936[0m         [0;32mfrom[0m [0mtorch[0m[0;34m.[0m[0m_subclasses[0m[0;34m.[0m[0mfake_tensor[0m [0;32mimport[0m [0mFakeTensor[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    932[0m         [0;32mif[0m [0mrecurse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    933[0m             [0;32mfor[0m [0mmodule[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mchildren[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 934[0;31m                 [0mmodule[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0mfn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    935[0m [0;34m[0m[0m
-[1;32m    936[0m         [0;32mfrom[0m [0mtorch[0m[0;34m.[0m[0m_subclasses[0m[0;34m.[0m[0mfake_tensor[0m [0;32mimport[0m [0mFakeTensor[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    932[0m         [0;32mif[0m [0mrecurse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    933[0m             [0;32mfor[0m [0mmodule[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mchildren[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 934[0;31m                 [0mmodule[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0mfn[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    935[0m [0;34m[0m[0m
-[1;32m    936[0m         [0;32mfrom[0m [0mtorch[0m[0;34m.[0m[0m_subclasses[0m[0;34m.[0m[0mfake_tensor[0m [0;32mimport[0m [0mFakeTensor[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_apply[0;34m(self, fn, recurse)[0m
-[1;32m    963[0m             [0;31m# `with torch.no_grad():`[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    964[0m             [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 965[0;31m                 [0mparam_applied[0m [0;34m=[0m [0mfn[0m[0;34m([0m[0mparam[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    966[0m             [0mp_should_use_set_data[0m [0;34m=[0m [0mcompute_should_use_set_data[0m[0;34m([0m[0mparam[0m[0;34m,[0m [0mparam_applied[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    967[0m [0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m<lambda>[0;34m(t)[0m
-[1;32m   1095[0m             [0mModule[0m[0;34m:[0m [0mself[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1096[0m         """
-[0;32m-> 1097[0;31m         [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_apply[0m[0;34m([0m[0;32mlambda[0m [0mt[0m[0;34m:[0m [0mt[0m[0;34m.[0m[0mcuda[0m[0;34m([0m[0mdevice[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1098[0m [0;34m[0m[0m
-[1;32m   1099[0m     [0;32mdef[0m [0mipu[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mdevice[0m[0;34m:[0m [0mint[0m [0;34m|[0m [0mdevice[0m [0;34m|[0m [0;32mNone[0m [0;34m=[0m [0;32mNone[0m[0;34m)[0m [0;34m->[0m [0mSelf[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 39.49 GiB of which 15.44 MiB is free. Including non-PyTorch memory, this process has 39.47 GiB memory in use. Of the allocated memory 38.33 GiB is allocated by PyTorch, and 636.39 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+README.md:   0%|          | 0.00/26.4k [00:00<?, ?B/s]
+Resolving data files:   0%|          | 0/2410 [00:00<?, ?it/s]
+[corpus] 648 train + 3 eval + 70 held-test
+[init] ridge->BPE SVD-32 init (top sv [1.52 1.21 1.14 1.11])
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[v2] patch projection trained inline (6 epochs)
+[floor] wt-test stock 0.9001 byte 12.4312 (548864 B)
+/content/qt/hnet-qwen-adapter/src/decoder.py:32: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.enc = nn.TransformerEncoder(layer, n_layers)
+/usr/local/lib/python3.13/dist-packages/torch/nn/modules/transformer.py:431: UserWarning: Support for mismatched src_key_padding_mask and mask is deprecated. Use same type for both instead.
+  src_key_padding_mask = F._canonical_mask(
+/tmp/ipykernel_10874/738297629.py:231: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  ep_tot += float(loss) * int(lm.sum()); ep_n += int(lm.sum()); step += 1
+[d256x4] interior train bpb 3.0923 | 4.87M params | 1686s
+    [v2] FULL-BYTE bpb on eval docs (wikitext held): 2.9040 (24576 bytes)
+    [v2] FULL-BYTE bpb on WIKITEXT-103 TEST (leaderboard): 2.8996 (548864 bytes)
+    [v2] FULL-BYTE bpb on hnet val split (cross-domain): 2.8281 (85796 bytes)
+[d384x6] interior train bpb 3.7981 | 13.21M params | 3056s
+    [v2] FULL-BYTE bpb on eval docs (wikitext held): 3.1502 (24576 bytes)
+    [v2] FULL-BYTE bpb on WIKITEXT-103 TEST (leaderboard): 3.1423 (548864 bytes)
+    [v2] FULL-BYTE bpb on hnet val split (cross-domain): 3.0541 (85796 bytes)
+[refs] byte-level 5.57 | constructed-sum eff 5.56 | v1 eff 5.27 | stock BPE 4.92 (eval docs)
+
+[generate:markdown] '# Report\n\n## Introduction\n\n¢ ( Wo\x9aleti Û\n- [aL-\n\n##\x9d â»[\x8b°i\x8bìi¿|\x81_¡\x8cë\x98½å\xad\x87\x98'
+
+[generate:english] "The history of the¢d Cou\x9anity\nÛechorLe's.\n\x9de\x95Ôin¯als c{tter \x97eitas"
+[save] /content/byte_decoder.pt

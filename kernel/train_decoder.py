@@ -205,7 +205,7 @@ for d in wt_te[3:]:
     qb, _, nb = qwen_byte_bpb(model, tok, d)
     _sb += qb * nb
     fb = lm1.byte_nll(d)
-    _bb += 8.0 * len(d) + float(fb.sum())
+    _bb += 8.0 + float(fb.sum())          # first byte costs 8 bits once per doc
     _tb += len(d)
 print(f"[floor] wt-test stock {_sb / _tb:.4f} byte {_bb / _tb:.4f} ({int(_tb)} B)",
       flush=True)

@@ -77,8 +77,11 @@ class HNetQwen(nn.Module):
         self.w_out = None                                       # (D, D) dec output adapter
         self.w_main = None                                      # (D, D) main-input adapter
         self.w_enc = None                                       # enc-state residual (H-Net residual_proj)
+        self.w_sup = nn.Linear(text.config.hidden_size,
+                               text.config.hidden_size, bias=False)  # superchunk proj
+        self.w_sup.weight.data.zero_()
         dt = self.emb.weight.dtype                              # match checkpoint dtype
-        self.boundary.to(dt); self.dechunk.to(dt)
+        self.boundary.to(dt); self.dechunk.to(dt); self.w_sup.to(dt)
 
     # ---- stage helpers -----------------------------------------------------
     def causal_mask(self, T, sparse=None):
@@ -145,7 +148,7 @@ class HNetQwen(nn.Module):
 
     # ---- the H-Net forward --------------------------------------------------
     def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev",
-                head_first=None, n_ctx=1):
+                head_first=None, n_ctx=1, super_k=1):
         """byte_ids (T,) -> (logits, boundaries, spans).
 
         sparse=(w, stride, sinks): LSA-style mask on the main attention stack.
@@ -170,6 +173,15 @@ class HNetQwen(nn.Module):
         if self.w_main is not None:
             patch = self.w_main(patch)
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
+        if super_k > 1:
+            # two-stage recursion: pool chunks -> superchunks -> second main
+            # pass; each chunk receives its superchunk's global state
+            n_sup = max(len(glob) // super_k, 1)
+            sup = glob[:n_sup * super_k].view(n_sup, super_k, -1).mean(1)
+            sup = self.run_stack(self.main, sup[None], sparse=sparse)[0]
+            glob = glob + self.w_sup(sup)[torch.div(
+                torch.arange(len(glob), device=glob.device),
+                super_k, rounding_mode="floor").clamp(max=n_sup - 1)]
         ctx_v = self.dechunk(glob)                            # (C, D)
         # encoder-state residual — H-Net residual_proj: byte-local detail
         # crosses the chunk bottleneck into the decoder input

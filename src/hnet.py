@@ -178,13 +178,14 @@ class HNetQwen(nn.Module):
             # pass; each chunk receives the PREVIOUS superchunk's state only
             # (strict causality — no future chunk info within the group)
             n_sup = max(len(glob) // super_k, 1)
-            sup = glob[:n_sup * super_k].view(n_sup, super_k, -1).mean(1)
-            sup = self.run_stack(self.main, sup[None], sparse=sparse)[0]
-            grp = torch.div(torch.arange(len(glob), device=glob.device),
-                            super_k, rounding_mode="floor")
-            src = (grp - 1).clamp(min=0)
-            glob = glob + self.w_sup(sup)[src] * (grp > 0)[:, None].to(
-                glob.dtype)
+            sup_states = glob[:n_sup * super_k].view(n_sup, super_k, -1).mean(1)
+            sup_states = self.run_stack(self.main, sup_states[None],
+                                        sparse=sparse)[0]
+            grp_idx = torch.div(torch.arange(len(glob), device=glob.device),
+                                super_k, rounding_mode="floor")
+            prev_sup = (grp_idx - 1).clamp(min=0)
+            has_sup = (grp_idx > 0)[:, None].to(glob.dtype)
+            glob = glob + self.w_sup(sup_states)[prev_sup] * has_sup
         ctx_v = self.dechunk(glob)                            # (C, D)
         # encoder-state residual — H-Net residual_proj: byte-local detail
         # crosses the chunk bottleneck into the decoder input

@@ -1,0 +1,33 @@
+[colab] Creating session 'run-5bea9b'...
+[colab] Session READY (run-5bea9b). Executing kernel/colab_run.py...
+[setup] cloning the repos
+[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[setup] done in 28s
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[setup] byte-token map: 221/256 bytes mapped
+[corpus] hnet-kaggle markdown (OOD): 8 docs, 65536 bytes
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[doc 0] 8192 bytes: adapter first-byte bpb 9.4098 (n=1361, cov=0.997, tcov=0.998) | qwen full bpb 4.6717
+[doc 1] 8192 bytes: adapter first-byte bpb 8.9149 (n=1351, cov=0.992, tcov=0.990) | qwen full bpb 5.2151
+[doc 2] 8192 bytes: adapter first-byte bpb 9.5078 (n=1358, cov=0.996, tcov=0.996) | qwen full bpb 5.0837
+[doc 3] 8192 bytes: adapter first-byte bpb 10.0417 (n=1361, cov=0.995, tcov=0.998) | qwen full bpb 3.5468
+[doc 4] 8192 bytes: adapter first-byte bpb 9.1948 (n=1354, cov=0.994, tcov=0.993) | qwen full bpb 3.8477
+[doc 5] 8192 bytes: adapter first-byte bpb 9.0181 (n=1354, cov=0.990, tcov=0.993) | qwen full bpb 3.5528
+[doc 6] 8192 bytes: adapter first-byte bpb 8.2898 (n=1353, cov=0.993, tcov=0.992) | qwen full bpb 3.9613
+[doc 7] 8192 bytes: adapter first-byte bpb 9.1273 (n=1356, cov=0.994, tcov=0.994) | qwen full bpb 4.1689
+
+adapter v0 (period 6): first-byte bpb 9.1890 over 10848 predictions (input cov 0.9940, target cov 0.9941)
+stock Qwen3.5-0.8B (BPE):      full-byte bpb 4.2560 over 65536 bytes
+trained 18.6M H-Net (published, full-byte): 1.4177
+[timing] 7s
+[colab] Stopping session 'run-5bea9b'...
+[colab] Session terminated.

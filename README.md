@@ -24,16 +24,33 @@ The distribution shift is minimized *by construction*: every patch vector is a l
 model's own token embeddings. Chunk sequences are ~1.3× shorter than BPE sequences for the same text
 (6 bytes/chunk vs 4.57 bytes/token), so the sequence statistics are comparable.
 
-## The measurement (the unmeasured question)
+## The measurement (the unmeasured question — now measured)
 
-First-byte bpb on the hnet-kaggle val split (the published 1.4177 protocol's data):
+First-byte bpb of composed v0 on 8 hnet-kaggle markdown docs (65536 bytes, OOD for the H-Net but the
+honest stress case), period-6 chunks, Qwen3.5-0.8B on Colab A100 (`results/a100_v0_period6.log`):
 
 | system | what it predicts | bpb |
 |---|---|---|
-| trained 18.6M H-Net (the reference) | every byte | 1.4177 (published) |
-| stock Qwen3.5-0.8B, BPE | every byte (via tokens) | measured in-repo |
-| **adapter v0** | each chunk's first byte, at chunk resolution | **the number this repo exists for** |
-| stock Qwen3.5-0.8B, same positions | the same first bytes, token resolution | the control |
+| trained 18.6M H-Net (the reference) | every byte | 1.4177 (published, its val split) |
+| stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **4.2560** |
+| **adapter v0, period 6** | each chunk's first byte, byte-marginalized head | **9.1890** (10,848 preds) |
+
+Coverage: 221/256 bytes have a single-token row (input cov 0.994); 0.6% of targets are unmappable
+bytes and are skipped (target cov 0.994).
+
+**Reading the number honestly:**
+- 9.19 bits is ~1.2 bits *better than uniform* (8 bits): the frozen stack extracts weak-but-real
+  signal from summed patch embeddings.
+- The tasks differ by construction — the adapter predicts one byte per six (chunk onsets; it has no
+  mechanism for interior bytes); Qwen's 4.26 covers every byte. The fair summary: the zero-training
+  patch interface is **dramatically lossy** — the distribution-shift wall (report Finding 4)
+  measured.
+- The readout matters: scoring the head on single-byte *tokens* directly reads 12.58 (worse than
+  uniform — a metric artifact); the byte-marginalized head (`ByteHead`, P(byte) = mass of all tokens
+  whose first byte is b) is the honest readout.
+
+**Untested cheap knobs (v0.x):** mean vs sum patch aggregation (the patch norm is ~√6× a token row —
+pre-norm helps but the direction is off-manifold), patch-vector length correction, period sweep.
 
 Papers: MEGABYTE (2305.07185, the frozen-chunking shape), BLT (2412.09871, §2.3 entropy patching — the
 v1 chunker), H-Net (2507.07955, the mechanism), the companion report

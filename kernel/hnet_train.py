@@ -60,11 +60,33 @@ print(f"[train] {MODEL} | {len(hn.layers)} layers | "
       f"DeltaNet {len(lin_idx)} | enc {ENC} dec {DEC} (start {dec_start})",
       flush=True)
 
-# ---- data: decontam docs for the dry run (no external download needed)
+# ---- data: STREAM dolma3.5 curated configs (never snapshot the pool);
+# decontam docs for adapter fit + held-out eval
+from datasets import load_dataset                            # noqa: E402
+
+
+def stream_docs(cfg, n_docs, cap=4096):
+    ds = load_dataset("allenai/dolma3.5_pool", cfg,
+                      split="train", streaming=True)
+    docs, buf = [], b""
+    for row in ds:
+        text = row.get("text") or next(
+            (row[k] for k in row if isinstance(row[k], str)
+             and len(row[k]) > 200), "")
+        buf += text.encode("utf-8")
+        while len(buf) >= cap and len(docs) < n_docs:
+            docs.append(buf[:cap]); buf = buf[cap:]
+        if len(docs) >= n_docs:
+            break
+    return docs
+
+
 all_docs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))]
 fit_docs = [d[:4096] for d in all_docs[:4]]
-train_docs = [d[:4096] for d in all_docs[4:38]]
 held_docs = [d[:4096] for d in all_docs[38:44]]
+N_TRAIN = int(os.environ.get("N_TRAIN", "400"))
+train_docs = (stream_docs("common_pile_wiki", N_TRAIN // 2) +
+              stream_docs("common_pile_textbook", N_TRAIN // 2))
 print(f"[data] {len(train_docs)} train + {len(held_docs)} held + "
       f"{len(fit_docs)} adapter-fit docs", flush=True)
 

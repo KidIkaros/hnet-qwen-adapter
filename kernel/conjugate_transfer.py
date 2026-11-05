@@ -110,8 +110,9 @@ X, Y = emb1[:n_shared].double(), emb2[:n_shared].double()
 R = torch.linalg.solve(X.T @ X + lam * torch.eye(D1, dtype=X.dtype, device="cuda"),
                        X.T @ Y).float()                       # (D1, D2)
 Rp = torch.linalg.pinv(R)                                     # (D2, D1)
-dW_t = (R @ dW @ Rp)                                          # (D2, D2) conjugated
-print(f"    R: {n_shared} pairs, ||R dW R+||_F {dW_t.norm():.2f}", flush=True)
+# row-convention: patch2 = b @ (I + conj), conj = R+ @ dW.T @ R   (D2 x D2)
+conj = (Rp @ dW.T @ R).float()
+print(f"    R: {n_shared} pairs, ||R+ dW.T R||_F {conj.norm():.2f}", flush=True)
 
 # ---------- 3) eval on 4B-Base: identity vs conjugated vs local ridge
 tr2 = [prep(d, ext2, P) for d in train_docs]
@@ -140,7 +141,7 @@ def boundary(apply):
 I2 = torch.eye(D2, device="cuda")
 maps = {
     "identity": lambda b: b,
-    "conjugated_dW": lambda b: b + (b @ dW_t.T),
+    "conjugated_dW": lambda b: b + (b @ conj),
     "local_ridge": local_ridge,
 }
 for name, f in maps.items():

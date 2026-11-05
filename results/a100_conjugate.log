@@ -1,0 +1,29 @@
+[colab] Creating session 'run-c44efa'...
+[colab] Session READY (run-c44efa). Executing kernel/conjugate_transfer.py...
+[1] train dW on 0.8B
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+    ||dW||_F 6.38
+[2] ridge bridge R on shared vocab
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
+[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_485/825260306.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    115[0m                        X.T @ Y).float()                       # (D1, D2)
+[1;32m    116[0m [0mRp[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mlinalg[0m[0;34m.[0m[0mpinv[0m[0;34m([0m[0mR[0m[0;34m)[0m                                     [0;31m# (D2, D1)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 117[0;31m [0mdW_t[0m [0;34m=[0m [0;34m([0m[0mR[0m [0;34m@[0m [0mdW[0m [0;34m@[0m [0mRp[0m[0;34m)[0m                                          [0;31m# (D2, D2) conjugated[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    118[0m [0mprint[0m[0;34m([0m[0;34mf"    R: {n_shared} pairs, ||R dW R+||_F {dW_t.norm():.2f}"[0m[0;34m,[0m [0mflush[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    119[0m [0;34m[0m[0m
+[0;31mRuntimeError[0m: mat1 and mat2 shapes cannot be multiplied (1024x2560 and 1024x1024)
+[colab] Stopping session 'run-c44efa'...
+[colab] Session terminated.

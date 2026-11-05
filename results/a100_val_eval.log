@@ -1,9 +1,77 @@
 [setup] cloning the repos
-
-fatal: destination path '/content/qt/hnet-qwen-adapter' already exists and is not an empty directory.
-
-An exception has occurred, use %tb to see the full traceback.
-[0;31mSystemExit[0m[0;31m:[0m FAILED: git clone -q https://github.com/KidIkaros/hnet-qwen-adapter.git /content/qt/hnet-qwen-adapter
-
-/usr/local/lib/python3.13/dist-packages/IPython/core/interactiveshell.py:3561: UserWarning: To exit: use 'exit', 'quit', or Ctrl-D.
-  warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
+[setup] downloading Qwen/Qwen3.5-0.8B (weights + tokenizer)
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+[setup] done in 0s
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[setup] byte-token map: 221/256 bytes mapped
+[corpus] hnet val split (the published protocol's data): 8 docs, 85796 bytes
+[entropy] byte-level scores + fallback NLLs from the period-1 model
+[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_863/1966164104.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m     80[0m [0mlm1[0m [0;34m=[0m [0mChunkLM[0m[0;34m([0m[0mmodel[0m[0;34m,[0m [0mtok[0m[0;34m,[0m [0mperiod[0m[0;34m=[0m[0;36m1[0m[0;34m,[0m [0magg[0m[0;34m=[0m[0;34m"sum"[0m[0;34m,[0m [0mbyte_head[0m[0;34m=[0m[0m_shared_head[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     81[0m [0mprint[0m[0;34m([0m[0;34m"[entropy] byte-level scores + fallback NLLs from the period-1 model"[0m[0;34m,[0m [0mflush[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 82[0;31m [0mentropy[0m [0;34m=[0m [0;34m[[0m[0mlm1[0m[0;34m.[0m[0mbyte_entropy[0m[0;34m([0m[0md[0m[0;34m)[0m [0;32mfor[0m [0md[0m [0;32min[0m [0mdocs[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     83[0m [0mfb_nll[0m [0;34m=[0m [0;34m[[0m[0mlm1[0m[0;34m.[0m[0mbyte_nll[0m[0;34m([0m[0md[0m[0;34m)[0m [0;32mfor[0m [0md[0m [0;32min[0m [0mdocs[0m[0;34m][0m                 [0;31m# the byte-level fallback per position[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     84[0m [0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/adapter.py[0m in [0;36mbyte_entropy[0;34m(self, data)[0m
+[1;32m    229[0m         [0;32mreturn[0m [0mlogits[0m[0;34m,[0m [0mcov[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    230[0m [0;34m[0m[0m
+[0;32m--> 231[0;31m     [0;32mdef[0m [0mbyte_entropy[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mdata[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    232[0m         """(T,) next-byte entropies from a period-1 run — the boundary scores an EntropyChunker
+[1;32m    233[0m         consumes.  scores[t] = entropy of predicting byte t."""
+[0;32m/content/qt/hnet-qwen-adapter/src/adapter.py[0m in [0;36mfirst_byte_logits[0;34m(self, data, aux)[0m
+[1;32m    223[0m [0;34m[0m[0m
+[1;32m    224[0m     [0;32mdef[0m [0mfirst_byte_logits[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mdata[0m[0;34m,[0m [0maux[0m[0;34m=[0m[0;32mNone[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 225[0;31m         [0mspans[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mchunker[0m[0;34m.[0m[0mspans[0m[0;34m([0m[0mdata[0m[0;34m,[0m [0maux[0m[0;34m=[0m[0maux[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    226[0m         [0;32mif[0m [0mlen[0m[0;34m([0m[0mspans[0m[0;34m)[0m [0;34m<[0m [0;36m2[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    227[0m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34mf"a sequence of {len(data)} bytes gives {len(spans)} chunks"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/adapter.py[0m in [0;36m_logits[0;34m(self, spans)[0m
+[1;32m    216[0m         [0mself[0m[0;34m.[0m[0mdtype[0m [0;34m=[0m [0mnext[0m[0;34m([0m[0mmodel[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0mdtype[0m              [0;31m# the model's native dtype (bf16)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    217[0m [0;34m[0m[0m
+[0;32m--> 218[0;31m     [0;32mdef[0m [0m_logits[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mspans[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    219[0m         [0mpv[0m[0;34m,[0m [0mcov[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0membedder[0m[0;34m.[0m[0membed_all[0m[0;34m([0m[0;34m[[0m[0mb[0m [0;32mfor[0m [0m_[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m  [0;31m# (M, D) fp32[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    220[0m         [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/utils/generic.py[0m in [0;36mwrapper[0;34m(self, *args, **kwargs)[0m
+[1;32m    941[0m         [0;32mif[0m [0mreturn_dict_passed[0m [0;32mis[0m [0;32mnot[0m [0;32mNone[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    942[0m             [0mreturn_dict[0m [0;34m=[0m [0mreturn_dict_passed[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 943[0;31m         [0moutput[0m [0;34m=[0m [0mfunc[0m[0;34m([0m[0mself[0m[0;34m,[0m [0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    944[0m         [0;32mif[0m [0;32mnot[0m [0mreturn_dict[0m [0;32mand[0m [0;32mnot[0m [0misinstance[0m[0;34m([0m[0moutput[0m[0;34m,[0m [0mtuple[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    945[0m             [0moutput[0m [0;34m=[0m [0moutput[0m[0;34m.[0m[0mto_tuple[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mforward[0;34m(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, labels, use_cache, logits_to_keep, **kwargs)[0m
+[1;32m   1720[0m         [0mhidden_states[0m [0;34m=[0m [0moutputs[0m[0;34m.[0m[0mlast_hidden_state[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1721[0m         [0mhidden_states[0m [0;34m=[0m [0mslice_logits_to_keep[0m[0;34m([0m[0mhidden_states[0m[0;34m,[0m [0mlogits_to_keep[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1722[0;31m         [0mlogits[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mlm_head[0m[0;34m([0m[0mhidden_states[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1723[0m [0;34m[0m[0m
+[1;32m   1724[0m         [0mloss[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/linear.py[0m in [0;36mforward[0;34m(self, input)[0m
+[1;32m    132[0m         [0mRuns[0m [0mthe[0m [0mforward[0m [0;32mpass[0m[0;34m.[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    133[0m         """
+[0;32m--> 134[0;31m         [0;32mreturn[0m [0mF[0m[0;34m.[0m[0mlinear[0m[0;34m([0m[0minput[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mweight[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mbias[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    135[0m [0;34m[0m[0m
+[1;32m    136[0m     [0;32mdef[0m [0mextra_repr[0m[0;34m([0m[0mself[0m[0;34m)[0m [0;34m->[0m [0mstr[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 4.62 GiB. GPU 0 has a total capacity of 39.49 GiB of which 4.38 GiB is free. Including non-PyTorch memory, this process has 35.11 GiB memory in use. Of the allocated memory 34.34 GiB is allocated by PyTorch, and 272.58 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

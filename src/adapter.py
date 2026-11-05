@@ -215,11 +215,14 @@ class ChunkLM:
         self.period, self.device = period, device
         self.dtype = next(model.parameters()).dtype              # the model's native dtype (bf16)
 
-    def _logits(self, spans):
+    def _logits(self, spans, keep=None):
         pv, cov = self.embedder.embed_all([b for _, b in spans])  # (M, D) fp32
+        kw = {}
+        if keep is not None:                                    # only the scored positions' logits —
+            kw["logits_to_keep"] = torch.as_tensor(keep, device=self.device)   # bounds the (M,V) peak
         with torch.no_grad():
-            out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device, self.dtype))
-        return out.logits[0], cov                               # (M, V) model dtype — ByteHead blocks cast
+            out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device, self.dtype), **kw)
+        return out.logits[0], cov                               # (K, V) model dtype — ByteHead blocks cast
 
     def first_byte_logits(self, data, aux=None):
         spans = self.chunker.spans(data, aux=aux)
@@ -257,15 +260,15 @@ class ChunkLM:
         spans = self.chunker.spans(data, aux=aux)
         if len(spans) < 2:
             raise ValueError(f"a sequence of {len(data)} bytes gives {len(spans)} chunks")
-        logits, cov = self._logits(spans)
-        ms, bs, pos = [], [], []
+        ms, bs, pos = [], [], []                                # scored positions are known pre-forward
         for m in range(len(spans) - 1):
             t = spans[m + 1][0]; b = int(data[t])
             if b in self.embedder.bmap:
                 ms.append(m); bs.append(b); pos.append(t)
         if not ms:
             raise ValueError("no mapped target bytes in this sequence")
-        pb = self.byte_head.byte_probs(logits[ms])
+        logits, cov = self._logits(spans, keep=ms)              # (len(ms), V) — bounded
+        pb = self.byte_head.byte_probs(logits)
         tb = torch.tensor(bs, device=pb.device)
         nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12)).double().cpu().numpy().ravel()
         return np.array(pos), nll, cov, len(spans)
@@ -280,7 +283,6 @@ class ChunkLM:
         spans = self.chunker.spans(data, aux=aux)
         if len(spans) < 2:
             raise ValueError(f"a sequence of {len(data)} bytes gives {len(spans)} chunks")
-        logits, cov = self._logits(spans)
         ms, bs = [], []
         for m in range(len(spans) - 1):
             b = int(data[spans[m + 1][0]])
@@ -288,7 +290,8 @@ class ChunkLM:
                 ms.append(m); bs.append(b)
         if not ms:
             raise ValueError("no mapped target bytes in this sequence")
-        pb = self.byte_head.byte_probs(logits[ms])               # (M', 256)
+        logits, cov = self._logits(spans, keep=ms)               # (len(ms), V) — bounded
+        pb = self.byte_head.byte_probs(logits)                   # (M', 256)
         tb = torch.tensor(bs, device=pb.device)
         nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12))
         tcov = len(ms) / max(len(spans) - 1, 1)

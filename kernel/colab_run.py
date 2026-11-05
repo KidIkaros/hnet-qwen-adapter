@@ -97,6 +97,7 @@ def adapter_score(chunker, agg, need_aux):
         except ValueError as e:
             skipped += 1
             print(f"        [skip] doc {i}: {e}", flush=True)
+        torch.cuda.empty_cache()                             # long-doc fragmentation adds up
     ci = float(np.mean(covs)) if covs else float("nan")
     ct = float(np.mean(tcovs)) if tcovs else float("nan")
     return (tot / max(n, 1), int(n), ci, ct, skipped,

@@ -1,7 +1,9 @@
 # hnet-qwen-adapter
 
 **Can a frozen Qwen3.5 be turned into an H-Net-style byte-level model with zero training — constructed
-glue only?**
+glue only?**  Answer (final): yes, as a scorer — and with a small trained byte decoder it becomes a
+real tokenizer-free LM below the frozen trunk's own byte-level floor. The decoder, not the trunk or
+the glue, is the measured bottleneck. See **Final state** below.
 
 The follow-on program from the qwentensor fork's research gate (`docs/DECISION_HNET.md` there): the
 companion report predicted the composed system runs *degraded, not competitive* (distribution shift
@@ -32,7 +34,7 @@ honest stress case), period-6 chunks, Qwen3.5-0.8B on Colab A100 (`results/a100_
 | system | what it predicts | bpb |
 |---|---|---|
 | trained 18.6M H-Net (the reference) | every byte | 1.4177 (published, its val split) |
-| stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **4.2567** |
+| stock Qwen3.5-0.8B, native BPE | every byte (via tokens) | **1.57** (corrected — see note below) |
 
 Construction sweep (`results/a100_construction_sweep.log`), byte-marginalized head throughout.
 Adaptive chunkers calibrate to mean_len ≈ 6 — the same compression ratio as period 6, the fair
@@ -56,15 +58,17 @@ Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an un
 > stock-vs-adapter gaps are contamination-confounded. Adapter-family comparisons are unaffected.
 
 **Cross-domain check — the H-Net val split** (85,796 bytes, `results/a100_val_eval.log`): the ordering
-survives on real English. Stock BPE 3.7560, byte-level 4.3310, best constructed chunked EFF ~4.59
-(entropy~12) — adaptive still beats periodic at matched compression, coverage rises to 0.998. The
-compression optimum drifts toward ~8-12 on natural text vs ~6 on markdown.
+survives on real English. Stock BPE 0.82 (corrected; `a100_family_sweep.log`), byte-level 4.3310,
+best constructed chunked EFF ~4.59 (entropy~12) — adaptive still beats periodic at matched
+compression, coverage rises to 0.998. The compression optimum drifts toward ~8-12 on natural text
+vs ~6 on markdown.
 
 **v1 — the learned glue (the ZHA recipe):**
-- **Granularity cost is small — the surprise**: period 1 degenerates the adapter to "Qwen as a
-  byte-level model" (byte-token rows in, marginalized head out) at **5.23 bits vs stock 4.26 — only
-  +0.97**. The frozen stack handles byte-granular input far better than the distribution-shift
-  prediction suggested.
+- **Frozen Qwen runs as a byte-level model — but "≈ stock" is retracted**: period 1 degenerates the
+  adapter to "Qwen as a byte-level model" (byte-token rows in, marginalized head out) at **5.23 md /
+  4.33 val vs corrected stock 1.57 / 0.82** — the real token-interface gap is ~3.5–4 bits (the
+  "+0.97" figure came from the buggy stock baseline). The frozen stack still handles byte-granular
+  input far better than the distribution-shift prediction suggested; it just isn't near-parity.
 - **Boundary placement is where the information lives**: at matched ~6× compression, content-aware
   boundaries beat periodic by 1.9-2.8 bits — and sim~6 (6.39 at mean 5.55) even beats period-3
   (6.43) on ~2× fewer positions. Chunk quality beats quantity. This rhymes with the frozen-router
@@ -88,12 +92,33 @@ params, identity at init) trained 156 steps on the byte-marginalized task loss, 
 |---|---|---|
 | **v1 learned projection (3 seeds)** | **2.5585 ± 0.0515** | **5.2728 ± 0.0091** |
 | constructed sum (same chunker/docs) | 4.1579 | 5.5558 |
-| stock BPE on eval docs | 4.9226 | — |
+| ridge→BPE (closed-form, zero training) | 4.5760† | 5.4466† |
+| stock BPE on eval docs (corrected) | 1.5692 | — |
 | byte-level adapter on eval docs | 5.5730 | 5.5730 |
 
+† periodic-6 chunker, `a100_construct_sweep.log` / `a100_construct_ledger.log`. On the val split
+the closed-form ridge scores **4.32 effective** — already at the byte-level floor with no training
+at all.
+
 Training only the patch interface recovers **−1.66 bits** over the best construction — the ZHA
-indexer pattern works at our scale (~2 min A100). Caveats: same-domain eval, boundary-byte task,
-interior-byte decoding untouched. Full writeup: `docs/DECISION.md`.
+indexer pattern works at our scale (~2 min A100). Full writeup: `docs/DECISION.md`.
+
+## Final state — where the program landed
+
+The full pipeline ran to ground. Corrected headline (`docs/RESULTS.md` for the full tables and
+log citations):
+
+| component | verdict | evidence |
+|---|---|---|
+| trunk | **solved** — Qwen3.5-4B-Base is the best byte trunk (3.35 val / 4.53 decontam); or merge instruct→Base — the α-dial recovers byte competence linearly, no barrier | `a100_family_sweep.log`, `a100_merge_sweep.log`, `a100_decontam.log` |
+| patch map | **solved** — closed-form ridge→BPE ≈ trained rank-32 (4.32 val effective, zero training) | `a100_construct_ledger.log` |
+| byte decoder | **the bottleneck** — v2 (ridge patch map + 13.2M decoder) hits **4.99 md / 4.13 val** on 0.8B, below its byte-level floor; but the same recipe on the better 4B-Base trunk is *worse* (5.11–5.15 / 4.21–4.30) | `a100_v3_scaled_gen.log`, `a100_v2_4bbase.log` |
+| cross-size glue transfer | **dead** — conjugating the 0.8B-learned ΔW to 4B-Base (R⁺ΔWᵀR) scores 5.95 vs identity 5.66; per-size refit (4.37) required | `a100_conjugate.log` |
+
+Decontaminated protocol (`data/decontam/`, `kernel/decontam_eval.py`, 48 post-cutoff arxiv+GitHub
+docs): stock stays ~1.0 bpb → mostly real modeling, not memorization; the byte interface costs
+~4 bits through Qwen on clean data too. Next lever: **decoder data scaling** — the decoder is
+data-bound, everything upstream of it is solved.
 
 Papers: MEGABYTE (2305.07185, the frozen-chunking shape), BLT (2412.09871, §2.3 entropy patching),
 H-Net (2507.07955, the mechanism), ZHA (2610.42112, the train-only-the-indexer recipe + recursive
@@ -104,11 +129,17 @@ post (rikiyat.github.io/blog/weight-space-programming/).
 ## Layout
 
 ```
-src/       adapter.py (chunker, patch embedder, ChunkLM) · corpus.py (val-split loader, byte-token map)
-kernel/    colab_run.py (the one-shot measurement; all compute runs on Colab)
+src/       adapter.py (chunkers, patch embedder, ChunkLM, ByteHead, corrected qwen_byte_bpb)
+           construct.py (closed-form maps: norm_match, cov_recolor, ridge→BPE)
+           learned.py (rank-32 residual patch map) · decoder.py (byte decoder) · generate.py
+           corpus.py (val-split loader, byte-token map)
+kernel/    colab_run.py · train_projection.py · train_decoder.py · construct_sweep.py
+           family_sweep.py · merge_sweep.py · decontam_eval.py · conjugate_transfer.py
+           (all compute runs on Colab)
 tests/     fast CPU tests (logic only; the model runs live on Colab)
-docs/      DESIGN.md · RESULTS.md
-configs/   run configurations
+docs/      DECISION.md · RESULTS.md · RESEARCH_WEIGHT_TRANSFER.md
+data/      decontam/ (post-cutoff arxiv+GitHub eval docs)
+results/   a100_*.log (every number in the docs cites one) · byte_decoder.pt
 ```
 
 ## Compute policy

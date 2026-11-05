@@ -59,12 +59,11 @@ with torch.no_grad():
 print(f"[forward] logits {tuple(logits.shape)} | {len(spans)} chunks "
       f"(mean {np.mean([b - a for a, b in spans]):.1f} B)", flush=True)
 
-# byte-bpb via marginalized head
+# byte-bpb via marginalized head (same path as the other kernels)
 head = ByteHead(tok)
-lp = torch.log_softmax(logits[0].float(), -1)
-first = head.first.cuda()
-probs = lp[:, first].logsumexp(-1)                              # (T, 256)
-nll = -probs[:-1, byte_ids[1:]]
+from src.learned import byte_logprobs                          # noqa: E402
+bp = byte_logprobs(logits[0].float(), head.first)               # (T, 256)
+nll = -bp[:-1, byte_ids[1:]]
 print(f"[score] byte bpb {float(nll.sum()) / np.log(2) / (T - 1):.4f}", flush=True)
 
 # random-init learned boundaries: span stats

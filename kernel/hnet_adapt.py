@@ -118,6 +118,35 @@ hn.w_in = ridge_to_bpe(Xin[:200_000].to(torch.bfloat16), Yin[:200_000].to(torch.
 hn.w_out = ridge_to_bpe(Xout[:200_000].to(torch.bfloat16), Yout[:len(Xout)].to(torch.bfloat16))
 hn.w_main = ridge_to_bpe(Xmain[:200_000].to(torch.bfloat16), Ymain_p[:200_000].to(torch.bfloat16))
 
+# dechunk ridge: glob_prev -> (real dec-input - w_in(byte-emb)) per byte position
+P = 6
+G, Rres = [], []
+for d in docs[:4]:
+    tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
+    hs = text.embed_tokens(tids[None])
+    for layer in hn.enc:
+        hs = layer(hs, position_embeddings=None, attention_mask=None,
+                   position_ids=None)
+    enc = hs[0]
+    n = len(d) // P
+    patch = hn.w_main(enc[torch.tensor([b - 1 for b in range(P, n * P + 1, P)],
+                                      device="cuda")][None])
+    glob = hn.run_stack(hn.main, patch)[0]                     # (C, D)
+    emb_x = text.embed_tokens(tids).float()
+    resid = hn.w_in(emb_x) - emb_x                             # target residual
+    for ci in range(1, n):
+        a, b = ci * P, min((ci + 1) * P, len(d))
+        for p_ in range(a, b):
+            G.append(glob[ci - 1].float())
+            Rres.append(resid[p_])
+    del patch, glob
+    torch.cuda.empty_cache()
+dechunk_W = ridge_to_bpe(torch.stack(G).to(torch.bfloat16),
+                         torch.stack(Rres).to(torch.bfloat16))(
+    torch.eye(hn.hidden, device="cuda", dtype=torch.bfloat16))
+hn.dechunk.weight.data.copy_(dechunk_W.T)                      # Linear: y = x @ W.T
+print(f"[adapt] dechunk refit on {len(G)} pairs", flush=True)
+
 # ---- eval grid: adapters on/off x ctx prev/retrieve
 T = 8192
 byte_ids = torch.tensor(list(docs[0]), device="cuda")

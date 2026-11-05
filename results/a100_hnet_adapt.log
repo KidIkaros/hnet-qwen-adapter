@@ -1,45 +1,10 @@
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
-Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
-  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [adapt] 8 docs
-[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
-[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [adapt] pairs 65536 | dec_start 5 main_start 3 | w_main pairs 5460
-[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_1664/3692775416.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    137[0m [0;32mfor[0m [0mwm[0m[0;34m,[0m [0mtag_m[0m [0;32min[0m [0;34m([0m[0;34m([0m[0;32mNone[0m[0;34m,[0m [0;34m"no w_main"[0m[0;34m)[0m[0;34m,[0m [0;34m([0m[0mhn[0m[0;34m.[0m[0mw_main[0m[0;34m,[0m [0;34m"+w_main"[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    138[0m     [0;32mfor[0m [0mctx[0m[0;34m,[0m [0mtag_c[0m [0;32min[0m [0;34m([0m[0;34m([0m[0;34m"prev"[0m[0;34m,[0m [0;34m"prev"[0m[0;34m)[0m[0;34m,[0m [0;34m([0m[0;34m"retrieve"[0m[0;34m,[0m [0;34m"retrieve"[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 139[0;31m         print(f"[adapt] {tag_m:<10} | {tag_c:<8} byte bpb {eval_bpb(wm, ctx):.4f}",
-[0m[1;32m    140[0m               flush=True)
-[0;32m/tmp/ipykernel_1664/3692775416.py[0m in [0;36meval_bpb[0;34m(w_main, ctx)[0m
-[1;32m    129[0m     [0mhn[0m[0;34m.[0m[0mw_main[0m [0;34m=[0m [0mw_main[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    130[0m     [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 131[0;31m         bp, _, _ = hn(byte_ids, boundaries=b6, ctx=ctx,
-[0m[1;32m    132[0m                       head_first=head.first)
-[1;32m    133[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;36m0[0m[0;34m,[0m [0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1780[0m [0;34m[0m[0m
-[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
-[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
-[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1791[0m [0;34m[0m[0m
-[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries, sparse, ctx, head_first)[0m
-[1;32m    175[0m                 [0;32mif[0m [0mci[0m [0;34m>[0m [0;36m0[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    176[0m                     [0mx[0m[0;34m[[0m[0;36m0[0m[0;34m,[0m [0ma[0m[0;34m:[0m[0mb[0m[0;34m][0m [0;34m+=[0m [0mctx_v[0m[0;34m[[0m[0mci[0m [0;34m-[0m [0;36m1[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 177[0;31m         [0mhs_dec[0m [0;34m=[0m [0mx[0m [0;32mif[0m [0mself[0m[0;34m.[0m[0mw_in[0m [0;32mis[0m [0;32mNone[0m [0;32melse[0m [0mself[0m[0;34m.[0m[0mw_in[0m[0;34m([0m[0mx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    178[0m         [0;32mfor[0m [0mlayer[0m [0;32min[0m [0mself[0m[0;34m.[0m[0mdec[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    179[0m             hs_dec = layer(hs_dec, position_embeddings=None,
-[0;32m/content/qt/hnet-qwen-adapter/src/construct.py[0m in [0;36m<lambda>[0;34m(base)[0m
-[1;32m     45[0m     [0mXtX[0m [0;34m=[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mX[0m [0;34m+[0m [0mlam[0m [0;34m*[0m [0mtorch[0m[0;34m.[0m[0meye[0m[0;34m([0m[0mX[0m[0;34m.[0m[0mshape[0m[0;34m[[0m[0;36m1[0m[0;34m][0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdtype[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     46[0m     [0mW[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mlinalg[0m[0;34m.[0m[0msolve[0m[0;34m([0m[0mXtX[0m[0;34m,[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mY[0m[0;34m)[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mpatch_sums[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 47[0;31m     [0;32mreturn[0m [0;32mlambda[0m [0mbase[0m[0;34m:[0m [0mbase[0m [0;34m@[0m [0mW[0m[0;34m[0m[0;34m[0m[0m
-[0m[0;31mRuntimeError[0m: expected mat1 and mat2 to have the same dtype, but got: c10::BFloat16 != float
+[adapt] no w_main  | prev     byte bpb 8.1012
+[adapt] no w_main  | retrieve byte bpb 8.1012
+[adapt] +w_main    | prev     byte bpb 8.1012
+[adapt] +w_main    | retrieve byte bpb 8.1012

@@ -31,16 +31,22 @@ class ByteDecoder(nn.Module):
                                            norm_first=True, activation="gelu")
         self.enc = nn.TransformerEncoder(layer, n_layers)
         self.head = nn.Linear(d_dec, 256)
-        self.register_buffer("causal", torch.triu(torch.full((max_len, max_len), -float("inf")),
-                                                  diagonal=1))
+        self.register_buffer("causal", torch.triu(torch.full((2 * max_len, 2 * max_len),
+                                                             -float("inf")), diagonal=1))
 
     def forward(self, ctx, bytes_in, pad_mask=None):
-        """ctx (B, D), bytes_in (B, P) shifted byte ids (pos 0 = SOS), pad_mask (B, P) True=pad."""
-        B, P = bytes_in.shape
-        h = self.byte_emb(bytes_in) + self.cond(ctx)[:, :P * self.byte_emb.embedding_dim] \
-            .reshape(B, P, -1)
-        h = self.enc(h, mask=self.causal[:P, :P], src_key_padding_mask=pad_mask)
-        return self.head(h)                                   # (B, P, 256)
+        """ctx (B, D) or (B, K, D) with one context per max_len segment; bytes_in (B, L) shifted
+        byte ids (pos 0 = SOS), pad_mask (B, L) True=pad."""
+        B, L = bytes_in.shape
+        d = self.byte_emb.embedding_dim
+        h = self.byte_emb(bytes_in)
+        cond = self.cond(ctx)                                 # (B, ..., max_len*d)
+        for seg in range(0, L, self.max_len):
+            c = cond[:, seg // self.max_len] if ctx.dim() == 3 else cond
+            w = min(self.max_len, L - seg)
+            h[:, seg:seg + w] += c[:, :w * d].reshape(B, w, d)
+        h = self.enc(h, mask=self.causal[:L, :L], src_key_padding_mask=pad_mask)
+        return self.head(h)                                   # (B, L, 256)
 
 
 def chunk_batch(data, spans, max_len=16):
@@ -56,3 +62,26 @@ def chunk_batch(data, spans, max_len=16):
         y[m, :L] = torch.tensor(list(chunk[:L]), dtype=torch.long)
         pad[m, :L] = False
     return x, y, pad
+
+
+def pair_batch(data, spans, max_len=16):
+    """MEGABYTE's cross-patch attention: decode each chunk with the PREVIOUS chunk's bytes as
+    attended context.  Returns x/y/pad/ctx_idx/loss_mask: x (B, 2P) = [SOS]+prev_chunk+this_chunk
+    shifted; loss_mask marks the interior positions of THIS chunk (the only scored ones).  The
+    context vector applied per half: ctx[j-1] for the prefix half, ctx[j] for this chunk."""
+    B = len(spans)
+    x = torch.full((B, 2 * max_len), SOS, dtype=torch.long)
+    y = torch.zeros(B, 2 * max_len, dtype=torch.long)
+    pad = torch.ones(B, 2 * max_len, dtype=torch.bool)
+    loss_mask = torch.zeros(B, 2 * max_len, dtype=torch.bool)
+    for m, (s, chunk) in enumerate(spans):
+        prev = spans[m - 1][1] if m > 0 else b""
+        Lp = min(len(prev), max_len)
+        Lc = min(len(chunk), max_len)
+        seq = list(prev[:Lp]) + list(chunk[:Lc])
+        x[m, 1:len(seq)] = torch.tensor(seq[:-1], dtype=torch.long)
+        y[m, :len(seq)] = torch.tensor(seq, dtype=torch.long)
+        pad[m, :len(seq)] = False
+        for p in range(Lp + 1, Lp + Lc):           # this chunk's positions p>=1 -> interior
+            loss_mask[m, p] = True
+    return x, y, pad, loss_mask

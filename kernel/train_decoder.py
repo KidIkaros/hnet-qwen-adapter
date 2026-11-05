@@ -41,7 +41,7 @@ src = snapshot_download("Qwen/Qwen3.5-0.8B")
 
 from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker  # noqa: E402
 from src.corpus import byte_token_map                             # noqa: E402
-from src.decoder import ByteDecoder, chunk_batch, SOS             # noqa: E402
+from src.decoder import ByteDecoder, chunk_batch, pair_batch, SOS  # noqa: E402
 from src.learned import PatchProjection, byte_logprobs            # noqa: E402
 
 tok = AutoTokenizer.from_pretrained(src)
@@ -100,8 +100,16 @@ def trunk_ctx(patch):
     return ctx, hs, lg
 
 
-# ---- optional: train the patch map first (the v1 recipe, inline)
-if os.environ.get("TRAIN_PROJ", "0") == "1":
+def ctx_pairs(ctx, ctx0):
+    """(M,2,D): row m's pair window conditions the prefix half on ctx[m-1] (ctx0 for m=0) and this
+    chunk's half on ctx[m]."""
+    prev = torch.cat([ctx0.unsqueeze(0).unsqueeze(0), ctx[:-1].unsqueeze(1)])
+    return torch.cat([prev, ctx.unsqueeze(1)], dim=1)
+
+
+# ---- the patch map first (the v1 recipe, inline; env vars don't reach the remote kernel so this
+# is always on)
+if True:
     opt = torch.optim.AdamW(proj.parameters(), lr=3e-3)
     for ep in range(6):
         for d in train_docs:
@@ -130,12 +138,12 @@ for ep in range(EPOCHS):
         sp = spans_of(d)
         base = base_sums(sp)
         ctx, hs, lg = trunk_ctx(proj(base))
-        x, y, pad = [t.cuda() for t in chunk_batch(d, sp, max_len=P)]
-        logits = dec(ctx, x, pad)
-        interior = ~pad.clone(); interior[:, 0] = False       # p>=1: interior bytes only
-        loss = F.cross_entropy(logits[interior].float(), y[interior])
+        ctx2 = ctx_pairs(ctx, dec.ctx0)
+        x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
+        logits = dec(ctx2, x, pad)
+        loss = F.cross_entropy(logits[lm].float(), y[lm])
         opt.zero_grad(); loss.backward(); opt.step()
-        ep_tot += float(loss) * int(interior.sum()); ep_n += int(interior.sum()); step += 1
+        ep_tot += float(loss) * int(lm.sum()); ep_n += int(lm.sum()); step += 1
     print(f"[epoch {ep:02d}] interior-byte train bpb {ep_tot / ep_n / np.log(2):.4f} ({step} steps)",
           flush=True)
 print(f"[timing] decoder training {time.time() - t0:.0f}s", flush=True)
@@ -146,16 +154,16 @@ for d in eval_docs:
     sp = spans_of(d)
     base = base_sums(sp)
     ctx, hs, lg = trunk_ctx(proj(base))
+    ctx2 = ctx_pairs(ctx, dec.ctx0)
     bits = 8.0                                                 # byte 0: uniform
     lp = byte_logprobs(lg[:-1], head.first)                    # boundary bytes by the trunk head
     for j in range(len(sp) - 1):
         bits += float(-lp[j, sp[j + 1][1][0]])
-    x, y, pad = [t.cuda() for t in chunk_batch(d, sp, max_len=P)]
+    x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
     with torch.no_grad():
-        logits = dec(ctx, x, pad)
+        logits = dec(ctx2, x, pad)
     lsm = logits.float().log_softmax(-1)
-    interior = ~pad.clone(); interior[:, 0] = False
-    bits += float(-lsm[interior, y[interior]].sum())
+    bits += float(-lsm[lm, y[lm]].sum())
     tot_bits += bits; tot_bytes += len(d)
 
 print(f"\n[v2] FULL-BYTE bpb on eval docs: {tot_bits / np.log(2) / tot_bytes:.4f} "

@@ -37,7 +37,8 @@ import numpy as np                                               # noqa: E402
 import torch.nn.functional as F                                  # noqa: E402
 from huggingface_hub import snapshot_download                    # noqa: E402
 from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
-src = snapshot_download("Qwen/Qwen3.5-0.8B")
+MODEL_NAME = "Qwen/Qwen3.5-4B-Base"                      # the best byte-level trunk measured
+src = snapshot_download(MODEL_NAME)
 
 from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker  # noqa: E402
 from src.corpus import byte_token_map, ValDocs                    # noqa: E402

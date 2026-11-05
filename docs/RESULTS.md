@@ -1,5 +1,15 @@
 # Results — a tokenizer-free adapter over frozen Qwen3.5-0.8B
 
+> **Metric correction (2026-11-05):** the `qwen_byte_bpb` stock-baseline implementation reported
+> **mean per-token surprisal**, not bits-per-byte (per-token CE × token byte-length / token count —
+> inflated ~3×, the mean token length). Every "stock BPE" figure below (4.26, 4.92, 3.76) is
+> therefore wrong on its face. Corrected stock values from `results/a100_family_sweep.log`:
+> **0.8B 1.57 md / 0.82 val; 4B-Base 1.30 md / 0.65 val.** Two consequences: (a) the "byte-level
+> nearly matches stock" claim is dead — the true token-interface gap is ~3.5 bits on val, not 0.58;
+> (b) corrected stock is implausibly good (< 1 bit/byte) — strong evidence the eval data sits inside
+> Qwen3.5's pretraining corpus, so stock-vs-adapter comparisons are **contamination-confounded** and
+> need decontaminated data. All byte-level/adapter numbers were always correct and are unchanged.
+
 **Question**: can a frozen token-level LLM be driven at byte/chunk level through constructed or
 cheaply-learned glue — no trunk training?  Model: Qwen3.5-0.8B (frozen, bf16, Colab A100).  Head:
 the LM head marginalized to bytes (P(b) = mass of all tokens whose first byte is b; 221/256 bytes

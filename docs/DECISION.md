@@ -81,6 +81,15 @@ The residual ~31% is task-conditional.  Also: `norm_match` helped despite RMSNor
 (an open anomaly); `cov_recolor` actively hurt.  WSP framing: *fitting ≠ training* — deterministic
 one-shot solves count as construction, and they get you most of the way.
 
+## Metric correction + contamination flag (2026-11-05)
+
+`qwen_byte_bpb` computed mean per-token surprisal (~3× inflated) — all cited stock-bpb numbers were
+wrong.  Corrected: 0.8B 1.57/0.82, 4B-Base 1.30/0.65 (md/val).  Consequences: (a) the "byte-level
+≈ stock" claims are retracted — the real interface gap is ~3.5 bits on val; (b) corrected stock is
+implausibly good → the eval corpora are very likely inside Qwen3.5's pretraining data, so
+stock-relative gaps are contamination-confounded.  Adapter-internal comparisons unaffected.
+**Next: a decontaminated eval set (post-cutoff or synthetic data) before any stock-relative claim.**
+
 ## Open questions parked
 
 - Can a WSP-style construction produce what the rank-32 map learned? (The falsifiable WSP question —

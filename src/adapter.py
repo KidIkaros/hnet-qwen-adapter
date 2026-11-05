@@ -311,12 +311,15 @@ def effective_bpb(data, pos, chunk_nll, byte_nll_arr):
 
 def qwen_byte_bpb(model, tok, data, device="cuda"):
     """Stock Qwen's next-byte bpb at its native BPE granularity on the same bytes (the same-weights
-    reference): token CE summed x token byte-lengths / total bytes / ln 2."""
+    reference): total token CE / predicted byte span / ln 2.
+
+    NB an earlier version multiplied each token's CE by its byte length — that computes mean
+    per-token surprisal (~3x inflated), not bits-per-byte.  Correct accounting: the token-level
+    code length is the sum of token NLLs, paid once each, divided by the bytes they cover."""
     ids = tok.encode(data.decode("latin-1"), add_special_tokens=False)
     x = torch.tensor(ids, device=device)[None]
     with torch.no_grad():
         logits = model(input_ids=x).logits[0].float()       # (L, V)
     ce = F.cross_entropy(logits[:-1], x[0, 1:], reduction="none")
-    lens = np.array([len(tok.encode(tok.decode([i]), add_special_tokens=False)) for i in ids[1:]])
-    total_bytes = float(lens.sum())
-    return float((ce.cpu().numpy() * lens).sum() / math.log(2) / total_bytes), len(ids), total_bytes
+    nbytes = len(data) - len(tok.decode([ids[0]]).encode("latin-1"))
+    return float(ce.sum().item() / math.log(2) / nbytes), len(ids), nbytes

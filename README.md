@@ -50,6 +50,11 @@ comparison; sim/entropy targets are *harder* bytes (boundaries land on transitio
 Coverage: 221/256 bytes have a single-token row; ~0.6-3% of chunks contain an unmappable byte
 (zero-vector holes, counted in input cov) and ~0.6-3% of targets are skipped (target cov).
 
+> **Metric correction (2026-11-05):** all "stock BPE" numbers below were computed by a buggy
+> reference (per-token surprisal, ~3× inflated). Corrected stock: **1.57 md / 0.82 val** —
+> implausibly good, i.e. the eval data is very likely inside Qwen's pretraining corpus and
+> stock-vs-adapter gaps are contamination-confounded. Adapter-family comparisons are unaffected.
+
 **Cross-domain check — the H-Net val split** (85,796 bytes, `results/a100_val_eval.log`): the ordering
 survives on real English. Stock BPE 3.7560, byte-level 4.3310, best constructed chunked EFF ~4.59
 (entropy~12) — adaptive still beats periodic at matched compression, coverage rises to 0.998. The

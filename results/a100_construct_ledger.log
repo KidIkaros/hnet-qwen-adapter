@@ -1,0 +1,38 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[corpus] 13 train + 3 eval
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+
+=== periodic-6: 17745 fit chunks ===
+           map  boundary bpb  EFF (constructed)
+      identity        6.5490             5.7740
+    norm_match        5.9260             5.6706
+   cov_recolor        6.9934             5.8477
+     ridge_bpe        4.5764             5.4466
+    sgd_rank32        3.6496             5.2928
+  [autopsy] ||dW||/||I|| 0.2847 top sv [8.28  3.354 1.389 0.836]
+    cos(dW, norm_match-I) = 0.000
+    cos(dW, cov_recolor-I) = -0.004
+    cos(dW, ridge_bpe-I) = -0.000
+
+=== sim~6: 19137 fit chunks ===
+           map  boundary bpb  EFF (constructed)
+      identity        4.1579             5.5568
+    norm_match        4.8368             5.6769
+   cov_recolor        3.5763             5.4539
+     ridge_bpe        3.7439             5.4835
+    sgd_rank32        2.6026             5.2816
+  [autopsy] ||dW||/||I|| 0.2632 top sv [5.815 4.115 3.013 1.94 ]
+    cos(dW, norm_match-I) = 0.001
+    cos(dW, cov_recolor-I) = 0.014
+    cos(dW, ridge_bpe-I) = 0.001
+[val periodic-6 identity] boundary 6.5681 | EFF (constructed, zero-training) 4.7114
+[val periodic-6 ridge_bpe] boundary 4.2032 | EFF (constructed, zero-training) 4.3183

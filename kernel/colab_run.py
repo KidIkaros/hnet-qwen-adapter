@@ -112,6 +112,10 @@ for period in (1, 2, 3, 6, 12):
 for agg in ("sum", "mean", "last"):
     CONFIGS.append(("entropy~6", EntropyChunker(target_mean=6.0, max_len=16), agg, True))
     CONFIGS.append(("sim~6", SimChunker(lm1.embedder, target_mean=6.0, max_len=16), agg, False))
+# the compression curve for the winning family (sum only): does more compression cost or help?
+for tm in (3.0, 4.0, 8.0, 12.0):
+    CONFIGS.append((f"entropy~{tm:g}", EntropyChunker(target_mean=tm, max_len=24), "sum", True))
+    CONFIGS.append((f"sim~{tm:g}", SimChunker(lm1.embedder, target_mean=tm, max_len=24), "sum", False))
 
 for name, chunker, agg, need_aux in CONFIGS:
     bpb, n, ci, ct, sk, ml = adapter_score(chunker, agg, need_aux)

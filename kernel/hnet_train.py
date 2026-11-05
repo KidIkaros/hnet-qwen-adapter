@@ -86,7 +86,7 @@ for d in fit_docs:
             hs = layer(hs, position_embeddings=None, attention_mask=None,
                        position_ids=None)
     Xenc.append(hs[0].float())
-    del o, hsl, hs
+    del hsl, hs
     torch.cuda.empty_cache()
 Xin, Yin, Yout, Xenc = (torch.cat(x) for x in (Xin, Yin, Yout, Xenc))
 hn.w_in = ridge_to_bpe(Xin[:200_000].to(torch.bfloat16),

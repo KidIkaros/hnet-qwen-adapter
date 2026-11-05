@@ -1,85 +1,13 @@
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [train] Qwen/Qwen3.5-2B-Base | 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
-[0;31m---------------------------------------------------------------------------[0m[0;31mHTTPStatusError[0m                           Traceback (most recent call last)[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_http.py[0m in [0;36mhf_raise_for_status[0;34m(response, endpoint_name)[0m
-[1;32m    835[0m     [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 836[0;31m         [0mresponse[0m[0;34m.[0m[0mraise_for_status[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    837[0m     [0;32mexcept[0m [0mhttpx[0m[0;34m.[0m[0mHTTPStatusError[0m [0;32mas[0m [0me[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/httpx/_models.py[0m in [0;36mraise_for_status[0;34m(self)[0m
-[1;32m    828[0m         [0mmessage[0m [0;34m=[0m [0mmessage[0m[0;34m.[0m[0mformat[0m[0;34m([0m[0mself[0m[0;34m,[0m [0merror_type[0m[0;34m=[0m[0merror_type[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 829[0;31m         [0;32mraise[0m [0mHTTPStatusError[0m[0;34m([0m[0mmessage[0m[0;34m,[0m [0mrequest[0m[0;34m=[0m[0mrequest[0m[0;34m,[0m [0mresponse[0m[0;34m=[0m[0mself[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    830[0m [0;34m[0m[0m
-[0;31mHTTPStatusError[0m: Client error '401 Unauthorized' for url 'https://huggingface.co/api/models/Salesforce/wikitext/revision/main'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
-The above exception was the direct cause of the following exception:
-[0;31mRepositoryNotFoundError[0m                   Traceback (most recent call last)[0;32m/tmp/ipykernel_14754/762788513.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m     61[0m [0;34m[0m[0m
-[1;32m     62[0m [0;31m# ---- data: wikitext train docs, 8kB chunks[0m[0;34m[0m[0;34m[0m[0m
-[0;32m---> 63[0;31m [0mwt[0m [0;34m=[0m [0msnapshot_download[0m[0;34m([0m[0;34m"Salesforce/wikitext"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     64[0m tr = open(f"{wt}/wikitext-103-raw-v1/wikitext-103-raw.train.tokens",
-[1;32m     65[0m           "rb").read()
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py[0m in [0;36m_inner_fn[0;34m(*args, **kwargs)[0m
-[1;32m     87[0m         [0mkwargs[0m [0;34m=[0m [0msmoothly_deprecate_legacy_arguments[0m[0;34m([0m[0mfn_name[0m[0;34m=[0m[0mfn[0m[0;34m.[0m[0m__name__[0m[0;34m,[0m [0mkwargs[0m[0;34m=[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     88[0m [0;34m[0m[0m
-[0;32m---> 89[0;31m         [0;32mreturn[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     90[0m [0;34m[0m[0m
-[1;32m     91[0m     [0;32mreturn[0m [0m_inner_fn[0m  [0;31m# type: ignore[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_http.py[0m in [0;36m_inner[0;34m(*args, **kwargs)[0m
-[1;32m    264[0m         [0mtoken[0m [0;34m=[0m [0m_IS_DOWNLOAD_CALL[0m[0;34m.[0m[0mset[0m[0;34m([0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    265[0m         [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 266[0;31m             [0;32mreturn[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    267[0m         [0;32mfinally[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    268[0m             [0m_IS_DOWNLOAD_CALL[0m[0;34m.[0m[0mreset[0m[0;34m([0m[0mtoken[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/_snapshot_download.py[0m in [0;36msnapshot_download[0;34m(repo_id, repo_type, revision, cache_dir, local_dir, library_name, library_version, user_agent, etag_timeout, force_download, token, local_files_only, allow_patterns, ignore_patterns, max_workers, tqdm_class, headers, endpoint, dry_run)[0m
-[1;32m    376[0m         ):
-[1;32m    377[0m             [0;31m# Repo not found, gated, or specific authentication error => let's raise the actual error[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 378[0;31m             [0;32mraise[0m [0mapi_call_error[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    379[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    380[0m             [0;31m# Otherwise: most likely a connection issue or Hub downtime => let's warn the user[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/_snapshot_download.py[0m in [0;36msnapshot_download[0;34m(repo_id, repo_type, revision, cache_dir, local_dir, library_name, library_version, user_agent, etag_timeout, force_download, token, local_files_only, allow_patterns, ignore_patterns, max_workers, tqdm_class, headers, endpoint, dry_run)[0m
-[1;32m    275[0m         [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    276[0m             [0;31m# if we have internet connection we want to list files to download[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 277[0;31m             [0mrepo_info[0m [0;34m=[0m [0mapi[0m[0;34m.[0m[0mrepo_info[0m[0;34m([0m[0mrepo_id[0m[0;34m=[0m[0mrepo_id[0m[0;34m,[0m [0mrepo_type[0m[0;34m=[0m[0mrepo_type[0m[0;34m,[0m [0mrevision[0m[0;34m=[0m[0mrevision[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    278[0m             [0;32massert[0m [0mrepo_info[0m[0;34m.[0m[0msha[0m [0;32mis[0m [0;32mnot[0m [0;32mNone[0m[0;34m,[0m [0;34m"Repo info returned from server must have a revision sha."[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    279[0m             [0mcommit_hash[0m [0;34m=[0m [0mrepo_info[0m[0;34m.[0m[0msha[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py[0m in [0;36m_inner_fn[0;34m(*args, **kwargs)[0m
-[1;32m     87[0m         [0mkwargs[0m [0;34m=[0m [0msmoothly_deprecate_legacy_arguments[0m[0;34m([0m[0mfn_name[0m[0;34m=[0m[0mfn[0m[0;34m.[0m[0m__name__[0m[0;34m,[0m [0mkwargs[0m[0;34m=[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     88[0m [0;34m[0m[0m
-[0;32m---> 89[0;31m         [0;32mreturn[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     90[0m [0;34m[0m[0m
-[1;32m     91[0m     [0;32mreturn[0m [0m_inner_fn[0m  [0;31m# type: ignore[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/hf_api.py[0m in [0;36mrepo_info[0;34m(self, repo_id, revision, repo_type, timeout, files_metadata, expand, token)[0m
-[1;32m   3641[0m             [0mcase[0m [0m_[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3642[0m                 [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34m"Unsupported repo type."[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 3643[0;31m         return method(
-[0m[1;32m   3644[0m             [0mrepo_id[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3645[0m             [0mrevision[0m[0;34m=[0m[0mrevision[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py[0m in [0;36m_inner_fn[0;34m(*args, **kwargs)[0m
-[1;32m     87[0m         [0mkwargs[0m [0;34m=[0m [0msmoothly_deprecate_legacy_arguments[0m[0;34m([0m[0mfn_name[0m[0;34m=[0m[0mfn[0m[0;34m.[0m[0m__name__[0m[0;34m,[0m [0mkwargs[0m[0;34m=[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     88[0m [0;34m[0m[0m
-[0;32m---> 89[0;31m         [0;32mreturn[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     90[0m [0;34m[0m[0m
-[1;32m     91[0m     [0;32mreturn[0m [0m_inner_fn[0m  [0;31m# type: ignore[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/hf_api.py[0m in [0;36mmodel_info[0;34m(self, repo_id, revision, timeout, securityStatus, files_metadata, expand, token)[0m
-[1;32m   3321[0m             [0mparams[0m[0;34m[[0m[0;34m"expand"[0m[0;34m][0m [0;34m=[0m [0mexpand[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3322[0m         [0mr[0m [0;34m=[0m [0mget_session[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mget[0m[0;34m([0m[0mpath[0m[0;34m,[0m [0mheaders[0m[0;34m=[0m[0mheaders[0m[0;34m,[0m [0mtimeout[0m[0;34m=[0m[0mtimeout[0m[0;34m,[0m [0mparams[0m[0;34m=[0m[0mparams[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 3323[0;31m         [0mhf_raise_for_status[0m[0;34m([0m[0mr[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   3324[0m         [0mdata[0m [0;34m=[0m [0mr[0m[0;34m.[0m[0mjson[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3325[0m         [0;32mreturn[0m [0mModelInfo[0m[0;34m([0m[0;34m**[0m[0mdata[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_http.py[0m in [0;36mhf_raise_for_status[0;34m(response, endpoint_name)[0m
-[1;32m    921[0m                 [0;34m+[0m [0;34m"\nFor more details, see https://huggingface.co/docs/huggingface_hub/authentication"[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    922[0m             )
-[0;32m--> 923[0;31m             [0;32mraise[0m [0m_format[0m[0;34m([0m[0mRepositoryNotFoundError[0m[0;34m,[0m [0mmessage[0m[0;34m,[0m [0mresponse[0m[0;34m,[0m [0mrepo_type[0m[0;34m=[0m[0mrepo_type[0m[0;34m,[0m [0mrepo_id[0m[0;34m=[0m[0mrepo_id[0m[0;34m)[0m [0;32mfrom[0m [0me[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    924[0m [0;34m[0m[0m
-[1;32m    925[0m         [0;32melif[0m [0mresponse[0m[0;34m.[0m[0mstatus_code[0m [0;34m==[0m [0;36m400[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;31mRepositoryNotFoundError[0m: 401 Client Error. (Request ID: Root=1-6aecc374-48f9753b22638d3858b92e67;a4056ec9-ae1c-4e41-a82d-763c24ab563c)
-
-Repository Not Found for url: https://huggingface.co/api/models/Salesforce/wikitext/revision/main.
-Please make sure you specified the correct `repo_id` and `repo_type`.
-If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
-For more details, see https://huggingface.co/docs/huggingface_hub/authentication
-Invalid username or password.
+[data] 34 train + 6 held + 4 adapter-fit docs
+[0;31m---------------------------------------------------------------------------[0m[0;31mNameError[0m                                 Traceback (most recent call last)[0;32m/tmp/ipykernel_14754/3745260497.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m     87[0m                        position_ids=None)
+[1;32m     88[0m     [0mXenc[0m[0;34m.[0m[0mappend[0m[0;34m([0m[0mhs[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m.[0m[0mfloat[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 89[0;31m     [0;32mdel[0m [0mo[0m[0;34m,[0m [0mhsl[0m[0;34m,[0m [0mhs[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     90[0m     [0mtorch[0m[0;34m.[0m[0mcuda[0m[0;34m.[0m[0mempty_cache[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     91[0m [0mXin[0m[0;34m,[0m [0mYin[0m[0;34m,[0m [0mYout[0m[0;34m,[0m [0mXenc[0m [0;34m=[0m [0;34m([0m[0mtorch[0m[0;34m.[0m[0mcat[0m[0;34m([0m[0mx[0m[0;34m)[0m [0;32mfor[0m [0mx[0m [0;32min[0m [0;34m([0m[0mXin[0m[0;34m,[0m [0mYin[0m[0;34m,[0m [0mYout[0m[0;34m,[0m [0mXenc[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;31mNameError[0m: name 'o' is not defined

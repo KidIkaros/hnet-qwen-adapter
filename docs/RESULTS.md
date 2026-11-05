@@ -43,6 +43,23 @@ the uniform 8 bits.  Every number below is on that one axis.
 6. **Cross-domain holds.** The ordering, the adaptive>periodic margin, and the U-curve all survive
    on the H-Net val split; the compression optimum drifts ~6→8-12 on natural English.
 
+## The construction staircase — fitting vs. training (periodic-6, eval docs)
+
+Can the interface be built without gradient training?  Each map is scored on the same boundary task:
+
+| step | map | bpb | |
+|---|---|---|---|
+| hand-crafted | identity (sum) | 6.5483 | baseline |
+| | norm_match (median token-norm rescale) | 5.9277 | anomalous — RMSNorm should be scale-invariant |
+| | cov_recolor (whiten + recolor to token Σ) | 6.9935 | actively hurt |
+| closed-form | **ridge→BPE** (paired Procrustes: patch-sum → mean emb of covering BPE tokens) | **4.5760** | **~69% of the trained gap** |
+| SGD | rank-32 residual | 3.6838 | target |
+
+**cos(ΔW, construction−I) ≈ 0 for every closed-form map** — the learned correction is a different
+direction in weight space than any statistical reshaping.  Paired Procrustes closes most of the gap
+by making patches "look like real tokens" (manifold matching); the trained map's residual ~31% is
+task-conditional and not recoverable from first/second-moment geometry.
+
 ## Caveats
 
 - v1 trained/eval'd on same-domain markdown docs; its val-split transfer is unmeasured.

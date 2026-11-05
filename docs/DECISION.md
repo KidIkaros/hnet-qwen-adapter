@@ -72,6 +72,15 @@ optimum drifting toward 8-12 on natural text.
 **W autopsy**: ||dW||/||I|| ≈ 0.23-0.29, top singular values 5-6 decaying — a real structured
 correction, not a perturbation. Weights saved for the WSP question.
 
+## The WSP answer (2026-11-05, `results/a100_construct_sweep.log`)
+
+Partial yes — **~69% of the interface is closed-form constructible** (paired Procrustes-ridge
+4.58 vs identity 6.55 vs SGD 3.68, periodic-6).  But `cos(dW, every construction) ≈ 0`: the
+trained map occupies a different direction in weight space than any statistical reshaping.
+The residual ~31% is task-conditional.  Also: `norm_match` helped despite RMSNorm scale-invariance
+(an open anomaly); `cov_recolor` actively hurt.  WSP framing: *fitting ≠ training* — deterministic
+one-shot solves count as construction, and they get you most of the way.
+
 ## Open questions parked
 
 - Can a WSP-style construction produce what the rank-32 map learned? (The falsifiable WSP question —

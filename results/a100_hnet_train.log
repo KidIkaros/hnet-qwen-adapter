@@ -5,62 +5,253 @@ Downloading bytes:           |  0.00B
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
-[train] Qwen/Qwen3.5-2B-Base | 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
+[train] 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
 Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
 Resolving data files:   0%|          | 0/84 [00:00<?, ?it/s]
 Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
 Resolving data files:   0%|          | 0/32 [00:00<?, ?it/s]
-[data] 400 train + 6 held + 4 adapter-fit docs
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/15694 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/15741 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/128 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/7855 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/4669 [00:00<?, ?it/s]
+[data] 2000 train (dolma mix) | 6 held | 4 adapter-fit
+[data] enwik8 test slice 200000 bytes
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
-[fit] w_in/w_out/w_enc ridges fit (frozen during training)
-[train] 832.1M trainable params (rest frozen)
-  step 0    loss 4.5994 |gn| 50.50 | held bpb 14.6064
-/tmp/ipykernel_27300/1856290797.py:174: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[fit] adapters fit | 16344 dechunk pairs
+[train] 832.1M trainable
+  ep0 step 25    loss 1.529 |gn| 5.09 | held 5.115 | enwik8 4.765
+/tmp/ipykernel_38345/2379702061.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
 Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
-  print(f"  step {step:<4} loss {float(loss):.4f} |gn| {float(gn):.2f} "
-  step 10   loss 3.6923 |gn| 6.53 | held bpb 5.8108
-  step 20   loss 2.5652 |gn| 1.35 | held bpb 8.8485
-  step 30   loss 2.9251 |gn| 8.31 | held bpb 6.5884
-  step 40   loss 2.0825 |gn| 4.41 | held bpb 8.2822
-  step 50   loss 1.6713 |gn| 11.50 | held bpb 6.5062
-  step 60   loss 1.2944 |gn| 3.20 | held bpb 6.0327
-  step 70   loss 1.2822 |gn| 1.76 | held bpb 6.0373
-  step 80   loss 3.3364 |gn| 2.17 | held bpb 5.8173
-  step 90   loss 1.5491 |gn| 2.89 | held bpb 7.2294
-  step 100  loss 1.3701 |gn| 3.91 | held bpb 6.2315
-  step 110  loss 1.2434 |gn| 7.12 | held bpb 5.8298
-  step 120  loss 1.2129 |gn| 3.66 | held bpb 6.3138
-  step 130  loss 1.1809 |gn| 1.82 | held bpb 6.1426
-  step 140  loss 2.5654 |gn| 6.22 | held bpb 5.3828
-  step 150  loss 3.5111 |gn| 2.50 | held bpb 5.5842
-  step 160  loss 2.9626 |gn| 0.51 | held bpb 5.1569
-  step 170  loss 3.1534 |gn| 0.94 | held bpb 4.5829
-  step 180  loss 2.6522 |gn| 0.70 | held bpb 4.5767
-  step 190  loss 1.5175 |gn| 2.75 | held bpb 4.7953
-  step 200  loss 2.7998 |gn| 1.19 | held bpb 4.8423
-  step 210  loss 2.5119 |gn| 1.00 | held bpb 4.6084
-  step 220  loss 2.4495 |gn| 0.91 | held bpb 4.7048
-  step 230  loss 2.2013 |gn| 0.55 | held bpb 4.5248
-  step 240  loss 2.4426 |gn| 1.21 | held bpb 4.5485
-  step 250  loss 2.1674 |gn| 0.68 | held bpb 4.8454
-  step 260  loss 2.1049 |gn| 0.63 | held bpb 4.3762
-  step 270  loss 2.0343 |gn| 0.58 | held bpb 4.5581
-  step 280  loss 2.0363 |gn| 0.71 | held bpb 4.7223
-  step 290  loss 2.0837 |gn| 0.55 | held bpb 4.2913
-  step 300  loss 2.0368 |gn| 0.67 | held bpb 4.4867
-  step 310  loss 2.0738 |gn| 0.84 | held bpb 4.6774
-  step 320  loss 1.9115 |gn| 0.71 | held bpb 4.2079
-  step 330  loss 1.9363 |gn| 0.77 | held bpb 4.3872
-  step 340  loss 1.7868 |gn| 0.75 | held bpb 4.6922
-  step 350  loss 1.8527 |gn| 0.80 | held bpb 4.2623
-  step 360  loss 1.8673 |gn| 0.70 | held bpb 4.3933
-  step 370  loss 1.7855 |gn| 0.80 | held bpb 4.6620
-  step 380  loss 1.7803 |gn| 0.73 | held bpb 4.1682
-  step 390  loss 1.7631 |gn| 0.86 | held bpb 4.4593
-  step 399  loss 1.8277 |gn| 0.81 | held bpb 4.8043
-[rsi] round-2 on worst 200 docs (worst bpb 5.040)
-[rsi] round-2 held bpb 4.7451 (['3.872', '4.294', '3.858', '4.342', '4.149', '7.955'])
-[train] dry-run complete
+  print(f"  ep{ep} step {step:<5} loss {float(loss):.3f} "
+  ep0 step 50    loss 1.843 |gn| 12.44 | held 4.069 | enwik8 4.427
+  ep0 step 75    loss 2.814 |gn| 2.09 | held 4.355 | enwik8 4.229
+  ep0 step 100   loss 2.388 |gn| 3.88 | held 3.675 | enwik8 4.042
+  ep0 step 125   loss 2.560 |gn| 4.41 | held 8.951 | enwik8 4.038
+  ep0 step 150   loss 1.881 |gn| 1.13 | held 3.378 | enwik8 3.861
+  ep0 step 175   loss 1.796 |gn| 1.17 | held 3.696 | enwik8 3.799
+  ep0 step 200   loss 1.911 |gn| 1.51 | held 3.326 | enwik8 3.626
+  ep0 step 225   loss 1.725 |gn| 1.62 | held 3.627 | enwik8 3.620
+  ep0 step 250   loss 1.590 |gn| 1.71 | held 3.051 | enwik8 3.480
+  ep0 step 275   loss 1.672 |gn| 1.30 | held 6.568 | enwik8 3.523
+  ep0 step 300   loss 1.462 |gn| 1.02 | held 2.995 | enwik8 3.398
+  ep0 step 325   loss 1.868 |gn| 1.55 | held 3.496 | enwik8 3.353
+  ep0 step 350   loss 1.965 |gn| 1.74 | held 2.967 | enwik8 3.299
+  ep0 step 375   loss 1.665 |gn| 1.73 | held 3.272 | enwik8 3.286
+  ep0 step 400   loss 1.699 |gn| 1.49 | held 2.799 | enwik8 3.248
+  ep0 step 425   loss 0.937 |gn| 2.67 | held 5.803 | enwik8 3.201
+  ep0 step 450   loss 1.409 |gn| 1.52 | held 2.769 | enwik8 3.207
+  ep0 step 475   loss 1.640 |gn| 1.35 | held 3.202 | enwik8 3.168
+  ep0 step 500   loss 1.539 |gn| 1.20 | held 2.792 | enwik8 3.161
+  ep0 step 525   loss 1.518 |gn| 6.44 | held 3.121 | enwik8 3.082
+  ep0 step 550   loss 1.623 |gn| 1.27 | held 2.591 | enwik8 3.051
+  ep0 step 575   loss 0.268 |gn| 0.64 | held 6.019 | enwik8 3.058
+  ep0 step 600   loss 1.644 |gn| 1.05 | held 2.664 | enwik8 3.016
+  ep0 step 625   loss 1.574 |gn| 6.94 | held 3.039 | enwik8 2.946
+  ep0 step 650   loss 1.483 |gn| 2.28 | held 2.606 | enwik8 2.952
+  ep0 step 675   loss 1.734 |gn| 4.94 | held 2.918 | enwik8 2.966
+  ep0 step 700   loss 1.659 |gn| 2.08 | held 2.466 | enwik8 2.929
+  ep0 step 725   loss 1.580 |gn| 1.58 | held 7.130 | enwik8 2.896
+  ep0 step 750   loss 1.400 |gn| 1.12 | held 2.529 | enwik8 2.938
+  ep0 step 775   loss 1.785 |gn| 2.12 | held 2.838 | enwik8 2.800
+  ep0 step 800   loss 0.194 |gn| 0.61 | held 2.531 | enwik8 2.799
+  ep0 step 825   loss 1.618 |gn| 3.39 | held 2.831 | enwik8 2.801
+  ep0 step 850   loss 1.256 |gn| 1.30 | held 2.380 | enwik8 2.786
+  ep0 step 875   loss 1.424 |gn| 1.45 | held 7.381 | enwik8 2.760
+  ep0 step 900   loss 0.869 |gn| 4.09 | held 2.451 | enwik8 2.817
+  ep0 step 925   loss 1.284 |gn| 1.48 | held 2.782 | enwik8 2.764
+  ep0 step 950   loss 0.154 |gn| 0.44 | held 2.522 | enwik8 2.734
+  ep0 step 975   loss 1.994 |gn| 2.47 | held 2.746 | enwik8 2.701
+  ep0 step 1000  loss 0.241 |gn| 2.31 | held 2.358 | enwik8 2.763
+  ep0 step 1025  loss 1.268 |gn| 1.24 | held 6.371 | enwik8 2.748
+  ep0 step 1050  loss 1.385 |gn| 1.18 | held 2.370 | enwik8 2.730
+  ep0 step 1075  loss 1.134 |gn| 2.50 | held 2.694 | enwik8 2.708
+  ep0 step 1100  loss 1.650 |gn| 2.14 | held 2.361 | enwik8 2.740
+  ep0 step 1125  loss 1.534 |gn| 1.49 | held 2.584 | enwik8 2.701
+  ep0 step 1150  loss 1.503 |gn| 1.84 | held 2.248 | enwik8 2.642
+  ep0 step 1175  loss 1.485 |gn| 1.17 | held 5.533 | enwik8 2.652
+  ep0 step 1200  loss 1.772 |gn| 1.95 | held 2.335 | enwik8 2.679
+  ep0 step 1225  loss 1.339 |gn| 1.31 | held 2.575 | enwik8 2.672
+  ep0 step 1250  loss 1.338 |gn| 1.12 | held 2.257 | enwik8 2.671
+  ep0 step 1275  loss 0.997 |gn| 1.31 | held 2.549 | enwik8 2.636
+  ep0 step 1300  loss 1.462 |gn| 1.20 | held 2.234 | enwik8 2.679
+  ep0 step 1325  loss 0.993 |gn| 6.50 | held 5.674 | enwik8 2.667
+  ep0 step 1350  loss 1.159 |gn| 0.87 | held 2.331 | enwik8 2.651
+  ep0 step 1375  loss 1.353 |gn| 1.16 | held 2.560 | enwik8 2.659
+  ep0 step 1400  loss 0.881 |gn| 1.43 | held 2.242 | enwik8 2.641
+  ep0 step 1425  loss 0.932 |gn| 7.44 | held 2.489 | enwik8 2.655
+  ep0 step 1450  loss 1.245 |gn| 1.06 | held 2.254 | enwik8 2.576
+  ep0 step 1475  loss 1.006 |gn| 5.88 | held 5.209 | enwik8 2.570
+  ep0 step 1500  loss 1.121 |gn| 1.11 | held 2.259 | enwik8 2.547
+  ep0 step 1525  loss 1.479 |gn| 1.41 | held 2.518 | enwik8 2.575
+  ep0 step 1550  loss 1.072 |gn| 1.00 | held 2.267 | enwik8 2.552
+  ep0 step 1575  loss 1.564 |gn| 1.28 | held 2.436 | enwik8 2.586
+  ep0 step 1600  loss 1.203 |gn| 1.45 | held 2.230 | enwik8 2.622
+  ep0 step 1625  loss 1.356 |gn| 1.09 | held 5.821 | enwik8 2.601
+  ep0 step 1650  loss 1.600 |gn| 1.45 | held 2.281 | enwik8 2.570
+  ep0 step 1675  loss 0.411 |gn| 2.00 | held 2.426 | enwik8 2.525
+  ep0 step 1700  loss 0.426 |gn| 0.77 | held 2.252 | enwik8 2.507
+  ep0 step 1725  loss 1.219 |gn| 1.49 | held 2.426 | enwik8 2.525
+  ep0 step 1750  loss 1.334 |gn| 1.13 | held 2.196 | enwik8 2.506
+  ep0 step 1775  loss 1.051 |gn| 0.78 | held 4.912 | enwik8 2.566
+  ep0 step 1800  loss 1.361 |gn| 1.12 | held 2.167 | enwik8 2.546
+  ep0 step 1825  loss 0.617 |gn| 1.77 | held 2.423 | enwik8 2.499
+  ep0 step 1850  loss 0.831 |gn| 2.05 | held 2.222 | enwik8 2.537
+  ep0 step 1875  loss 0.966 |gn| 0.91 | held 2.484 | enwik8 2.518
+  ep0 step 1900  loss 0.981 |gn| 0.83 | held 2.132 | enwik8 2.516
+  ep0 step 1925  loss 0.554 |gn| 1.40 | held 5.147 | enwik8 2.488
+  ep0 step 1950  loss 0.656 |gn| 1.64 | held 2.167 | enwik8 2.505
+  ep0 step 1975  loss 1.379 |gn| 1.56 | held 2.480 | enwik8 2.512
+  ep0 step 2000  loss 1.111 |gn| 0.89 | held 2.161 | enwik8 2.515
+[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_38345/2379702061.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    106[0m [0;34m[0m[0m
+[1;32m    107[0m [0;31m# ---- final eval: enwik8 test + held decontam[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 108[0;31m [0mew_final[0m [0;34m=[0m [0meval_bpb[0m[0;34m([0m[0mew8_test[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    109[0m hb_final = [eval_bpb(torch.tensor(list(hd), device="cuda"))
+[1;32m    110[0m             for hd in held_docs]
+[0;32m/tmp/ipykernel_38345/2379702061.py[0m in [0;36meval_bpb[0;34m(byte_ids)[0m
+[1;32m     81[0m [0;32mdef[0m [0meval_bpb[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     82[0m     [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 83[0;31m         [0;32mreturn[0m [0mfloat[0m[0;34m([0m[0mdoc_loss[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m)[0m [0;34m/[0m [0mnp[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;36m2[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     84[0m [0;34m[0m[0m
+[1;32m     85[0m [0;34m[0m[0m
+[0;32m/tmp/ipykernel_38345/2379702061.py[0m in [0;36mdoc_loss[0;34m(byte_ids)[0m
+[1;32m     73[0m [0;32mdef[0m [0mdoc_loss[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     74[0m     [0mT[0m [0;34m=[0m [0mlen[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 75[0;31m     bp, _, _ = hn(byte_ids, boundaries=periodic(T, P), ctx="retrieve",
+[0m[1;32m     76[0m                   n_ctx=1, super_k=4, head_first=trunk["head"].first)
+[1;32m     77[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;36m0[0m[0;34m,[0m [0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries, sparse, ctx, head_first, n_ctx, super_k)[0m
+[1;32m    195[0m         [0;32mif[0m [0mctx[0m [0;34m==[0m [0;34m"retrieve"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    196[0m             [0;31m# bytes attend past-chunk ctx with their OWN queries — no broadcast[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 197[0;31m             [0mx[0m [0;34m=[0m [0mx[0m [0;34m+[0m [0mself[0m[0;34m.[0m[0mdecoder_attn_pass[0m[0;34m([0m[0mx[0m[0;34m,[0m [0mctx_v[0m[0;34m,[0m [0mchunk_of[0m[0;34m,[0m [0mn_ctx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    198[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    199[0m             [0msrc[0m [0;34m=[0m [0mchunk_of[0m [0;32mif[0m [0mctx[0m [0;34m==[0m [0;34m"own"[0m [0;32melse[0m [0;34m([0m[0mchunk_of[0m [0;34m-[0m [0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mdecoder_attn_pass[0;34m(self, x_bytes, ctx, chunk_of, n_ctx_layers)[0m
+[1;32m    124[0m         [0mneg[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mfinfo[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mfloat32[0m[0;34m)[0m[0;34m.[0m[0mmin[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    125[0m         [0mN[0m [0;34m=[0m [0mC[0m [0;34m+[0m [0mT[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 126[0;31m         [0mallow[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mN[0m[0;34m,[0m [0mN[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mtorch[0m[0;34m.[0m[0mbool[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mx_bytes[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    127[0m         allow[:C, :C] = torch.tril(torch.ones(C, C, dtype=torch.bool,
+[1;32m    128[0m                                               device=x_bytes.device))
+[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 50.71 GiB. GPU 0 has a total capacity of 39.49 GiB of which 26.26 GiB is free. Including non-PyTorch memory, this process has 13.23 GiB memory in use. Of the allocated memory 11.81 GiB is allocated by PyTorch, and 915.03 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/jupyter_kernel_client/wsclient.py:1353 in _recv_reply                  │
+│                                                                              │
+│   1350 │   │   │   │   if channel == "control":                              │
+│   1351 │   │   │   │   │   reply =                                           │
+│        self.control_channel.get_msg(timeout=timeout)                         │
+│   1352 │   │   │   │   else:                                                 │
+│ ❱ 1353 │   │   │   │   │   reply =                                           │
+│        self.shell_channel.get_msg(timeout=timeout)                           │
+│   1354 │   │   │   except queue.Empty as e:                                  │
+│   1355 │   │   │   │   msg = "Timeout waiting for reply"                     │
+│   1356 │   │   │   │   raise TimeoutError(msg) from e                        │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/jupyter_kernel_client/wsclient.py:411 in get_msg                       │
+│                                                                              │
+│    408 │   │   ------                                                        │
+│    409 │   │   Empty exception if no message is received before the timeout. │
+│    410 │   │   """                                                           │
+│ ❱  411 │   │   return self._messages.get(timeout=timeout)                    │
+│    412 │                                                                     │
+│    413 │   def get_msgs(self) -> list[dict[str, t.Any]]:                     │
+│    414 │   │   """Get all available messages.                                │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/pyt │
+│ hon3.14/queue.py:209 in get                                                  │
+│                                                                              │
+│   206 │   │   │   │   while not self._qsize():                               │
+│   207 │   │   │   │   │   remaining = endtime - time()                       │
+│   208 │   │   │   │   │   if remaining <= 0.0:                               │
+│ ❱ 209 │   │   │   │   │   │   raise Empty                                    │
+│   210 │   │   │   │   │   self.not_empty.wait(remaining)                     │
+│   211 │   │   │   │   │   if self.is_shutdown and not self._qsize():         │
+│   212 │   │   │   │   │   │   raise ShutDown                                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Empty
+
+The above exception was the direct cause of the following exception:
+
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/colab_cli/commands/execution.py:258 in exec_command                    │
+│                                                                              │
+│   255 │   │   │   )                                                          │
+│   256 │   │   │   state.store.add(s)                                         │
+│   257 │   │   │                                                              │
+│ ❱ 258 │   │   │   outputs = runtime.execute_code(                            │
+│   259 │   │   │   │   code,                                                  │
+│   260 │   │   │   │   output_hook=lambda o: display_output(o, output_image), │
+│   261 │   │   │   │   timeout=timeout,                                       │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/colab_cli/runtime.py:237 in execute_code                               │
+│                                                                              │
+│   234 │   │   │   │   │   │   if idx < len(outputs):                         │
+│   235 │   │   │   │   │   │   │   output_hook(outputs[idx])                  │
+│   236 │   │   │                                                              │
+│ ❱ 237 │   │   │   reply = self.kernel_client.execute_interactive(            │
+│   238 │   │   │   │   code, output_hook=wrapped_output_hook, **kwargs        │
+│   239 │   │   │   )                                                          │
+│   240 │   │   │   # execute_interactive returns the raw reply message        │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/jupyter_kernel_client/client.py:364 in execute_interactive             │
+│                                                                              │
+│   361 │   │   │   The reply message for this request                         │
+│   362 │   │   """                                                            │
+│   363 │   │   self._set_variables(variables)                                 │
+│ ❱ 364 │   │   return self._manager.client.execute_interactive(               │
+│   365 │   │   │   code,                                                      │
+│   366 │   │   │   silent=silent,                                             │
+│   367 │   │   │   store_history=store_history,                               │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/jupyter_kernel_client/wsclient.py:1112 in execute_interactive          │
+│                                                                              │
+│   1109 │   │   │   # output is done, get the reply                           │
+│   1110 │   │   │   if timeout is not None:                                   │
+│   1111 │   │   │   │   timeout = max(0, deadline - time.monotonic())         │
+│ ❱ 1112 │   │   │   return self._recv_reply(msg_id, timeout=timeout)          │
+│   1113 │                                                                     │
+│   1114 │   def is_alive(self) -> bool:                                       │
+│   1115 │   │   """Is the kernel process still running?"""                    │
+│                                                                              │
+│ /home/ikaaros/.local/share/uv/tools/google-colab-cli/lib/python3.14/site-pac │
+│ kages/jupyter_kernel_client/wsclient.py:1356 in _recv_reply                  │
+│                                                                              │
+│   1353 │   │   │   │   │   reply =                                           │
+│        self.shell_channel.get_msg(timeout=timeout)                           │
+│   1354 │   │   │   except queue.Empty as e:                                  │
+│   1355 │   │   │   │   msg = "Timeout waiting for reply"                     │
+│ ❱ 1356 │   │   │   │   raise TimeoutError(msg) from e                        │
+│   1357 │   │   │   if reply["parent_header"].get("msg_id") != msg_id:        │
+│   1358 │   │   │   │   self.log.debug("Ignoring message not from request:    │
+│        %s", msg_id)                                                          │
+│   1359 │   │   │   │   continue                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+TimeoutError: Timeout waiting for reply

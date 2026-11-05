@@ -59,7 +59,8 @@ attn_idx = [i for i, l in enumerate(hn.layers) if l.block_type == "full_attentio
 dec_start, main_start = lin_idx[-14], attn_idx[0]
 P = 6
 
-Xin, Yin, Xout, Yout, Xmain, Ymain, G, Rres = [], [], [], [], [], [], [], []
+Xin, Yin, Xout, Yout, Xmain, Ymain, Xenc, G, Rres = ([], [], [], [], [],
+                                                    [], [], [], [])
 for di, d in enumerate(fit_docs[:4]):
     tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
     with torch.no_grad():
@@ -76,6 +77,7 @@ for di, d in enumerate(fit_docs[:4]):
         hs = layer(hs, position_embeddings=None, attention_mask=None,
                    position_ids=None)
     enc = hs[0]
+    Xenc.append(enc.float())                                   # encoder states
     n = len(d) // P
     bounds = [b - 1 for b in range(P, n * P + 1, P)]
     Xmain.append(enc[torch.tensor(bounds, device="cuda")].float())
@@ -108,6 +110,11 @@ for d in fit_docs[:4]:
     Ymain_p.append(Ymain[off + P - 1:off + n * P:P]); off += len(d)
 Ymain_p = torch.cat(Ymain_p)
 hn.w_main = ridge_to_bpe(Xmain[:200_000].to(torch.bfloat16), Ymain_p[:200_000].to(torch.bfloat16))
+# w_enc: encoder states -> (real dec-input - byte-emb) residual — H-Net's
+# residual_proj skip, closed-form on the same harvest
+Xenc = torch.cat(Xenc)
+enc_resid = (Yin[:len(Xenc)] - Xin[:len(Xenc)]).to(torch.bfloat16)
+hn.w_enc = ridge_to_bpe(Xenc[:200_000].to(torch.bfloat16), enc_resid[:200_000])
 
 for d in fit_docs[:4]:
     tids = torch.tensor([bmap.get(int(b), 0) for b in d], device="cuda")
@@ -158,7 +165,7 @@ for di, d in enumerate(eval_docs):
     b6 = torch.zeros(T, device="cuda"); b6[::P] = 1.0
     bs = spacelike(d[:T], T)
     for wm, tag_m in ((None, "no_main"), (hn.w_main, "+w_main")):
-        for ctx, tag_c in (("prev", "prev"), ("retrieve", "retr")):
+        for ctx, tag_c in (("prev", "prev"), ("retrieve", "retr"), ("own", "own")):
             p6 = eval_doc(byte_ids, b6, wm, ctx)
             sl = eval_doc(byte_ids, bs, wm, ctx)
             print(f"  doc{di} {tag_m:<8} {tag_c:<5} periodic {p6:.3f} | "

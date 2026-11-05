@@ -74,6 +74,7 @@ class HNetQwen(nn.Module):
         self.w_in = None                                        # (D, D) dec input adapter
         self.w_out = None                                       # (D, D) dec output adapter
         self.w_main = None                                      # (D, D) main-input adapter
+        self.w_enc = None                                       # enc-state residual (H-Net residual_proj)
         dt = self.emb.weight.dtype                              # match checkpoint dtype
         self.boundary.to(dt); self.dechunk.to(dt)
 
@@ -163,13 +164,18 @@ class HNetQwen(nn.Module):
             patch = self.w_main(patch)
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
         ctx_v = self.dechunk(glob)                            # (C, D)
-        x = hs.clone()
+        # encoder-state residual — H-Net residual_proj: byte-local detail
+        # crosses the chunk bottleneck into the decoder input
+        x = hs.clone() if self.w_enc is None else hs + self.w_enc(enc[None])
         if ctx == "retrieve":
-            # bytes see all past chunk ctx via one attention layer
-            x = hs + self.decoder_attn_pass(torch.zeros_like(hs), ctx_v, spans)
+            x = x + self.decoder_attn_pass(torch.zeros_like(hs), ctx_v, spans)
             for ci, (a, b) in enumerate(spans):
                 if ci > 0:
                     x[0, a:b] += ctx_v[ci - 1]
+        elif ctx == "own":
+            # H-Net-faithful: each byte gets its OWN chunk's main output
+            for ci, (a, b) in enumerate(spans):
+                x[0, a:b] += ctx_v[ci]
         else:
             for ci, (a, b) in enumerate(spans):
                 if ci > 0:

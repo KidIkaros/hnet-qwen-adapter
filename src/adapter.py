@@ -47,13 +47,25 @@ class ByteHead:
             if s and s[0] in u2b:
                 first[i] = u2b[s[0]]
         self.first = torch.tensor(first)
+        self._src = self._dst = None                       # lazily sized to the logits' width
+        self._width = None
 
     def byte_probs(self, logits):
-        """(M, V_vocab) logits -> (M, 256) byte probabilities (tokens with no first byte excluded)."""
+        """(M, V_logits) logits -> (M, 256) byte probabilities.  V_logits can exceed len(tok)
+        (transformers pads the vocab to a multiple of 256): the pad columns have no token and are
+        excluded from every byte's mass."""
         p = logits.softmax(-1)
         out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=logits.dtype)
-        mask = self.first >= 0
-        out.index_add_(1, self.first[mask].to(logits.device), p[:, mask.to(logits.device)])
+        if self._width != logits.shape[1]:
+            first = self.first
+            if first.numel() < logits.shape[1]:
+                first = torch.cat([first, torch.full((logits.shape[1] - first.numel(),), -1)])
+            tok_ids = (first >= 0).nonzero().squeeze(1)      # the columns carrying byte mass
+            self._dst = first[tok_ids]                       # each column's byte bucket
+            self._src = tok_ids
+            self._width = logits.shape[1]
+        src = self._src.to(logits.device)
+        out.index_add_(1, self._dst.to(logits.device), p[:, src])
         return out
 
 

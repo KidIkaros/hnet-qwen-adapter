@@ -108,6 +108,18 @@ def test_first_byte_bpb_accounting():
     assert abs(bpb - want) < 1e-4          # fp32 summation-order noise; the accounting is what's tested
 
 
+def test_byte_head_padded_vocab():
+    """transformers pads the model vocab to a multiple of 256 (248320 for Qwen's 248077 tokenizer):
+    logits wider than len(tok) must exclude the pad columns rather than crash."""
+    model = FakeModel(V=800)                              # 800 > FakeTok.VOCAB=768
+    lm = ChunkLM(model, FakeTok(), period=4, device="cpu", dtype=torch.float32)
+    bpb, n, (cov, tcov) = lm.first_byte_bpb(b"ABCDEFGH")
+    assert n == 1 and cov == 1.0 and tcov == 1.0
+    logits = (model.emb.weight[torch.tensor([1, 2, 3, 4])].sum(0).unsqueeze(0) @ model.W)[0]
+    p = logits.softmax(-1)
+    assert abs(bpb - float(-torch.log2(p[5] + p[325]))) < 1e-4
+
+
 def test_qwen_byte_bpb_accounting():
     """The same-weights reference: token CE weighted by each token's byte length, over total bytes."""
     model = FakeModel()

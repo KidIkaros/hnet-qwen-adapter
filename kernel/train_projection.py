@@ -84,21 +84,7 @@ D = emb.shape[1]
 RANK = int(os.environ.get("RANK", "32"))
 LR = float(os.environ.get("LR", "3e-3"))
 EPOCHS = int(os.environ.get("EPOCHS", "12"))
-proj = PatchProjection(D, rank=RANK).cuda()
-opt = torch.optim.AdamW(proj.parameters(), lr=LR)
-
-
-def evaluate(split):
-    tot, n = 0.0, 0
-    with torch.no_grad():
-        for base, ms, bs in split:
-            patch = proj(base).to(torch.bfloat16).unsqueeze(0)
-            logits = model(inputs_embeds=patch).logits[0].float()
-            lp = byte_logprobs(logits, head.first)
-            nll = -lp[ms, bs]
-            tot += float(nll.sum()); n += len(bs)
-    return tot / max(n, 1), n
-
+SEEDS = [int(s) for s in os.environ.get("SEEDS", "0,1,2").split(",")]
 
 from src.adapter import ChunkLM, qwen_byte_bpb                    # noqa: E402
 
@@ -115,27 +101,55 @@ for d in eval_docs:
 print(f"[control] stock BPE on eval docs: {qb_tot / qb_n:.4f} | byte-level period-1: "
       f"{b1_tot / b1_n:.4f}", flush=True)
 
-eb0, en0 = evaluate(evals)
-print(f"[v1] BEFORE: eval bpb {eb0:.4f} over {en0} targets (identity map = constructed-sum baseline)", flush=True)
 
+def run_seed(seed):
+    torch.manual_seed(seed)
+    proj = PatchProjection(D, rank=RANK).cuda()
+    opt = torch.optim.AdamW(proj.parameters(), lr=LR)
+
+    def evaluate(split):
+        tot, n = 0.0, 0
+        with torch.no_grad():
+            for base, ms, bs in split:
+                patch = proj(base).to(torch.bfloat16).unsqueeze(0)
+                logits = model(inputs_embeds=patch).logits[0].float()
+                lp = byte_logprobs(logits, head.first)
+                nll = -lp[ms, bs]
+                tot += float(nll.sum()); n += len(bs)
+        return tot / max(n, 1), n
+
+    eb0, en0 = evaluate(evals)
+    step = 0
+    for ep in range(EPOCHS):
+        order = np.random.RandomState(seed * 1000 + ep).permutation(len(train))
+        for i in order:
+            base, ms, bs = train[i]
+            patch = proj(base).to(torch.bfloat16).unsqueeze(0)
+            logits = model(inputs_embeds=patch).logits[0].float()
+            lp = byte_logprobs(logits, head.first)
+            loss = -lp[ms, bs].mean()
+            opt.zero_grad(); loss.backward(); opt.step()
+            step += 1
+        print(f"    [seed {seed} epoch {ep:02d}] train bpb running ({step} steps)", flush=True)
+    eb, en = evaluate(evals)
+    tb, tn = evaluate(train)
+    print(f"[seed {seed}] baseline {eb0:.4f} -> eval {eb:.4f} | train {tb:.4f} "
+          f"({step} steps, {en} eval targets)", flush=True)
+    # the W autopsy (the parked WSP question)
+    dW = (proj.A @ proj.B).detach().float()
+    s = torch.linalg.svdvals(dW)
+    print(f"    [autopsy] ||dW||_F {dW.norm():.4f} ||dW||/||I|| {float(dW.norm() / D ** 0.5):.4f} "
+          f"| top sv {np.round(s[:6].cpu().numpy(), 3)}", flush=True)
+    torch.save({"A": proj.A.cpu(), "B": proj.B.cpu(), "rank": RANK, "target_mean": TM,
+                "seed": seed, "eval_bpb": eb}, f"/content/patch_proj_s{seed}.pt")
+    return eb0, eb
+
+
+print(f"[v1] training {len(SEEDS)} seeds x {EPOCHS} epochs", flush=True)
 t0 = time.time()
-step = 0
-for ep in range(EPOCHS):
-    order = np.random.RandomState(ep).permutation(len(train))
-    ep_tot = ep_n = 0.0
-    for i in order:
-        base, ms, bs = train[i]
-        patch = proj(base).to(torch.bfloat16).unsqueeze(0)
-        logits = model(inputs_embeds=patch).logits[0].float()
-        lp = byte_logprobs(logits, head.first)
-        loss = -lp[ms, bs].mean()
-        opt.zero_grad(); loss.backward(); opt.step()
-        ep_tot += float(loss) * len(bs); ep_n += len(bs); step += 1
-    print(f"[epoch {ep:02d}] train bpb {ep_tot / ep_n:.4f} ({step} steps)", flush=True)
-print(f"[timing] training {time.time() - t0:.0f}s ({step} steps)", flush=True)
-
-eb, en = evaluate(evals)
-tb, tn = evaluate(train)
-print(f"\n[v1] AFTER:  eval bpb {eb:.4f} over {en} targets | train bpb {tb:.4f} over {tn}", flush=True)
+res = [run_seed(s) for s in SEEDS]
+ebs = np.array([r[1] for r in res])
+print(f"\n[v1] eval bpb across seeds: {ebs.mean():.4f} +- {ebs.std():.4f} "
+      f"(baseline {res[0][0]:.4f}; {time.time() - t0:.0f}s total)", flush=True)
 print("[refs] constructed sim~6+sum 6.3867 (8 shared docs) | byte-level 5.2250 | stock BPE 4.2560 | "
       "H-Net 1.4177", flush=True)

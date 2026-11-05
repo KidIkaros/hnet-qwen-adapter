@@ -69,29 +69,34 @@ print(f"[corpus] {corpus_name}: {len(docs)} docs, {sum(len(d) for d in docs)} by
 NDOCS = int(os.environ.get("NDOCS", "8"))
 docs = docs[:NDOCS]
 
-from src.adapter import ByteHead, EntropyChunker, PeriodicChunker, SimChunker  # noqa: E402
+from src.adapter import (ByteHead, EntropyChunker, PeriodicChunker, SimChunker,  # noqa: E402
+                         effective_bpb)
 _shared_head = ByteHead(tok)
 
 lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=_shared_head)
-print("[entropy] byte-level scores from the period-1 model (BLT's estimator is our own adapter)", flush=True)
+print("[entropy] byte-level scores + fallback NLLs from the period-1 model", flush=True)
 entropy = [lm1.byte_entropy(d) for d in docs]
+fb_nll = [lm1.byte_nll(d) for d in docs]                 # the byte-level fallback per position
 
 
 def adapter_score(chunker, agg, need_aux):
     lm = ChunkLM(model, tok, agg=agg, byte_head=_shared_head, chunker=chunker)
-    tot = n = 0.0; covs = []; skipped = 0; mlen = []
+    tot = n = 0.0; covs = []; tcovs = []; skipped = 0; mlen = []; eff_bits = eff_bytes = 0.0
     for i, d in enumerate(docs):
         sc = entropy[i] if need_aux else None
         try:
-            bpb, k, c = lm.first_byte_bpb(d, aux=sc)
-            tot += bpb * k; n += k; covs.append(c)
-            mlen.append(len(d) / len(chunker.spans(d, aux=sc)))
+            pos, cnll, c, ns = lm.boundary_nll(d, aux=sc)   # one forward per config per doc
+            tot += float(cnll.sum()); n += len(pos); covs.append(c)
+            tcovs.append(len(pos) / max(ns - 1, 1))
+            mlen.append(len(d) / ns)
+            eff_bits += effective_bpb(d, pos, cnll, fb_nll[i]) * len(d); eff_bytes += len(d)
         except ValueError as e:
             skipped += 1
             print(f"        [skip] doc {i}: {e}", flush=True)
-    ci = float(np.mean([c for c, _ in covs])) if covs else float("nan")
-    ct = float(np.mean([t for _, t in covs])) if covs else float("nan")
-    return tot / max(n, 1), int(n), ci, ct, skipped, float(np.mean(mlen)) if mlen else float("nan")
+    ci = float(np.mean(covs)) if covs else float("nan")
+    ct = float(np.mean(tcovs)) if tcovs else float("nan")
+    return (tot / max(n, 1), int(n), ci, ct, skipped,
+            float(np.mean(mlen)) if mlen else float("nan"), eff_bits / max(eff_bytes, 1))
 
 
 t0 = time.time()
@@ -101,7 +106,9 @@ for d in docs:
     qb_tot += qb * len(d); qb_n += len(d)
 print(f"stock Qwen3.5-0.8B (native BPE): full-byte bpb {qb_tot / max(qb_n, 1):.4f} over {int(qb_n)} bytes", flush=True)
 
-print(f"\n{'chunker':>10} {'agg':>5} {'mean_len':>8} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7} {'skip':>5}", flush=True)
+fb_eff = sum(n.sum() for n in fb_nll) / sum(len(n) for n in fb_nll)
+print(f"[control] byte-level adapter effective bpb (its own fallback): {fb_eff:.4f}", flush=True)
+print(f"\n{'chunker':>10} {'agg':>5} {'mean_len':>8} {'first-b bpb':>12} {'EFF bpb':>8} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7} {'skip':>5}", flush=True)
 
 CONFIGS = []
 for period in (1, 2, 3, 6, 12):
@@ -118,8 +125,8 @@ for tm in (3.0, 4.0, 8.0, 12.0):
     CONFIGS.append((f"sim~{tm:g}", SimChunker(lm1.embedder, target_mean=tm, max_len=24), "sum", False))
 
 for name, chunker, agg, need_aux in CONFIGS:
-    bpb, n, ci, ct, sk, ml = adapter_score(chunker, agg, need_aux)
-    print(f"{name:>10} {agg:>5} {ml:>8.2f} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f} {sk:>5}", flush=True)
+    bpb, n, ci, ct, sk, ml, eb = adapter_score(chunker, agg, need_aux)
+    print(f"{name:>10} {agg:>5} {ml:>8.2f} {bpb:>12.4f} {eb:>8.4f} {n:>9} {ci:>7.4f} {ct:>7.4f} {sk:>5}", flush=True)
 
 print(f"\ntrained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
 print(f"[timing] {time.time() - t0:.0f}s", flush=True)

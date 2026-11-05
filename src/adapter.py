@@ -235,6 +235,38 @@ class ChunkLM:
         scores[1:] = ent[:len(data) - 1]
         return scores
 
+    def byte_nll(self, data):
+        """(T,) per-position byte NLL in bits from a period-1 run: position m's output predicts byte
+        m+1.  Position 0 gets the uniform 8 bits — no model conditions on an empty prefix.  This is
+        the fallback scorer for every position a chunked system does not predict."""
+        logits, _ = self.first_byte_logits(data)
+        pb = self.byte_head.byte_probs(logits)                   # (T, 256)
+        nll = np.full(len(data), 8.0)
+        tgt = torch.tensor(list(data[1:]), device=pb.device)
+        nll[1:] = -torch.log2(pb[:len(data) - 1].gather(1, tgt[:, None])
+                              .clamp_min(1e-12)).double().cpu().numpy().ravel()
+        return nll
+
+    def boundary_nll(self, data, aux=None):
+        """(positions, nll_bits, input_cov, n_spans): the chunk-start positions this chunked system
+        predicts, the byte-marginalized NLL of each, the patch-input coverage, and the chunk count.
+        Positions whose byte is unmappable are absent (the fallback scorer covers them)."""
+        spans = self.chunker.spans(data, aux=aux)
+        if len(spans) < 2:
+            raise ValueError(f"a sequence of {len(data)} bytes gives {len(spans)} chunks")
+        logits, cov = self._logits(spans)
+        ms, bs, pos = [], [], []
+        for m in range(len(spans) - 1):
+            t = spans[m + 1][0]; b = int(data[t])
+            if b in self.embedder.bmap:
+                ms.append(m); bs.append(b); pos.append(t)
+        if not ms:
+            raise ValueError("no mapped target bytes in this sequence")
+        pb = self.byte_head.byte_probs(logits[ms])
+        tb = torch.tensor(bs, device=pb.device)
+        nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12)).double().cpu().numpy().ravel()
+        return np.array(pos), nll, cov, len(spans)
+
     def first_byte_bpb(self, data, aux=None):
         """Bits per byte of the FIRST-byte predictions: position m predicts the next chunk's first
         byte, scored on the BYTE-MARGINALIZED head (ByteHead).  Targets without a single-byte token
@@ -258,6 +290,17 @@ class ChunkLM:
         nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12))
         tcov = len(ms) / max(len(spans) - 1, 1)
         return float(nll.sum() / len(ms)), len(ms), (cov, tcov)
+
+
+def effective_bpb(data, pos, chunk_nll, byte_nll_arr):
+    """THE comparable metric: total bits / total bytes for a chunked system.  Chunk-start positions
+    are scored by the chunk model; every other position (including unmapped-byte targets and the
+    periodic tail the chunker drops) falls back to the byte-level NLL.  Position 0 pays the uniform
+    8 bits for every system — so period-1, periodic-6, sim~6 and BPE all sit on the same axis."""
+    total = float(byte_nll_arr.sum())
+    total -= float(byte_nll_arr[pos].sum())
+    total += float(chunk_nll.sum())
+    return total / len(data)
 
 
 def qwen_byte_bpb(model, tok, data, device="cuda"):

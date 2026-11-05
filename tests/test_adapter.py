@@ -188,6 +188,35 @@ def test_pad_chunk_ids():
     assert ids.tolist() == [[1, 2], [999, 3]]               # 0x80 unmappable -> pad
 
 
+def test_effective_bpb_accounting():
+    """Boundary positions take the chunk model's NLL; every other position takes the byte-level
+    fallback; position 0 is uniform-8 for everyone."""
+    from src.adapter import effective_bpb
+    model, tok = FakeModel(), FakeTok()
+    lm = ChunkLM(model, tok, period=4, device="cpu", dtype=torch.float32)
+    lm1 = ChunkLM(model, tok, period=1, device="cpu", dtype=torch.float32)
+    data = b"ABCDEFGH"
+    nll_b = lm1.byte_nll(data)
+    assert nll_b[0] == 8.0                                # uniform prior on position 0
+    pos, cnll, cov, ns = lm.boundary_nll(data)
+    assert pos.tolist() == [4] and ns == 2                # ABCD|EFGH: one boundary at 'E'
+    eff = effective_bpb(data, pos, cnll, nll_b)
+    want = (nll_b.sum() - nll_b[4] + cnll.sum()) / 8
+    assert abs(eff - want) < 1e-9
+
+
+def test_effective_bpb_period1_is_byte_level():
+    """Period 1 predicts every position: effective bpb == the byte-level mean NLL exactly."""
+    from src.adapter import effective_bpb
+    model, tok = FakeModel(), FakeTok()
+    lm1 = ChunkLM(model, tok, period=1, device="cpu", dtype=torch.float32)
+    data = b"ABCDEFGH"
+    nll_b = lm1.byte_nll(data)
+    pos, cnll, cov, ns = lm1.boundary_nll(data)
+    assert len(pos) == len(data) - 1
+    assert abs(effective_bpb(data, pos, cnll, nll_b) - nll_b.mean()) < 1e-9
+
+
 def test_qwen_byte_bpb_accounting():
     """The same-weights reference: token CE weighted by each token's byte length, over total bytes."""
     model = FakeModel()

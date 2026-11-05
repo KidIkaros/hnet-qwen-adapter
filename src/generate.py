@@ -38,14 +38,15 @@ def generate(model, dec, proj, head, emb_ext, bmap, trunk_ctx, ctx_pairs,
         ctx, hs, lg = trunk_ctx(proj(base))                    # (M,D),(M,V); last pos predicts next
         b0 = _sample(head.byte_probs(lg[-1:].float())[0], temperature, top_k, rng)
         chunk = bytearray([b0])
-        ctx2 = ctx_pairs(ctx, dec.ctx0)[-1:]                   # (1,2,D) — ctx for this chunk
+        # (1,2,D) pair for the NEW chunk: [prev chunk's ctx = ctx[-1], this chunk's ctx = hs[-1]]
+        ctx2 = torch.stack([ctx[-1], hs[-1]]).unsqueeze(0)     # ctx[-1] is the zeros slot at M=0
         for _k in range(P - 1):
-            win = bytes(out[-(hist - 1):]) + bytes(chunk) if hist > 1 else bytes(chunk)
-            x = torch.tensor([[sos] + list(win)], device="cuda")
+            # the pair-window layout the decoder trained with: [SOS][prev chunk][this chunk so far]
+            prev = bytes(out[-P:])
+            x = torch.tensor([[sos] + list(prev) + list(chunk)], device="cuda")
             pad = torch.zeros(1, x.shape[1], dtype=torch.bool, device="cuda")
-            c2 = ctx2 if x.shape[1] > P else ctx2[:, 1:]       # prefix half only when hist>0
             with torch.no_grad():
-                logits = dec(c2, x, pad)
+                logits = dec(ctx2, x, pad)
             chunk.append(_sample(logits[0, -1].float(), temperature, top_k, rng))
         out += chunk
         ids = [bmap[b] for b in bytes(chunk) if b in bmap]

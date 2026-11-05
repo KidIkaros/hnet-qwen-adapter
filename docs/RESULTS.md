@@ -71,13 +71,16 @@ Frozen Qwen trunk + ridge-initialized patch map (~160k, 6 SGD epochs) + 4-layer 
 
 | corpus | stock BPE | byte-level | best constructed | **v2 composed** |
 |---|---|---|---|---|
-| markdown eval docs | 4.9226 | 5.5730 | 5.5558 | **5.0074** |
-| **hnet val split (cross-domain)** | **3.7560** | **4.3310** | **~4.59** | **4.1443** |
+| markdown eval docs | 4.9226 | 5.5730 | 5.5558 | **4.9400** (d384x6) |
+| **hnet val split (cross-domain)** | **3.7560** | **4.3310** | **~4.59** | **4.1309** (d384x6) |
 
+Decoder scaling ablation (same session): d256x4/4.87M → 5.0165/4.1819; d384x6/13.2M → 4.9400/4.1309.
 Trained on markdown, the system transfers to English: it beats byte-level and every constructed
-chunker on the published val split, and sits within **0.39 bits of stock BPE** on data it never
-trained on — a working tokenizer-free LM at ~3.3M glue parameters over a frozen 0.8B trunk.
-Decoder weights: `results/byte_decoder.pt`.
+chunker on the published val split, and sits within **0.37 bits of stock BPE** on data it never
+trained on — a working tokenizer-free LM at ~13.4M glue parameters over a frozen 0.8B trunk.
+Generation exists (`src/generate.py`, trunk proposes boundary bytes, decoder fills interiors) but
+output is fragmentary — the decoder's 12-byte context window can't sustain coherence; it's a
+scorer-grade artifact.  Weights: `results/byte_decoder.pt`.
 
 ## Caveats
 

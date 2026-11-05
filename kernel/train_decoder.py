@@ -61,12 +61,15 @@ sh("pip", "install", "-q", "datasets")
 from datasets import load_dataset  # noqa: E402
 
 wt = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1")
-wt_tr = [x.encode() for x in wt["train"]["text"] if len(x) >= 8192][:1200]
-wt_te = [x.encode() for x in wt["test"]["text"] if len(x) >= 8192][:24]
-train_docs = [x[:8192] for x in wt_tr]
+join = lambda rows, cap: b"\n".join(x.encode() for x in rows)[:cap]  # noqa: E731
+tr_j = join(wt["train"]["text"], 12_000_000)
+te_j = join(wt["test"]["text"], 600_000)
+train_docs = [tr_j[i:i + 8192] for i in range(0, len(tr_j) - 8192, 8192)]
+eval_docs = [te_j[i:i + 8192] for i in range(0, len(te_j) - 8192, 8192)]
+wt_te = eval_docs[3:]
+eval_docs = eval_docs[:3]
 train_docs += [open(f, "rb").read() for f in
                __import__("glob").glob("data/decontam/*.bin")]
-eval_docs = [x[:8192] for x in wt_te[:3]]
 print(f"[corpus] {len(train_docs)} train (wt103+decontam) + {len(eval_docs)} eval"
       f" + {len(wt_te)} wt-test held", flush=True)
 

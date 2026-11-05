@@ -47,18 +47,22 @@ the uniform 8 bits.  Every number below is on that one axis.
 
 Can the interface be built without gradient training?  Each map is scored on the same boundary task:
 
-| step | map | bpb | |
+| step | map | periodic-6 | sim~6 |
 |---|---|---|---|
-| hand-crafted | identity (sum) | 6.5483 | baseline |
-| | norm_match (median token-norm rescale) | 5.9277 | anomalous — RMSNorm should be scale-invariant |
-| | cov_recolor (whiten + recolor to token Σ) | 6.9935 | actively hurt |
-| closed-form | **ridge→BPE** (paired Procrustes: patch-sum → mean emb of covering BPE tokens) | **4.5760** | **~69% of the trained gap** |
-| SGD | rank-32 residual | 3.6838 | target |
+| hand-crafted | identity (sum) | 6.5483 | 4.1574 |
+| | norm_match (median token-norm rescale) | 5.9277 | 4.8373 |
+| | cov_recolor (whiten + recolor to token Σ) | 6.9935 | 3.5747 |
+| closed-form | **ridge→BPE** (paired Procrustes) | **4.5760** | **3.7443** |
+| SGD | rank-32 residual | 3.6838 | 2.6101 |
 
-**cos(ΔW, construction−I) ≈ 0 for every closed-form map** — the learned correction is a different
-direction in weight space than any statistical reshaping.  Paired Procrustes closes most of the gap
-by making patches "look like real tokens" (manifold matching); the trained map's residual ~31% is
-task-conditional and not recoverable from first/second-moment geometry.
+**cos(ΔW, construction−I) ≈ 0 for every closed-form map, under both chunkers** — the learned
+correction is a different direction in weight space than any statistical reshaping.  Paired
+Procrustes closes **~69%** of the gap under periodic boundaries but only **~27%** under sim~6:
+construction helps most where the base construction is weakest — good boundaries already do part
+of the manifold-matching work.  `norm_match` flips sign across chunkers (patch norm carries
+length signal under variable-length chunking, so uniformizing it destroys information);
+`cov_recolor` likewise flips (helps under sim, hurts under periodic) — whitening assumptions are
+chunker-dependent.
 
 ## Caveats
 

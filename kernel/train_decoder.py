@@ -40,7 +40,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
 src = snapshot_download("Qwen/Qwen3.5-0.8B")
 
 from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker  # noqa: E402
-from src.corpus import byte_token_map                             # noqa: E402
+from src.corpus import byte_token_map, ValDocs                    # noqa: E402
+from src.construct import ridge_to_bpe                            # noqa: E402
 from src.decoder import ByteDecoder, chunk_batch, pair_batch, SOS  # noqa: E402
 from src.learned import PatchProjection, byte_logprobs            # noqa: E402
 
@@ -109,8 +110,25 @@ def ctx_pairs(ctx, ctx0):
     return torch.cat([prev, ctx.unsqueeze(1)], dim=1)
 
 
-# ---- the patch map first (the v1 recipe, inline; env vars don't reach the remote kernel so this
-# is always on)
+# ---- ridge->BPE initialization: the closed-form floor before any SGD
+Xs, Ys = [], []
+for d in train_docs:
+    sp = spans_of(d)
+    Xs.append(base_sums(sp))
+    for _, c in sp:
+        tids = tok.encode(c.decode("latin-1"), add_special_tokens=False) or [0]
+        Ys.append(emb[torch.tensor(tids, device="cuda")].mean(0))
+X = torch.cat(Xs); Y = torch.stack(Ys)
+Wr = ridge_to_bpe(X, Y)(torch.eye(D, device="cuda"))           # the closed-form map
+dW = (Wr - torch.eye(D, device="cuda")).T                       # proj applies I + dW.T
+U, S, Vt = torch.linalg.svd(dW)
+r = 32
+sq = S[:r].sqrt()
+proj.A.data = U[:, :r] @ torch.diag(sq)
+proj.B.data = torch.diag(sq) @ Vt[:r, :]
+print(f"[init] ridge->BPE SVD-32 init (top sv {np.round(S[:4].cpu().numpy(),2)})", flush=True)
+
+# ---- a short SGD pass on top of the closed-form floor (the 'margin' the training buys)
 if True:
     opt = torch.optim.AdamW(proj.parameters(), lr=3e-3)
     for ep in range(6):
@@ -151,25 +169,33 @@ for ep in range(EPOCHS):
 print(f"[timing] decoder training {time.time() - t0:.0f}s", flush=True)
 
 # ---- the real full-byte eval
-tot_bits = tot_bytes = 0.0
-for d in eval_docs:
-    sp = spans_of(d)
-    base = base_sums(sp)
-    ctx, hs, lg = trunk_ctx(proj(base))
-    ctx2 = ctx_pairs(ctx, dec.ctx0)
-    bits = 8.0                                                 # byte 0: uniform
-    lp = byte_logprobs(lg[:-1], head.first)                    # boundary bytes by the trunk head
-    for j in range(len(sp) - 1):
-        bits += float(-lp[j, sp[j + 1][1][0]])
-    x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
-    with torch.no_grad():
-        logits = dec(ctx2, x, pad)
-    lsm = logits.float().log_softmax(-1)
-    bits += float(-lsm[lm, y[lm]].sum())
-    tot_bits += bits; tot_bytes += len(d)
+def full_byte_bpb(ds, label):
+    tot_bits = tot_bytes = 0.0
+    for d in ds:
+        sp = spans_of(d)
+        base = base_sums(sp)
+        ctx, hs, lg = trunk_ctx(proj(base))
+        ctx2 = ctx_pairs(ctx, dec.ctx0)
+        bits = 8.0                                             # byte 0: uniform
+        lp = byte_logprobs(lg[:-1], head.first)                # boundary bytes by the trunk head
+        for j in range(len(sp) - 1):
+            bits += float(-lp[j, sp[j + 1][1][0]])
+        x, y, pad, lm = [t.cuda() for t in pair_batch(d, sp, max_len=P)]
+        with torch.no_grad():
+            logits = dec(ctx2, x, pad)
+        lsm = logits.float().log_softmax(-1)
+        bits += float(-lsm[lm, y[lm]].sum())
+        tot_bits += bits; tot_bytes += len(d)
+    bpb = tot_bits / np.log(2) / tot_bytes
+    print(f"[v2] FULL-BYTE bpb on {label}: {bpb:.4f} ({tot_bytes:.0f} bytes)", flush=True)
+    return bpb
 
-print(f"\n[v2] FULL-BYTE bpb on eval docs: {tot_bits / np.log(2) / tot_bytes:.4f} "
-      f"(boundary=trunk, interior=decoder)", flush=True)
+
+full_byte_bpb(eval_docs, "eval docs (markdown)")
+if os.path.isdir("/content/val"):                             # cross-domain: trained on markdown,
+    vdocs = ValDocs("/content/val").docs(8, min_len=4096)       # eval on the published val split
+    full_byte_bpb(vdocs, "hnet val split (cross-domain)")
+
 print("[refs] byte-level 5.57 | constructed-sum eff 5.56 | v1 eff 5.27 | stock BPE 4.92 "
       "(eval docs)", flush=True)
 torch.save(dec.state_dict(), "/content/byte_decoder.pt")

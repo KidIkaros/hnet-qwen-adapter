@@ -50,12 +50,11 @@ class ByteHead:
         self._src = self._dst = None                       # lazily sized to the logits' width
         self._width = None
 
-    def byte_probs(self, logits):
-        """(M, V_logits) logits -> (M, 256) byte probabilities.  V_logits can exceed len(tok)
+    def byte_probs(self, logits, block=2048):
+        """(M, V_logits) logits -> (M, 256) byte probabilities, computed in row blocks so the
+        (M, V) softmax temporaries stay bounded on long docs.  V_logits can exceed len(tok)
         (transformers pads the vocab to a multiple of 256): the pad columns have no token and are
         excluded from every byte's mass."""
-        p = logits.softmax(-1)
-        out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=logits.dtype)
         if self._width != logits.shape[1]:
             first = self.first
             if first.numel() < logits.shape[1]:
@@ -65,8 +64,12 @@ class ByteHead:
             self._src = tok_ids
             self._width = logits.shape[1]
         src = self._src.to(logits.device)
-        out.index_add_(1, self._dst.to(logits.device), p[:, src])
-        return out
+        dst = self._dst.to(logits.device)
+        out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=logits.dtype)
+        for i in range(0, logits.shape[0], block):
+            p = logits[i:i + block].float().softmax(-1)
+            out[i:i + block].index_add_(1, dst, p[:, src])
+        return out.float()
 
 
 class PeriodicChunker:
@@ -216,7 +219,7 @@ class ChunkLM:
         pv, cov = self.embedder.embed_all([b for _, b in spans])  # (M, D) fp32
         with torch.no_grad():
             out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device, self.dtype))
-        return out.logits[0].float(), cov                       # (M, V_vocab)
+        return out.logits[0], cov                               # (M, V) model dtype — ByteHead blocks cast
 
     def first_byte_logits(self, data, aux=None):
         spans = self.chunker.spans(data, aux=aux)

@@ -79,7 +79,7 @@ else:
         if len(tr_j) > 12_000_000 and len(te_j) > 600_000:
             break
     tr_j, te_j = bytes(tr_j[:12_000_000]), bytes(te_j[:600_000])
-train_docs = [tr_j[i:i + 8192] for i in range(0, len(tr_j) - 8192, 8192)]
+train_docs = [tr_j[i:i + 8192] for i in range(0, len(tr_j) - 8192, 8192)][:600]
 eval_docs = [te_j[i:i + 8192] for i in range(0, len(te_j) - 8192, 8192)]
 wt_te = eval_docs[3:]
 eval_docs = eval_docs[:3]

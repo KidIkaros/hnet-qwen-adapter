@@ -89,9 +89,11 @@ def base_sums(spans):
     return emb_ext[ids.cuda()].sum(1)
 
 
-def trunk_ctx(patch):
-    """(M, D) trunk last-hidden per chunk position; ctx for chunk j = hidden[j-1] (j=0 -> ctx0)."""
-    with torch.no_grad():
+def trunk_ctx(patch, grad=False):
+    """(M, D) trunk last-hidden per chunk position; ctx for chunk j = hidden[j-1] (j=0 -> ctx0).
+    grad=True keeps the graph for the projection's backward pass."""
+    cm = torch.enable_grad() if grad else torch.no_grad()
+    with cm:
         out = model(inputs_embeds=patch.unsqueeze(0).to(torch.bfloat16),
                     output_hidden_states=True)
         hs = out.hidden_states[-1][0].float()                   # (M, D)
@@ -116,7 +118,7 @@ if True:
             sp = spans_of(d)
             base = base_sums(sp)
             patch = proj(base)
-            ctx, hs, lg = trunk_ctx(patch)
+            ctx, hs, lg = trunk_ctx(patch, grad=True)
             lp = byte_logprobs(lg[:-1], head.first)             # pos j-1 predicts chunk j's byte0
             tgt = torch.tensor([sp[j + 1][1][0] for j in range(len(sp) - 1)], device="cuda")
             loss = -lp[torch.arange(len(tgt)), tgt].mean()

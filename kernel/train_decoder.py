@@ -37,7 +37,7 @@ import numpy as np                                               # noqa: E402
 import torch.nn.functional as F                                  # noqa: E402
 from huggingface_hub import snapshot_download                    # noqa: E402
 from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
-MODEL_NAME = "Qwen/Qwen3.5-4B-Base"                      # the best byte-level trunk measured
+MODEL_NAME = "Qwen/Qwen3.5-0.8B"
 src = snapshot_download(MODEL_NAME)
 
 from src.adapter import ByteHead, PatchEmbedder, PeriodicChunker  # noqa: E402
@@ -64,6 +64,8 @@ joined = b"\n".join(buf)
 NDOCS = int(os.environ.get("NDOCS", "16"))
 docs = [joined[i:i + 8192] for i in range(0, len(joined) - 8192, 8192)][:NDOCS]
 train_docs, eval_docs = docs[:-3], docs[-3:]
+train_docs += [open(f, "rb").read() for f in
+               __import__("glob").glob("data/decontam/*.bin")]
 print(f"[corpus] {len(train_docs)} train + {len(eval_docs)} eval", flush=True)
 
 P = 6

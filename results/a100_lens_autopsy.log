@@ -1,0 +1,30 @@
+[colab] Creating session 'run-ce078d'...
+[colab] Session READY (run-ce078d). Executing kernel/lens_autopsy.py...
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[autopsy] ||dW||_F 8.47 | top sv [8.1599760055542, 2.165254592895508, 0.46754884719848633, 0.26688307523727417, 0.23247681558132172, 0.2144022136926651, 0.1821204274892807, 0.12946519255638123]
+[autopsy] energy: top8 0.906 top16 0.956
+[autopsy] reads (right-singular V rows: which tokens dW keys on):
+  V[0] sv=8.16 +["' '", "'-'", "'1'", "'2'", "'/'", "'c'", "' ('", "'m'"] -["'*”,'", "'*“.'", "'”…'", "'!”.'", "'**”,'", "' **:**'", "'*”.'", "'ingss'"]
+  V[1] sv=2.17 +["'e'", "'o'", "'a'", "'i'", "'h'", "'r'", "'eza'", "'t'"] -["'1'", "'.'", "'2'", "'0'", "'-'", "'3'", "'4'", "'8'"]
+  V[2] sv=0.47 +["'a'", "'i'", "'/'", "'-'", "' '", "'.'", "' cont'", "'e'"] -["'lename'", "'gica'", "'yps'", "'osas'", "'ifikationen'", "'베이스'", "'kelse'", '\'！",\'']
+  V[3] sv=0.27 +["'ئه'", "'quina'", '"\')("', '"\'l"', "'的一线'", "'estina'", "'工作经验者优先'", "'endam'"] -["' '", "'e'", "','", "'a'", "'s'", "'0'", "'.'", "'5'"]
+  V[4] sv=0.23 +["'n'", "'s'", "'m'", "'nc'", "'t'", "'ly'", "'ns'", "'н'"] -["'如对'", "'返'", "'中招'", "'ezi'", "'而与'", '\';"\'', '\'()"\'', "'Like'"]
+[autopsy] writes (left-singular U cols: which token-space dW writes toward):
+  U[0] sv=8.16 +["'ear'", "'ug'", "'arms'", "'reat'", "'stand'", "'antar'", "'eh'", "'need'"] -["' '", "'容器'", "' {'", "'周岁'", "'<|endoftext|>'", "' arbitrarily'", "'某'", "'.schema'"]
+  U[1] sv=2.17 +["'edas'", "'等新'", "'verb'", "' recher'", "'想出'", "'texte'", "' isto'", "':result'"] -["' '", "'1'", "'0'", "'>'", "'3'", "'2'", "'4'", "'5'"]
+  U[2] sv=0.47 +["'!'", "'new'", "'-'", "'`.'", '\'!".\'', "'ri'", '\'".\'', '\'."\''] -["'式设计'", "'óticos'", "'odoro'", "'ichtigen'", "'عث'", "'وده'", "'诗集'", "'филь'"]
+  U[3] sv=0.27 +["'ost'", "' ost'", "'旁'", "'ivol'", "'igned'", "' domain'", "'rol'", "' classification'"] -["'作出的'", "'工作是'", "'的操作'", "'包括但不限于'", "'issão'", "'操作的'", "'aksanaan'", "'adays'"]
+  U[4] sv=0.23 +["' '", "'/'", "' b'", "' in'", "' &'", "'&'", "'emia'", "' Bi'"] -["'#{@'", "'来看看'", "'有这样的'", "'來看看'", "' întâl'", "'就能看到'", "'們的'", "'簡單的'"]
+[autopsy] ||e @ dW.T|| mean: byte-tokens 1.129 (||e|| 0.635) vs other 0.499 (||e|| 0.651)
+[colab] Stopping session 'run-ce078d'...
+[colab] Session terminated.

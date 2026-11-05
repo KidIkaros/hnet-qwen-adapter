@@ -58,33 +58,40 @@ else:
     corpus_name = "hnet-kaggle markdown (OOD)"
 print(f"[corpus] {corpus_name}: {len(docs)} docs, {sum(len(d) for d in docs)} bytes", flush=True)
 
-# ---- the measurement: the same-position control, then the period x aggregation sweep
-# Period 1 is the control: each chunk IS one byte, so the adapter degenerates to "Qwen as a byte-level
-# model through the byte-fallback rows" — decomposing the v0 loss into granularity cost (period 1 vs
-# stock) + chunking cost (period >1 vs period 1).
+# ---- the measurement: stock control, then the construction sweep
+# Constructions under test (all training-free):
+#   chunkers:  periodic (baseline), EntropyChunker (BLT entropy patching — the period-1 byte-level
+#              Qwen supplies its own boundary scores), SimChunker (consecutive-embedding cosine sim —
+#              the streaming analog of LSA's Ward clustering).  Both adaptive chunkers calibrate their
+#              threshold to mean length ~6 -> the same compression ratio as period 6.
+#   patchers:  sum (LSA's centroid), mean, last (boundary-weighted exp-decay — ZHA's
+#              query-answerability insight: preserve what the prediction needs).
 NDOCS = int(os.environ.get("NDOCS", "8"))
 docs = docs[:NDOCS]
 
-print("[control] stock Qwen, same first-byte positions (byte-marginalized head at the byte-token that ENDS the chunk)", flush=True)
-
-
-from src.adapter import ByteHead                                    # noqa: E402
+from src.adapter import ByteHead, EntropyChunker, PeriodicChunker, SimChunker  # noqa: E402
 _shared_head = ByteHead(tok)
 
+lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=_shared_head)
+print("[entropy] byte-level scores from the period-1 model (BLT's estimator is our own adapter)", flush=True)
+entropy = [lm1.byte_entropy(d) for d in docs]
 
-def adapter_score(period, agg):
-    lm = ChunkLM(model, tok, period=period, agg=agg, byte_head=_shared_head)
-    tot = n = 0.0; covs = []; skipped = 0
-    for d in docs:
+
+def adapter_score(chunker, agg, need_aux):
+    lm = ChunkLM(model, tok, agg=agg, byte_head=_shared_head, chunker=chunker)
+    tot = n = 0.0; covs = []; skipped = 0; mlen = []
+    for i, d in enumerate(docs):
+        sc = entropy[i] if need_aux else None
         try:
-            bpb, k, c = lm.first_byte_bpb(d)
+            bpb, k, c = lm.first_byte_bpb(d, aux=sc)
             tot += bpb * k; n += k; covs.append(c)
+            mlen.append(len(d) / len(chunker.spans(d, aux=sc)))
         except ValueError as e:
             skipped += 1
-            print(f"        [skip] doc at period {period}/{agg}: {e}", flush=True)
+            print(f"        [skip] doc {i}: {e}", flush=True)
     ci = float(np.mean([c for c, _ in covs])) if covs else float("nan")
     ct = float(np.mean([t for _, t in covs])) if covs else float("nan")
-    return tot / max(n, 1), int(n), ci, ct, skipped
+    return tot / max(n, 1), int(n), ci, ct, skipped, float(np.mean(mlen)) if mlen else float("nan")
 
 
 t0 = time.time()
@@ -94,13 +101,21 @@ for d in docs:
     qb_tot += qb * len(d); qb_n += len(d)
 print(f"stock Qwen3.5-0.8B (native BPE): full-byte bpb {qb_tot / max(qb_n, 1):.4f} over {int(qb_n)} bytes", flush=True)
 
-print(f"\n{'period':>6} {'agg':>5} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7} {'skipped':>8}", flush=True)
+print(f"\n{'chunker':>10} {'agg':>5} {'mean_len':>8} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7} {'skip':>5}", flush=True)
+
+CONFIGS = []
 for period in (1, 2, 3, 6, 12):
-    for agg in ("sum", "mean"):
-        if period == 1 and agg == "mean":
-            continue                                    # sum == mean for one-byte chunks
-        bpb, n, ci, ct, sk = adapter_score(period, agg)
-        print(f"{period:>6} {agg:>5} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f} {sk:>8}", flush=True)
+    for agg in ("sum", "mean", "last"):
+        if period == 1 and agg != "sum":
+            continue                                    # one-byte chunks: mean == last == sum
+        CONFIGS.append((f"period={period}", PeriodicChunker(period), agg, False))
+for agg in ("sum", "mean", "last"):
+    CONFIGS.append(("entropy~6", EntropyChunker(target_mean=6.0, max_len=16), agg, True))
+    CONFIGS.append(("sim~6", SimChunker(lm1.embedder, target_mean=6.0, max_len=16), agg, False))
+
+for name, chunker, agg, need_aux in CONFIGS:
+    bpb, n, ci, ct, sk, ml = adapter_score(chunker, agg, need_aux)
+    print(f"{name:>10} {agg:>5} {ml:>8.2f} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f} {sk:>5}", flush=True)
 
 print(f"\ntrained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
 print(f"[timing] {time.time() - t0:.0f}s", flush=True)

@@ -9,7 +9,8 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.adapter import ChunkLM, PatchEmbedder, PeriodicChunker, qwen_byte_bpb   # noqa: E402
+from src.adapter import (ChunkLM, EntropyChunker, PatchEmbedder, PeriodicChunker,  # noqa: E402
+                         SimChunker, qwen_byte_bpb)
 from src.corpus import byte_token_map, bytes_to_token_ids                       # noqa: E402
 
 
@@ -127,6 +128,41 @@ def test_unmapped_chunk_becomes_zero_vector():
     bpb, n, (cov, tcov) = lm.first_byte_bpb(b"AB\x80CD")   # 0x80 is unmapped: 5 chunks, one hole
     assert cov == 0.8                                     # one of five chunks empty
     assert n == 3                                         # 4 prediction slots; the 0x80 target skipped
+
+
+def test_last_weighted_aggregation():
+    emb = PatchEmbedder(FakeModel(), FakeTok(), agg="last", decay=0.5)
+    v, cov = emb.embed(b"ABC")                            # ids 1,2,3 with weights .25/.5/1
+    want = 0.25 * emb.emb[1].float() + 0.5 * emb.emb[2].float() + 1.0 * emb.emb[3].float()
+    assert cov == 1.0 and torch.allclose(v, want)
+
+
+def test_entropy_chunker_boundaries():
+    ch = EntropyChunker(target_mean=3.0, min_len=1, max_len=16)
+    data = b"ABCDEFGH"
+    scores = np.array([-np.inf, 1, 9, 1, 1, 9, 1, 1])     # high entropy before bytes 2 and 5
+    spans = ch.spans(data, aux=scores)
+    assert [s for s, _ in spans] == [0, 2, 5]
+    assert bytes(spans[1][1]) == b"CDE"
+
+
+def test_sim_chunker_boundaries():
+    class StubEmbedder:
+        bmap = {ord(c): i for i, c in enumerate("AAaaBBbb")}   # A=0,1 a=2,3 B=4,5 b=6,7
+        emb = torch.tensor([[1., 0.]] * 4 + [[0., 1.]] * 4)    # A/a cluster on x, B/b on y
+    ch = SimChunker(StubEmbedder(), target_mean=4.0, min_len=1, max_len=16)
+    spans = ch.spans(b"AAaaBBbb")                          # sim 1 within groups, 0 across
+    starts = [s for s, _ in spans]
+    assert 4 in starts and len(spans) <= 4                  # cut at the A->B transition
+
+
+def test_variable_length_targets():
+    """With a non-periodic chunker the target is the next chunk's first byte wherever it starts."""
+    ch = EntropyChunker(target_mean=3.0, min_len=1, max_len=16)
+    lm = ChunkLM(FakeModel(), FakeTok(), agg="sum", device="cpu", dtype=torch.float32, chunker=ch)
+    scores = np.array([-np.inf, 1, 9, 1, 1, 9, 1, 1])
+    bpb, n, (cov, tcov) = lm.first_byte_bpb(b"ABCDEFGH", aux=scores)
+    assert n == 2 and tcov == 1.0                           # targets: 'C' (start 2) and 'F' (start 5)
 
 
 def test_qwen_byte_bpb_accounting():

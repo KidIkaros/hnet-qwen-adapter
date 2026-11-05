@@ -77,10 +77,77 @@ class PeriodicChunker:
         assert period >= 1
         self.period = period
 
-    def chunks(self, data):
+    def spans(self, data, aux=None):
         P = self.period
         n = (len(data) // P) * P
-        return [data[i:i + P] for i in range(0, n, P)]
+        return [(i, data[i:i + P]) for i in range(0, n, P)]
+
+    def chunks(self, data):
+        return [b for _, b in self.spans(data)]
+
+
+def _calibrated_spans(data, scores, target_mean, min_len, max_len, high_scores_cut):
+    """Shared boundary search for the adaptive chunkers: rank-select the ~n/target_mean most
+    boundary-worthy positions (deterministic, tie-robust), then a greedy walk honoring min/max
+    length.  `scores[t]` is the boundary-worthiness of cutting BEFORE byte t (-inf = never)."""
+    n = len(data)
+    n_cuts = max(int(round(n / target_mean)) - 1, 0)
+    cand = [t for t in range(max(min_len, 1), n) if np.isfinite(scores[t])]
+    key = (lambda t: -scores[t]) if high_scores_cut else (lambda t: scores[t])
+    cut_at = set(sorted(cand, key=key)[:n_cuts])
+    out, start = [], 0
+    for t in range(1, n):
+        L = t - start
+        if L >= max_len or (L >= min_len and t in cut_at):
+            out.append((start, data[start:t])); start = t
+    if start < n and n - start >= min_len:
+        out.append((start, data[start:n]))
+    return out
+
+
+class EntropyChunker:
+    """BLT's entropy patching (2412.09871 §2.3), training-free: cut before byte t when the next-byte
+    prediction entropy is high — unpredictable bytes open new chunks.  `aux` to spans() is the
+    per-position boundary score (scores[t] = entropy of predicting byte t); the number of cuts is
+    calibrated per document to hit ~`target_mean` — the same compression ratio as the periodic
+    baseline, the fair comparison.  The entropy source can be anything; the driver uses the period-1
+    ChunkLM itself (byte-level Qwen as its own boundary estimator)."""
+
+    def __init__(self, target_mean=6.0, min_len=1, max_len=16):
+        self.target_mean, self.min_len, self.max_len = target_mean, min_len, max_len
+
+    def spans(self, data, aux=None):
+        scores = aux
+        if scores is None or len(scores) != len(data):
+            raise ValueError("EntropyChunker needs a per-byte boundary-score array via aux")
+        return _calibrated_spans(data, np.asarray(scores, dtype=np.float64),
+                                 self.target_mean, self.min_len, self.max_len, True)
+
+
+class SimChunker:
+    """Streaming content-similarity chunker — the training-free analog of LSA's Ward clustering:
+    cut before byte t when consecutive byte-token embeddings are dissimilar (a semantic transition),
+    the number of cuts calibrated to `target_mean` for the same-compression comparison.  Positions
+    touching an unmappable byte are treated as unknown content -> eligible cuts."""
+
+    def __init__(self, embedder, target_mean=6.0, min_len=1, max_len=16):
+        self.embedder = embedder
+        self.target_mean, self.min_len, self.max_len = target_mean, min_len, max_len
+
+    def spans(self, data, aux=None):
+        emb = self.embedder.emb.float()
+        n = len(data)
+        scores = np.full(n, 0.0, dtype=np.float64)           # cos(e_{t-1}, e_t); low -> cut
+        prev = None
+        for t in range(n):
+            cur = self.embedder.bmap.get(data[t])
+            if prev is not None and cur is not None and t > 0:
+                a, b = emb[prev], emb[cur]
+                scores[t] = float((a @ b) / (a.norm() * b.norm() + 1e-12))
+            prev = cur
+        scores[0] = np.inf
+        return _calibrated_spans(data, scores, self.target_mean, self.min_len,
+                                 self.max_len, False)
 
 
 class PatchEmbedder:
@@ -91,12 +158,13 @@ class PatchEmbedder:
     ones are unprintable controls).
     """
 
-    def __init__(self, model, tok, agg="sum"):
-        assert agg in ("sum", "mean")
+    def __init__(self, model, tok, agg="sum", decay=0.5):
+        assert agg in ("sum", "mean", "last")
         self.bmap = byte_token_map(tok)
         self.emb = model.get_input_embeddings().weight          # (V_vocab, D), frozen
         self.D = self.emb.shape[1]
         self.agg = agg
+        self.decay = decay
 
     def embed(self, chunk):
         ids = [self.bmap[b] for b in chunk if b in self.bmap]
@@ -107,9 +175,18 @@ class PatchEmbedder:
             # the model sees at that position.  The coverage reports it; the doc is not dropped.
             return torch.zeros(self.D, dtype=torch.float32, device=self.emb.device), 0.0
         with torch.no_grad():
-            v = self.emb[ids].float().sum(0)                    # (D,) fp32 sum: ONE rounding, not five
-            if self.agg == "mean":
-                v = v / len(ids)
+            rows = self.emb[ids].float()
+            if self.agg == "last":
+                # Boundary-weighted (ZHA's query-answerability insight: preserve what the prediction
+                # needs — the bytes nearest the boundary): position i gets decay^(L-1-i).
+                w = torch.tensor([self.decay ** (len(chunk) - 1 - i)
+                                  for i, b in enumerate(chunk) if b in self.bmap],
+                                 dtype=rows.dtype, device=rows.device)
+                v = (rows * w[:, None]).sum(0)
+            else:
+                v = rows.sum(0)                               # (D,) fp32 sum: ONE rounding, not five
+                if self.agg == "mean":
+                    v = v / len(ids)
         return v, cov
 
     def embed_all(self, chunks):
@@ -126,35 +203,52 @@ class ChunkLM:
     """
 
     def __init__(self, model, tok, period=6, agg="sum", device="cuda", dtype=torch.bfloat16,
-                 byte_head=None):
+                 byte_head=None, chunker=None):
         self.model = model.eval().to(device, dtype)
         self.tok = tok
-        self.chunker = PeriodicChunker(period)
+        self.chunker = chunker if chunker is not None else PeriodicChunker(period)
         self.embedder = PatchEmbedder(self.model, tok, agg=agg)
         self.byte_head = byte_head if byte_head is not None else ByteHead(tok)
         self.period, self.device = period, device
         self.dtype = next(model.parameters()).dtype              # the model's native dtype (bf16)
 
-    def first_byte_logits(self, data):
-        chunks = self.chunker.chunks(data)
-        if len(chunks) < 2:
-            raise ValueError(f"a sequence of {len(data)} bytes gives {len(chunks)} chunks at period {self.period}")
-        pv, cov = self.embedder.embed_all(chunks)               # (M, D) fp32
+    def _logits(self, spans):
+        pv, cov = self.embedder.embed_all([b for _, b in spans])  # (M, D) fp32
         with torch.no_grad():
             out = self.model(inputs_embeds=pv.unsqueeze(0).to(self.device, self.dtype))
         return out.logits[0].float(), cov                       # (M, V_vocab)
 
-    def first_byte_bpb(self, data):
-        """Bits per byte of the FIRST-byte predictions: position m predicts byte (m+1)*P, scored on
-        the BYTE-MARGINALIZED head (ByteHead).  Targets without a single-byte token (unprintables,
-        UTF-8 continuation bytes at a chunk boundary — the byte-phase finding in action) are SKIPPED
-        and counted in the target coverage.  Returns (bpb, n_predictions, (input_coverage,
+    def first_byte_logits(self, data, aux=None):
+        spans = self.chunker.spans(data, aux=aux)
+        if len(spans) < 2:
+            raise ValueError(f"a sequence of {len(data)} bytes gives {len(spans)} chunks")
+        logits, cov = self._logits(spans)
+        return logits, cov
+
+    def byte_entropy(self, data):
+        """(T,) next-byte entropies from a period-1 run — the boundary scores an EntropyChunker
+        consumes.  scores[t] = entropy of predicting byte t."""
+        logits, _ = self.first_byte_logits(data)
+        pb = self.byte_head.byte_probs(logits)                   # (T, 256): pos m predicts byte m+1
+        ent = -(pb.clamp_min(1e-12).log2() * pb).sum(1).cpu().numpy()
+        scores = np.full(len(data), -np.inf)
+        scores[1:] = ent[:len(data) - 1]
+        return scores
+
+    def first_byte_bpb(self, data, aux=None):
+        """Bits per byte of the FIRST-byte predictions: position m predicts the next chunk's first
+        byte, scored on the BYTE-MARGINALIZED head (ByteHead).  Targets without a single-byte token
+        (unprintables, UTF-8 continuation bytes at a chunk boundary — the byte-phase finding in
+        action) are SKIPPED and counted in the target coverage.  `aux` is passed to the chunker
+        (EntropyChunker's boundary scores).  Returns (bpb, n_predictions, (input_coverage,
         target_coverage))."""
-        logits, cov = self.first_byte_logits(data)
-        chunks = self.chunker.chunks(data)
+        spans = self.chunker.spans(data, aux=aux)
+        if len(spans) < 2:
+            raise ValueError(f"a sequence of {len(data)} bytes gives {len(spans)} chunks")
+        logits, cov = self._logits(spans)
         ms, bs = [], []
-        for m in range(len(chunks) - 1):
-            b = int(data[(m + 1) * self.period])
+        for m in range(len(spans) - 1):
+            b = int(data[spans[m + 1][0]])
             if b in self.embedder.bmap:
                 ms.append(m); bs.append(b)
         if not ms:
@@ -162,7 +256,7 @@ class ChunkLM:
         pb = self.byte_head.byte_probs(logits[ms])               # (M', 256)
         tb = torch.tensor(bs, device=pb.device)
         nll = -torch.log2(pb.gather(1, tb[:, None]).clamp_min(1e-12))
-        tcov = len(ms) / max(len(chunks) - 1, 1)
+        tcov = len(ms) / max(len(spans) - 1, 1)
         return float(nll.sum() / len(ms)), len(ms), (cov, tcov)
 
 

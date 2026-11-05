@@ -80,16 +80,18 @@ class HNetQwen(nn.Module):
         every stride-th position globally visible, first `sinks` always visible —
         the LSA-style {sink + window + strided} pattern, O(T*(w + T/stride))."""
         neg = torch.finfo(torch.float32).min
+        dt = self.emb.weight.dtype
         if sparse is None:
-            return torch.triu(torch.full((T, T), neg, device=self.emb.weight.device),
-                              diagonal=1)[None, None]
+            m = torch.triu(torch.full((T, T), neg,
+                                      device=self.emb.weight.device), diagonal=1)
+            return m[None, None].to(dt)
         w, stride, sinks = sparse
         idx = torch.arange(T, device=self.emb.weight.device)
         vis = (idx[None, :] <= idx[:, None])                       # causal
         win = (idx[:, None] - idx[None, :]) < w                    # within window
         glob = (idx[None, :] % stride == 0) | (idx[None, :] < sinks)
         allow = vis & (win | glob)
-        return torch.where(allow, 0.0, neg)[None, None].to(self.emb.weight.dtype)
+        return torch.where(allow, 0.0, neg)[None, None].to(dt)
 
     def run_stack(self, layers, hs, causal=True, sparse=None):
         """Run a stack of decoder layers on (1, T, D) hidden states."""

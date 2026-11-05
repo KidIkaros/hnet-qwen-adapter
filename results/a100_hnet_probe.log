@@ -1,10 +1,91 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [slice] 24 layers -> enc 4 + main 6 + dec 4  (DeltaNet 18 / attn 6)
 [probe] doc 3520 bytes
-[forward] logits (1, 3520, 248320) | 587 chunks (mean 6.0 B)
-[debug] bp (3520, 256) nll mean 4.614 nats max 13.4
-[score] byte bpb 6.6573
-[random-route] 718 chunks (mean span 4.9 B)
+[sweep] full/sparse main x prev/retrieve ctx, periodic-6 route
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_2267/1597369743.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m     68[0m     [0;32mfor[0m [0mctx[0m[0;34m,[0m [0mtag_c[0m [0;32min[0m [0;34m([0m[0;34m([0m[0;34m"prev"[0m[0;34m,[0m [0;34m"prev-chunk"[0m[0;34m)[0m[0;34m,[0m [0;34m([0m[0;34m"retrieve"[0m[0;34m,[0m [0;34m"retrieve-all"[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     69[0m         [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 70[0;31m             logits, bnd, spans = hn(byte_ids, boundaries=b6,
+[0m[1;32m     71[0m                                     sparse=sparse, ctx=ctx)
+[1;32m     72[0m         print(f"  {tag_s:>14} | {tag_c:<14} byte bpb {score(logits):.4f} "
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries, sparse, ctx)[0m
+[1;32m    154[0m         [0;31m# pool: encoder hidden state at each chunk's LAST byte[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    155[0m         [0mpatch[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mstack[0m[0;34m([0m[0;34m[[0m[0menc[0m[0;34m[[0m[0mb[0m [0;34m-[0m [0;36m1[0m[0;34m][0m [0;32mfor[0m [0m_[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m[0;34m[[0m[0;32mNone[0m[0;34m][0m  [0;31m# (1, C, D)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 156[0;31m         [0mglob[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mrun_stack[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mmain[0m[0;34m,[0m [0mpatch[0m[0;34m,[0m [0msparse[0m[0;34m=[0m[0msparse[0m[0;34m)[0m[0;34m[[0m[0;36m0[0m[0;34m][0m  [0;31m# (C, D)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    157[0m         [0mctx_v[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mdechunk[0m[0;34m([0m[0mglob[0m[0;34m)[0m                            [0;31m# (C, D)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    158[0m         [0mx[0m [0;34m=[0m [0mhs[0m[0;34m.[0m[0mclone[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mrun_stack[0;34m(self, layers, hs, causal, sparse)[0m
+[1;32m    100[0m             1, 1, T, T, device=hs.device, dtype=hs.dtype)
+[1;32m    101[0m         [0;32mfor[0m [0mlayer[0m [0;32min[0m [0mlayers[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 102[0;31m             hs = layer(hs, position_embeddings=pos_emb, attention_mask=mask,
+[0m[1;32m    103[0m                        position_ids=pos)
+[1;32m    104[0m         [0;32mreturn[0m [0mhs[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/modeling_layers.py[0m in [0;36m__call__[0;34m(self, *args, **kwargs)[0m
+[1;32m    109[0m [0;34m[0m[0m
+[1;32m    110[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_gradient_checkpointing_func[0m[0;34m([0m[0mpartial[0m[0;34m([0m[0msuper[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0m__call__[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m,[0m [0;34m*[0m[0margs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 111[0;31m         [0;32mreturn[0m [0msuper[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0m__call__[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    112[0m [0;34m[0m[0m
+[1;32m    113[0m [0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mforward[0;34m(self, hidden_states, position_embeddings, attention_mask, position_ids, past_key_values, **kwargs)[0m
+[1;32m    882[0m         [0;32melif[0m [0mself[0m[0;34m.[0m[0mblock_type[0m [0;34m==[0m [0;34m"full_attention"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    883[0m             [0;31m# Self Attention[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 884[0;31m             hidden_states, _ = self.self_attn(
+[0m[1;32m    885[0m                 [0mhidden_states[0m[0;34m=[0m[0mhidden_states[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    886[0m                 [0mattention_mask[0m[0;34m=[0m[0mattention_mask[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/models/qwen3_5/modeling_qwen3_5.py[0m in [0;36mforward[0;34m(self, hidden_states, position_embeddings, attention_mask, past_key_values, **kwargs)[0m
+[1;32m    791[0m         )
+[1;32m    792[0m [0;34m[0m[0m
+[0;32m--> 793[0;31m         attn_output, attn_weights = attention_interface(
+[0m[1;32m    794[0m             [0mself[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    795[0m             [0mquery_states[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/transformers/integrations/sdpa_attention.py[0m in [0;36msdpa_attention_forward[0;34m(module, query, key, value, attention_mask, dropout, scaling, is_causal, position_bias, cache, **kwargs)[0m
+[1;32m    172[0m         [0mis_causal[0m [0;34m=[0m [0;32mFalse[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    173[0m [0;34m[0m[0m
+[0;32m--> 174[0;31m     attn_output = torch.nn.functional.scaled_dot_product_attention(
+[0m[1;32m    175[0m         [0mquery[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    176[0m         [0mkey[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[0;31mRuntimeError[0m: invalid dtype for bias - should match query's dtype

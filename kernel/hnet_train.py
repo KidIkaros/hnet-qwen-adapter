@@ -9,6 +9,7 @@ next iteration).  ~60 docs, few steps — smoke test: does the loop run,
 does loss drop, does it fit?
 """
 import os, subprocess, sys
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 REPO = "/content/qt/hnet-qwen-adapter"
 
@@ -61,8 +62,9 @@ print(f"[train] {MODEL} | {len(hn.layers)} layers | "
 
 # ---- data: decontam docs for the dry run (no external download needed)
 all_docs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))]
-fit_docs = all_docs[:4]
-train_docs, held_docs = all_docs[4:38], all_docs[38:44]
+fit_docs = [d[:4096] for d in all_docs[:4]]
+train_docs = [d[:4096] for d in all_docs[4:38]]
+held_docs = [d[:4096] for d in all_docs[38:44]]
 print(f"[data] {len(train_docs)} train + {len(held_docs)} held + "
       f"{len(fit_docs)} adapter-fit docs", flush=True)
 
@@ -110,7 +112,9 @@ enc_resid = (Yin[:len(Xenc)] - Xin[:len(Xenc)]).to(torch.bfloat16)
 hn.w_enc = ridge_to_bpe(Xenc[:200_000].to(torch.bfloat16), enc_resid[:200_000])
 print("[fit] w_in/w_out/w_enc ridges fit (frozen during training)", flush=True)
 
-# ---- trainable: enc, dec, dechunk, boundary
+# ---- trainable: enc, dec, dechunk, boundary — with grad checkpointing
+for layer in list(hn.enc) + list(hn.dec):
+    layer.gradient_checkpointing_enable()
 trainable = list(hn.enc.parameters()) + list(hn.dec.parameters()) + \
     list(hn.dechunk.parameters()) + list(hn.boundary.parameters())
 for p in trainable:

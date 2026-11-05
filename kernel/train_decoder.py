@@ -143,6 +143,9 @@ for d in train_docs:
         tids = tok.encode(c.decode("latin-1"), add_special_tokens=False) or [0]
         Ys.append(emb[torch.tensor(tids, device="cuda")].mean(0))
 X = torch.cat(Xs); Y = torch.stack(Ys)
+if len(X) > 300_000:                                          # ridge fit: subsample (closed-form)
+    idx = torch.randperm(len(X), device="cuda")[:300_000]
+    X, Y = X[idx], Y[idx]
 Wr = ridge_to_bpe(X, Y)(torch.eye(D, device="cuda"))           # the closed-form map
 dW = (Wr - torch.eye(D, device="cuda")).T                       # proj applies I + dW.T
 U, S, Vt = torch.linalg.svd(dW)

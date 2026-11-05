@@ -65,7 +65,7 @@ class ByteHead:
             self._width = logits.shape[1]
         src = self._src.to(logits.device)
         dst = self._dst.to(logits.device)
-        out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=logits.dtype)
+        out = torch.zeros(logits.shape[0], 256, device=logits.device, dtype=torch.float32)
         for i in range(0, logits.shape[0], block):
             p = logits[i:i + block].float().softmax(-1)
             out[i:i + block].index_add_(1, dst, p[:, src])

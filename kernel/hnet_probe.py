@@ -41,7 +41,7 @@ model = AutoModelForCausalLM.from_pretrained(src, dtype=torch.bfloat16).cuda().e
 for p in model.parameters():
     p.requires_grad_(False)
 bmap = byte_token_map(tok)
-hn = HNetQwen(model, tok, bmap).cuda()
+hn = HNetQwen(model, tok, bmap, dec_layers=14).cuda()
 hn.dechunk.weight.data.zero_()          # zero-init: ctx is a no-op at t=0
 head = ByteHead(tok)
 from src.learned import byte_logprobs                          # noqa: E402

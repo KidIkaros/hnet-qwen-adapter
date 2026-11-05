@@ -1,19 +1,14 @@
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
-Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
-  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [probe] 8192 real bytes
-[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
-[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
-  periodic-6 full|prev    byte bpb 14.2573 (1366 ch, 6.0B)
-  periodic-6 full|retr    byte bpb 13.8929 (1366 ch, 6.0B)
-  periodic-6 sparse|retr  byte bpb 13.8457 (1366 ch, 6.0B)
-  spacelike  full|prev    byte bpb 14.5132 (2374 ch, 3.5B)
-  spacelike  full|retr    byte bpb 13.9695 (2374 ch, 3.5B)
-  spacelike  sparse|retr  byte bpb 13.8807 (2374 ch, 3.5B)
-  sim        full|prev    byte bpb 14.4464 (2984 ch, 2.7B)
-  sim        full|retr    byte bpb 14.0494 (2984 ch, 2.7B)
-  sim        sparse|retr  byte bpb 14.3693 (2984 ch, 2.7B)
+  periodic-6 full|prev    byte bpb 14.1989 (1366 ch, 6.0B)
+  periodic-6 full|retr    byte bpb 14.1989 (1366 ch, 6.0B)
+  periodic-6 sparse|retr  byte bpb 14.1989 (1366 ch, 6.0B)
+  spacelike  full|prev    byte bpb 14.1989 (2374 ch, 3.5B)
+  spacelike  full|retr    byte bpb 14.1989 (2374 ch, 3.5B)
+  spacelike  sparse|retr  byte bpb 14.1989 (2374 ch, 3.5B)
+  sim        full|prev    byte bpb 14.1989 (2984 ch, 2.7B)
+  sim        full|retr    byte bpb 14.1989 (2984 ch, 2.7B)
+  sim        sparse|retr  byte bpb 14.1989 (2984 ch, 2.7B)

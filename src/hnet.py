@@ -71,6 +71,8 @@ class HNetQwen(nn.Module):
         self.dechunk = nn.Linear(text.config.hidden_size,
                                  text.config.hidden_size, bias=False)
         self.hidden = text.config.hidden_size
+        dt = self.emb.weight.dtype                              # match checkpoint dtype
+        self.boundary.to(dt); self.dechunk.to(dt)
 
     # ---- stage helpers -----------------------------------------------------
     def run_stack(self, layers, hs, causal=True):

@@ -1,0 +1,60 @@
+[colab] Creating session 'run-b5ea6e'...
+[colab] Session READY (run-b5ea6e). Executing kernel/hnet_probe.py...
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[slice] 24 layers -> enc 4 + main 6 + dec 4  (DeltaNet 18 / attn 6)
+[probe] doc 3520 bytes
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_461/623427647.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m     60[0m [0mb6[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mT[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0;34m"cuda"[0m[0;34m)[0m[0;34m;[0m [0mb6[0m[0;34m[[0m[0;34m:[0m[0;34m:[0m[0;36m6[0m[0;34m][0m [0;34m=[0m [0;36m1.0[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     61[0m [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 62[0;31m     [0mlogits[0m[0;34m,[0m [0mbnd[0m[0;34m,[0m [0mspans[0m [0;34m=[0m [0mhn[0m[0;34m([0m[0mbyte_ids[0m[0;34m,[0m [0mboundaries[0m[0;34m=[0m[0mb6[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     63[0m print(f"[forward] logits {tuple(logits.shape)} | {len(spans)} chunks "
+[1;32m     64[0m       f"(mean {np.mean([b - a for a, b in spans]):.1f} B)", flush=True)
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries)[0m
+[1;32m    114[0m         [0mpatch[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mstack[0m[0;34m([0m[0;34m[[0m[0menc[0m[0;34m[[0m[0mb[0m [0;34m-[0m [0;36m1[0m[0;34m][0m [0;32mfor[0m [0m_[0m[0;34m,[0m [0mb[0m [0;32min[0m [0mspans[0m[0;34m][0m[0;34m)[0m[0;34m[[0m[0;32mNone[0m[0;34m][0m  [0;31m# (1, C, D)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    115[0m         [0mglob[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mrun_stack[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mmain[0m[0;34m,[0m [0mpatch[0m[0;34m)[0m[0;34m[[0m[0;36m0[0m[0;34m][0m            [0;31m# (C, D)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 116[0;31m         [0mctx[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mdechunk[0m[0;34m([0m[0mglob[0m[0;34m)[0m                              [0;31m# (C, D)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    117[0m         [0;31m# decoder: byte emb + dechunked ctx of the PREVIOUS chunk[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    118[0m         [0mx[0m [0;34m=[0m [0mhs[0m[0;34m.[0m[0mclone[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/linear.py[0m in [0;36mforward[0;34m(self, input)[0m
+[1;32m    132[0m         [0mRuns[0m [0mthe[0m [0mforward[0m [0;32mpass[0m[0;34m.[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    133[0m         """
+[0;32m--> 134[0;31m         [0;32mreturn[0m [0mF[0m[0;34m.[0m[0mlinear[0m[0;34m([0m[0minput[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mweight[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mbias[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    135[0m [0;34m[0m[0m
+[1;32m    136[0m     [0;32mdef[0m [0mextra_repr[0m[0;34m([0m[0mself[0m[0;34m)[0m [0;34m->[0m [0mstr[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;31mRuntimeError[0m: expected mat1 and mat2 to have the same dtype, but got: c10::BFloat16 != float
+[colab] Stopping session 'run-b5ea6e'...
+[colab] Session terminated.

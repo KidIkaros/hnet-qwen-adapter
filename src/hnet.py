@@ -160,7 +160,7 @@ class HNetQwen(nn.Module):
         # pool: encoder hidden state at each chunk's LAST byte
         patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
         if self.w_main is not None:
-            patch = patch @ self.w_main
+            patch = self.w_main(patch)
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
         ctx_v = self.dechunk(glob)                            # (C, D)
         x = hs.clone()
@@ -174,13 +174,13 @@ class HNetQwen(nn.Module):
             for ci, (a, b) in enumerate(spans):
                 if ci > 0:
                     x[0, a:b] += ctx_v[ci - 1]
-        hs_dec = x if self.w_in is None else (x @ self.w_in.T)
+        hs_dec = x if self.w_in is None else self.w_in(x)
         for layer in self.dec:
             hs_dec = layer(hs_dec, position_embeddings=None,
                            attention_mask=None, position_ids=None)
         out = self.norm(hs_dec)
         if self.w_out is not None:
-            out = out @ self.w_out.T
+            out = self.w_out(out)
         if head_first is not None:                            # chunked byte log-probs
             from .learned import byte_logprobs
             bp = torch.cat([byte_logprobs(self.lm_head(

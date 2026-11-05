@@ -4,19 +4,17 @@ Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [adapt] 8 docs
 [transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [adapt] pairs 65536 | dec_start 5 main_start 3 | w_main pairs 5460
-[0;31m---------------------------------------------------------------------------[0m[0;31mAttributeError[0m                            Traceback (most recent call last)[0;32m/tmp/ipykernel_713/3692775416.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[0;31m---------------------------------------------------------------------------[0m[0;31mAttributeError[0m                            Traceback (most recent call last)[0;32m/tmp/ipykernel_1330/3692775416.py[0m in [0;36m<cell line: 0>[0;34m()[0m
 [1;32m    137[0m [0;32mfor[0m [0mwm[0m[0;34m,[0m [0mtag_m[0m [0;32min[0m [0;34m([0m[0;34m([0m[0;32mNone[0m[0;34m,[0m [0;34m"no w_main"[0m[0;34m)[0m[0;34m,[0m [0;34m([0m[0mhn[0m[0;34m.[0m[0mw_main[0m[0;34m,[0m [0;34m"+w_main"[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 [1;32m    138[0m     [0;32mfor[0m [0mctx[0m[0;34m,[0m [0mtag_c[0m [0;32min[0m [0;34m([0m[0;34m([0m[0;34m"prev"[0m[0;34m,[0m [0;34m"prev"[0m[0;34m)[0m[0;34m,[0m [0;34m([0m[0;34m"retrieve"[0m[0;34m,[0m [0;34m"retrieve"[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 [0;32m--> 139[0;31m         print(f"[adapt] {tag_m:<10} | {tag_c:<8} byte bpb {eval_bpb(wm, ctx):.4f}",
 [0m[1;32m    140[0m               flush=True)
-[0;32m/tmp/ipykernel_713/3692775416.py[0m in [0;36meval_bpb[0;34m(w_main, ctx)[0m
+[0;32m/tmp/ipykernel_1330/3692775416.py[0m in [0;36meval_bpb[0;34m(w_main, ctx)[0m
 [1;32m    129[0m     [0mhn[0m[0;34m.[0m[0mw_main[0m [0;34m=[0m [0mw_main[0m[0;34m[0m[0;34m[0m[0m
 [1;32m    130[0m     [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 [0;32m--> 131[0;31m         bp, _, _ = hn(byte_ids, boundaries=b6, ctx=ctx,

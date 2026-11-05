@@ -1,0 +1,132 @@
+�� 59 個核心單字與片語，涵蓋音標、詞性、中譯、情境例句與字根記憶法。
+   - 內建瀏覽器原生 **Web Speech API 真人美式發音**（支援單字與完整例句朗讀）。
+   - 支援四大主題分類篩選、即時關鍵字搜尋、以及「待加強弱點本 / 已熟記」進度追蹤（自動保存於 `localStorage`）。
+   - 支援 **3D 翻轉閃卡模式**（可使用鍵盤 `←` `→` 切換與 `空白鍵` 翻面）。
+
+2. **閱讀理解挑戰 (Reading Comprehension)**
+   - 將全部核心字彙自然融入一篇科技職場實境短文《From Process Crisis to Triumph》。
+   - **互動式單字點擊彈窗**：點擊文章中任何高亮單字，即時聽發音並檢視字義與記憶技巧。
+   - 附帶 3 題上下文推論選擇題與即時批改解析。
+
+3. **聽力與口說訓練腳本 (Listening & Shadowing Studio)**
+   - 雙人工程師情境對話（Jamie & Alex），支援**分角色自動連播**與**單句跟讀 (Shadowing)**。
+   - 支援語速調整（`0.75x` / `0.9x` / `1.0x` / `1.15x`）與中英對照切換。
+   - 內建 3 組**互動式聽力填空 (Dictation)** 即時檢核。
+
+4. **綜合測驗中心 (Interactive Quiz & Weak-Word Booster)**
+   - **Part A**：字義配對與語境選擇題（5 題）
+   - **Part B**：上下文字首提示填空題（5 題）
+   - **Part C**：翻譯與指定單字造句題（2 題，具備指定關鍵字自動檢核與參考範本）
+   - **智慧弱點強化**：答錯的題目會自動收錄至「待加強弱點本」，並可點擊 **「⚡ 專攻待加強單字測驗」** 動態生成個人化複習考卷。
+
+## 🚀 本地端執行方式
+
+### 方法一：直接開啟
+直接在檔案總管雙擊 [index.html](file:///e:/AI%20agent/vocabulary%20review/index.html) 即可在瀏覽器中使用所有功能。
+
+### 方法二：使用本地端 HTTP 伺服器（推薦）
+```bash
+# 若已安裝 Python
+python -m http.server 8080
+
+# 或使用 Node.js npx
+npx serve .
+```
+接著於瀏覽器開啟 `http://localhost:8080`。
+
+## 📦 部署至 GitHub Pages
+1. 將本資料夾初始化為 Git 儲存庫並推送至 GitHub：
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit: Interactive Vocabulary Learning App"
+   git branch -M main
+   git remote add origin https://github.com/<你的帳號>/<你的倉庫名稱>.git
+   git push -u origin main
+   ```
+2. 進入 GitHub Repository → **Settings** → **Pages**，在 **Build and deployment** 選擇 `Deploy from a branch`（`main` / `root`），儲存後即可獲得線上版網址！
+
+
+
+---
+
+# test-repo-02
+fullsend behaviour test slot lease=0960d7f2fb08cd2e3d73863c58a1bb8d
+
+
+---
+
+# Crypto FCL — Funding-Crowding Long/Short (paper test di HYPE)
+
+> Dokumen lengkap (riset, keputusan, arsitektur, runbook): [docs/PROJECT%20CRYPTO%20-%20FCL.md](docs/PROJECT%20CRYPTO%20-%20FCL.md). Arsip riset: [research/](research/).
+
+Bot **paper trading** untuk strategi FCL hasil riset Alpha Hunt 24 Okt 2026. Laporan lengkap:
+`C:\Crypto data\backtest data and more\Alpha Hunt CHOP-30 20261024.md` (§6) dan
+`Alpha Hunt - Perbandingan RNT, Fat Tail, Uji Hipotesis 20261024.md`.
+
+- Modal paper **200 USD**, eksekusi (nanti) di **HYPE (Hyperliquid)**.
+- **Tanpa VPS**: semua jalan di GitHub Actions (repo publik = menit Actions tidak terbatas).
+- **Tanpa akses Binance**: funding Binance dibaca dari API HYPE (`predictedFundings`, venue `BinPerp`).
+- Telegram dan Google Sheets (mirror `equity`, `orders`, `stops`, `targets`) terpasang; wallet HYPE **menyusul**. Catatan resmi tetap `state/`.
+
+## Aturan strategi (FCL v1.0, sama dengan yang di-backtest)
+
+| Item | Aturan |
+|---|---|
+| Koin | 91 perp HYPE di `coins.csv` (beku). Koin HYPE dikeluarkan karena tidak punya funding Binance di API |
+| Universe | Sudah trading di HYPE ≥ 60 hari, top 50 menurut median volume USD 30 hari, cakupan data funding ≥ 70% |
+| Sinyal | **F14** = funding Binance 14 hari (rata-rata per jam × 336) |
+| Short | k koin F14 **tertinggi** (long ber-leverage yang ramai). Dilewati: koin dengan return 14 hari di 10% teratas (anti-squeeze) dan koin yang kena stop sejak rebalance sebelumnya |
+| Long | k koin F14 **terendah** |
+| k | `min(floor(N/3), max(4, floor(ekuitas / 25)))`. Di $200, k = 8, jadi 16 posisi × $12,50 |
+| Bobot | Sama rata, +50% long / −50% short (dollar-neutral, gross 1×) |
+| Stop | Short ditutup kalau harga ≥ entry × 1,40 (+0,5% slippage) |
+| Order | Selisih < $10 tidak di-trade (kecuali buka/tutup). Biaya paper 0,065%/sisi + funding HYPE riil per jam |
+
+Hasil riset (akun $200, biaya HYPE):
+
+| Periode | Hasil | Sharpe | MaxDD |
+|---|---|---|---|
+| Backtest 2020-03 → 2024-12 | $200 → $868 | 1,64 | −27% |
+| Forward 2025-01 → 2026-10 | $200 → $373 | 2,33 | −6,6% |
+
+Periode forward sangat menguntungkan strategi ini (alt −57%). **Ekspektasi realistis: Sharpe 1–1,5, DD 15–30%.**
+
+## Jadwal: rebalance 15:20 WIB (08:20 UTC)
+
+Alasan tidak memakai 07:00 WIB (00:00 UTC):
+1. **Sinyal paling segar.** Funding Binance settle pukul 00/08/16 UTC untuk koin 8 jam, dan tiap 4 jam untuk koin 4 jam. Pukul 08:20 UTC settlement 08:00 sudah masuk ledger, jadi tidak ada bagian sinyal yang masih "predicted".
+2. **Menghindari jam 00:00 UTC.** Close candle harian adalah jam tersibuk: banyak bot (termasuk RNT dan RMF Anda) rebalance di menit yang sama, spread melebar, dan Telegram Anda paling ramai.
+3. **Strategi ini lambat.** Di backtest, sinyal yang telat 1 hari tetap memberi Sharpe 1,65 (vs 1,61). Candle harian yang dipakai untuk momentum dan volume berumur 8 jam, dan itu tidak berpengaruh.
+4. **Jam yang nyaman.** Sore WIB: Asia masih aktif, sebelum lonjakan volatilitas pembukaan bursa AS (20:30 WIB), dan Anda masih terjaga untuk mengecek.
+
+## Cara kerja (tanpa VPS)
+
+```
+bot.yml (cron 7,37 * * * *) -> watcher hidup ~5,5 jam, siklus tiap 10 menit,
+                               bangun juga 5 menit sebelum tiap settlement Binance (kelipatan 4 jam UTC)
+  └─ run_cycle.py
+       1. predictedFundings HYPE -> snapshot funding Binance -> state/funding_ledger.csv saat settlement lewat
+       2. buku paper: mark harga mid, cek stop, funding HYPE per jam
+       3. sekali per hari >= 08:20 UTC: candle harian HYPE -> universe, momentum, F14 -> rebalance paper
+       4. outbox Telegram, log state/runs.csv
+  └─ tools/save_state.sh  commit state/ ke repo
+watchdog.yml   alarm + nyalakan watcher baru kalau state tidak diperbarui > 90 menit
+control.yml    ganti mode (off / paper)
+bootstrap.yml  isi ulang ledger funding dari arsip Binance kalau bot lama mati
+ci.yml         tes offline
+```
+
+**Kenapa bisa tanpa VPS:** cron GitHub memang sering telat atau terlewat, jadi bot dirancang tetap berjalan walaupun ada siklus yang hilang.
+- Watcher menyalakan penggantinya sendiri, dan watchdog menjadi cadangan.
+- Snapshot funding yang terlewat cukup dilewati: F14 adalah rata-rata dari jam yang tercatat.
+- Uji IS: sinyal dari 1 snapshot per hari tetap memberi Sharpe 1,71. Dengan 20–40% hari terlewat, Sharpe 1,24–1,35.
+
+**Bootstrap:** arsip Binance tidak punya funding harian, jadi `tools/bootstrap_funding.py` merekonstruksi 16 hari terakhir dari arsip premium index Binance.
+- Validasi September 2026: korelasi 0,94 dengan funding asli (jumlah bulanan).
+- Study case 25 Okt 2026: korelasi ranking F14 harian 0,81 (2025–26) / 0,90 (2020–24). Sinyal 100% arsip memberi Sharpe forward 1,1–1,2 (asli 2,33): layak sebagai cadangan sementara, bukan pengganti (`research/alpha_20261024/stats/archive_signal_study.py`).
+- Baris `bootstrap` otomatis tergantikan oleh rekaman bot (`predicted`). Setelah 14 hari, sinyal 100% dari rekaman bot.
+
+**Kalau HYPE berhenti memberi funding Binance** (`predictedFundings` error atau `BinPerp` hilang untuk > 50% koin):
+- Mark harga, stop short, dan funding HYPE tetap jalan; satu kali gagal hanya dicatat di log.
+- Putus ≥ 8 jam: alarm (tiap 6 jam), siklus dihitung error (run Actions merah), dan ledger diisi otomatis dari arsip premium index Binance (`fclbot/bootstrap.py`, tiap 6 jam, maks 5 hari per percobaan). Arsip satu hari baru terbit 1–2 hari kemudian, jadi beberapa hari terakhir F14 bolong; syarat cakupan 70% menahan cel

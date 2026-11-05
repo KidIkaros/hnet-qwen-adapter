@@ -1,0 +1,141 @@
+"""Decontaminated eval: stock vs byte-level vs ridge-constructed on post-cutoff data.
+
+    colab run --gpu A100 kernel/decontam_eval.py
+
+data/decontam/*.bin = arxiv abstracts + GitHub READMEs created in the last ~45 days —
+safely post-cutoff.  If stock collapses here relative to the val split, the val numbers were
+memorization.  Models: the interesting axis only (0.8B, 0.8B-Base, 4B-Base).
+"""
+import os, subprocess, sys, glob
+
+REPO = "/content/qt/hnet-qwen-adapter"
+MODELS = ["Qwen/Qwen3.5-0.8B", "Qwen/Qwen3.5-0.8B-Base", "Qwen/Qwen3.5-4B-Base"]
+
+
+def sh(*cmd):
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print(r.stdout[-2000:]); print(r.stderr[-4000:], flush=True)
+        raise SystemExit(f"FAILED: {' '.join(cmd)}")
+    return r.stdout
+
+
+for url, path in (("https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO),
+                  ("https://github.com/KidIkaros/hnet-kaggle.git", "/content/qt/hnet-kaggle")):
+    if os.path.exists(path):
+        sh("git", "-C", path, "pull", "-q")
+    else:
+        sh("git", "clone", "-q", url, path)
+sys.path.insert(0, REPO)
+os.chdir(REPO)
+
+import torch                                                     # noqa: E402
+import numpy as np                                               # noqa: E402
+import gc                                                        # noqa: E402
+from huggingface_hub import snapshot_download                    # noqa: E402
+from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
+
+from src.adapter import ByteHead, ChunkLM, PatchEmbedder, PeriodicChunker  # noqa: E402
+from src.corpus import byte_token_map, ValDocs                    # noqa: E402
+from src.construct import ridge_to_bpe                            # noqa: E402
+from src.learned import byte_logprobs                             # noqa: E402
+
+ddocs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))]
+vdocs = ValDocs("/content/val").docs(8, min_len=4096) if os.path.isdir("/content/val") else []
+# markdown train docs for the ridge fit (same as before)
+buf = []
+for name in sorted(os.listdir("/content/qt/hnet-kaggle/docs")):
+    if name.endswith(".md"):
+        buf.append(open(os.path.join("/content/qt/hnet-kaggle/docs", name), "rb").read())
+joined = b"\n".join(buf)
+train_docs = [joined[i:i + 8192] for i in range(0, len(joined) - 8192, 8192)][:13]
+P = 6
+print(f"[corpus] {len(ddocs)} decontam docs ({sum(len(d) for d in ddocs)} B), "
+      f"{len(vdocs)} val, {len(train_docs)} fit docs", flush=True)
+
+
+def run(name):
+    try:
+        src = snapshot_download(name)
+        tok = AutoTokenizer.from_pretrained(src)
+        model = AutoModelForCausalLM.from_pretrained(src, dtype=torch.bfloat16).cuda().eval()
+        for p in model.parameters():
+            p.requires_grad_(False)
+    except Exception as e:
+        print(f"{name:>26}  LOAD FAIL {type(e).__name__}", flush=True)
+        return
+    try:
+        bmap = byte_token_map(tok)
+        pe = PatchEmbedder(model, tok)
+        head = ByteHead(tok)
+        emb = pe.emb.detach().float().cuda()
+        PAD = emb.shape[0]
+        emb_ext = torch.cat([emb, torch.zeros(1, emb.shape[1], device="cuda")])
+        chunker = PeriodicChunker(P)
+        lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=head)
+
+        def base_sums(spans):
+            ids = torch.full((len(spans), P), PAD, dtype=torch.long)
+            for m, (_, c) in enumerate(spans):
+                for i, b in enumerate(c[:P]):
+                    if b in bmap:
+                        ids[m, i] = bmap[b]
+            return emb_ext[ids.cuda()].sum(1)
+
+        Xs, Ys = [], []
+        for d in train_docs:
+            sp = chunker.spans(d)
+            Xs.append(base_sums(sp))
+            for _, c in sp:
+                tids = tok.encode(c.decode("latin-1"), add_special_tokens=False) or [0]
+                Ys.append(emb[torch.tensor(tids, device="cuda")].mean(0))
+        ridge = ridge_to_bpe(torch.cat(Xs), torch.stack(Ys))
+
+        def metrics(ds):
+            stock_bits = byte_eff = ridge_bits = tot_bytes = 0.0
+            for d in ds:
+                tot_bytes += len(d)
+                ids = torch.tensor(tok.encode(d.decode("latin-1"),
+                                                add_special_tokens=False))
+                with torch.no_grad():
+                    lg = model(input_ids=ids[None].cuda()).logits[0].float()
+                nll = -lg.log_softmax(-1)[:-1].gather(1, ids[1:].cuda().unsqueeze(1))
+                stock_bits += float(nll.sum()); del lg, nll
+                fb = lm1.byte_nll(d)
+                byte_eff += 8.0 + float(fb.sum())
+                sp = chunker.spans(d)
+                base = base_sums(sp)
+                ms, bs, pos = [], [], []
+                for m in range(len(sp) - 1):
+                    b = int(sp[m + 1][1][0])
+                    if b in bmap:
+                        ms.append(m); bs.append(b); pos.append(sp[m + 1][0])
+                if ms:
+                    with torch.no_grad():
+                        patch = ridge(base).to(torch.bfloat16).unsqueeze(0)
+                        lg = model(inputs_embeds=patch,
+                                   logits_to_keep=torch.tensor(ms, device="cuda")
+                                   ).logits[0].float()
+                    lp = byte_logprobs(lg, head.first)
+                    nll = -lp[torch.arange(len(bs), device="cuda"),
+                              torch.tensor(bs, device="cuda")]
+                    ridge_bits += 8.0 + float(fb.sum() - fb[np.array(pos)].sum()
+                                              + float(nll.sum()))
+                    del lg, lp
+                torch.cuda.empty_cache()
+            return (stock_bits / np.log(2) / tot_bytes, byte_eff / tot_bytes,
+                    ridge_bits / tot_bytes)
+
+        s, b, r = metrics(ddocs)
+        sv, bv, rv = metrics(vdocs) if vdocs else (float("nan"),) * 3
+        print(f"{name:>26}  DECONTAM: stock {s:.4f} byte {b:.4f} ridge {r:.4f} | "
+              f"val: {sv:.4f} {bv:.4f} {rv:.4f}", flush=True)
+    except torch.cuda.OutOfMemoryError:
+        print(f"{name:>26}  OOM", flush=True)
+    finally:
+        del model
+        gc.collect(); torch.cuda.empty_cache()
+
+
+for m in MODELS:
+    run(m)

@@ -1,0 +1,109 @@
+lih tanggal, unduh Excel, segar tiap menit.
+   Sesi Kegiatan punya saringan **Sedang latihan mandiri**.
+2. Soal muncul satu per satu. Jawaban diketik lewat papan angka di layar.
+   Untuk soal pecahan ada kotak bilangan bulat, pembilang, dan penyebut.
+   Untuk pembagian bersisa ada kotak **hasil bagi** dan **sisa** (47 ÷ 5 = 9 sisa 2).
+3. **Benar**: lanjut ke nomor berikutnya.
+   **Salah**: siswa diberi tahu jawabannya, beserta saran bila kesalahannya
+   dikenali (tanda negatif, urutan operasi, belum paling sederhana, dll.).
+   Soalnya diganti yang baru, nomornya tetap sama.
+4. Salah **lebih dari 3 kali** di satu level (bisa diubah): level diulang dari
+   nomor 1.
+5. Sesi kelompok berakhir bersama sesi yang dibuka guru (termasuk tambah/kurangi
+   waktu); "Lama satu sesi" hanya bawaan pilihan lama sesi saat membuka sesi dan
+   lama latihan mandiri (sejak 20 Okt 2026; dulu ikut memotong sesi tiap siswa).
+   Setelah waktu habis, keluar, atau sesi tertutup, tingkat, level, **nomor soal,
+   dan hitungan salah** tetap tersimpan (`mtd_posisi.nomor`, `salah`); saat masuk
+   lagi siswa melanjutkan dari nomor terakhir. Nomor kembali ke 1 hanya bila naik
+   level, salah melewati batas, atau posisi/tahapan ditetapkan ulang (pemicu
+   `mtd_posisi_nomor_awal`). Masuk lagi untuk melanjutkan tidak menambah percobaan.
+   Satu NISN satu sesi: masuk di HP/tab lain menutup sesi sebelumnya
+   (`mtd_sesi.alasan = 'perangkat_lain'`; HP yang tergeser diberi tahu, dan Sesi
+   Kegiatan menandai siswa yang tergeser ≥ 2 kali sejak pertemuan terakhir).
+   "Sedang berlatih" di Sesi Kegiatan = sesi berjalan dan ada soal baru dalam
+   15 menit terakhir.
+   Perkembangan Siswa (Per Siswa) dimuat ulang diam-diam setiap tab dibuka lagi bila datanya
+   lebih dari 1 menit; jam pembaruan terakhir tertulis di bawah judul (21 Okt 2026).
+   Papan peringkat (Tampilkan teratas) menghitung "siswa sudah menjawab" = minimal satu
+   jawaban sejak sesi dibuka, jadi bisa kurang dari "sedang berlatih" selama ada siswa
+   yang baru masuk dan belum menjawab soal pertamanya.
+6. Sinyal tersendat saat mengirim jawaban: halaman mengirim ulang sendiri (sampai 3 kali,
+   jeda acak; permintaan yang menggantung dibatalkan setelah 15 detik). Jawaban yang
+   ternyata sudah tercatat **tidak dinilai dua kali**: halaman mengirim ID soal yang
+   dijawab (`p_soal`), dan bila soalnya sudah berganti server hanya membalas keadaan
+   terkini. Siswa melihat "Jawabanmu tadi sudah tercatat" lalu lanjut ke soal berikutnya.
+
+## Pembahasan dan Tinjau kesalahanku (19 Okt 2026)
+
+Keputusan user: **hanya di latihan mandiri**, tidak di sesi kelompok (juga tidak di tes
+pengelompokan/ujian), supaya sesi tetap mengukur kemampuan.
+
+- **Pembahasan langkah demi langkah** (`assets/bahas.js`): saat siswa salah di latihan mandiri,
+  kartu "Belum tepat" punya lipatan **📘 Lihat cara mengerjakan** — cara bersusun (dengan simpanan),
+  porogapit, aturan tanda, urutan operasi, samakan penyebut/KPK, kebalikan pecahan, sederhanakan
+  dengan FPB, operasi kebalikan untuk □. Langkah yang berkaitan dengan jenis kesalahan siswa disorot
+  "← perhatikan". Disusun di peramban dari soal + kunci yang **sudah** dikirim server sesudah menjawab
+  (tidak ada kunci baru yang bocor); bila siswa/guru menyembunyikan jawaban benar, pembahasan juga
+  tidak tampil. Hasil hitungan pembahasan selalu dicocokkan dengan kunci server — bila beda atau
+  bentuk soal belum dikenali, pembahasan tidak tampil. **Cakupan: seluruh MD10 (16 tingkat) dan MD11
+  (9 tingkat, 20 Okt 2026)**, diuji 5.040 soal MD10 + 3.600 soal MD11 acak → semua berpembahasan dan cocok.
+  MD11: koma lurus/samakan angka di belakang koma, kali tanpa koma lalu pasang koma, pembagi dijadikan
+  bulat, hasil antara tak berhenti ditulis pecahan, persen/pecahan → desimal, bandingkan lewat desimal,
+  soal cerita persen (diskon bertingkat, untung/rugi dibanding harga beli, kenaikan dibanding nilai awal),
+  notasi baku (arah geser koma → tanda pangkat; koma melewati angka mana saja), sifat eksponen.
+  **MD12 (5 tingkat, 20 Okt 2026)**, diuji 2.160 soal acak: PLSV (buka kurung, hilangkan pecahan dengan KPK,
+  pindah ruas berganti tanda, bagi koefisien, periksa), SPLDV (substitusi; eliminasi + substitusi, periksa di
+  persamaan lain), soal cerita (misalkan x, y → model → selesaikan; umur "… tahun lalu/lagi"), pola bilangan
+  (aturan dicari dari suku yang diketahui: beda, rasio, Fibonacci, selisih bertingkat, ×m + c, operasi
+  bergantian, dua pola berselang), penarikan kesimpulan (p, q dinamai; ponens/tollens/silogisme/kuantor/
+  kesetaraan/ingkaran; pilihan siswa yang keliru dijelaskan). Baris "Jadi …" tampil sebagai kotak kesimpulan.
+  20 Okt 2026 ditemukan & diperbaiki: soal SPLDV dengan ruas kanan 0 tertulis "x − y = " (migrasi
+  `20261020100000_matdas_spldv_ruas_kanan_nol_ditulis`; belum ada jawaban K12-02 di data).
+  Uji coba guru juga menampilkannya; di halaman guru, **Contoh → Tampilkan Jawaban** menampilkan
+  pembahasan yang sama (dilipat per soal, tidak ikut Mode Layar Penuh).
+- **📖 Tinjau kesalahanku** (kartu di latihan mandiri): soal yang salah di **5 sesi kelompok terakhir**
+  yang sudah selesai dan ada salahnya (sesi terbaru terbuka, lainnya terlipat), dengan jawaban siswa,
+  jawaban benar, saran, dan pembahasan. **Coba soal serupa**: server membuat satu soal baru dari level
+  yang sama (kunci tetap di server, tanpa batas waktu per soal); benar → ditandai **✓ sudah dipahami**;
+  salah → pembahasan + "Coba soal serupa lagi". Tidak mengubah kemajuan, nilai resmi, maupun
+  `mtd_jawaban`; catatannya di tabel `mtd_tinjau` (dilihat, paham, banyak coba).
+  Fungsi: `mtd_tinjau_daftar`, `mtd_tinjau_lihat`, `mtd_tinjau_coba`, `mtd_tinjau_jawab` (hanya
+  token latihan mandiri yang masih berjalan; sesi kelompok yang masih berjalan tidak ikut).
+- **Guru melihat hasilnya** (20 Okt 2026): Analisis Siswa → kartu Latihan mandiri → bagian **Tinjau kesalahan
+  sesi kelompok** (soal salah di 5 sesi terakhir, pembahasan dibuka, sudah dipahami, soal serupa dijawab; kunci `tinjau`
+  di `mtd_detail_mandiri`, migrasi `20261020120000`), dan Catatan otomatis menyebut "Belum meninjau …". Panduan
+  guru (docx/pdf) diperbarui: 1.3, 4.5, 5.2.
+- Syarat terlihat siswa: Pengaturan Umum → Halaman Latihan → **Latihan mandiri di luar sesi kelompok**
+  harus **boleh** (19 Okt 2026 di server masih mati).
+
+## Soal dibuat otomatis
+
+Soal tidak diketik guru. Server membuatnya acak dari aturan tiap level, yang
+mengikuti pola kotak di *Modul Matdas Kelas 10*. Contoh Penjumlahan Dasar:
+level 1 = 1 angka + 1 angka, level 2 = 2 angka + 1 angka, …, level 10 =
+4 angka + 4 angka. Pembagian Dasar level 10 adalah pembagian bersisa
+(3 angka ÷ 1 angka); sisa yang tidak lebih kecil dari pembagi dikenali sebagai
+jenis kesalahan tersendiri. Soal yang pernah dijawab siswa tidak diberikan lagi
+kepadanya di level itu. Pengecualian: level yang kemungkinan soalnya memang
+sedikit, misalnya 1 angka ÷ 1 angka yang hanya punya 23 pasangan.
+
+Kunci jawaban diperiksa di server dan **tidak pernah dikirim ke peramban
+sebelum siswa menjawab**.
+
+Isi saat ini:
+
+- **MD10** (Modul Kelas 10): 16 tingkat, 126 level (bilangan bulat, positif-negatif,
+  operasi gabungan, pecahan). Dua tingkat melatih mencari bilangan yang hilang,
+  masing-masing 10 level dari 1 angka & 1 angka sampai 3 angka & 3 angka, tanpa
+  bilangan negatif maupun koma:
+  - ke-3 *Kombinasi Penjumlahan dan Pengurangan* (setelah Penjumlahan dan
+    Pengurangan Dasar): □ + 3 = 8, 54 − □ = 29, …
+  - ke-6 *Kombinasi Perkalian dan Pembagian* (setelah Perkalian dan Pembagian
+    Dasar): □ × 6 = 42, 42 ÷ □ = 6, □ ÷ 6 = 7, … (pembagian selalu habis).
+- **MD11** (Modul Kelas 11), tahap A: 6 tingkat, 46 level: penjumlahan, pengurangan,
+  perkalian, pembagian desimal (satuan … ribuan), gabungan desimal, dan operasi
+  campuran pecahan, desimal, persen. Pembagian selalu menghasilkan desimal yang
+  berhenti. Jawaban dinilai dari nilainya: 0,75 = 3/4 = 75% sama-sama benar
+  (papan angka soal desimal punya tombol **,** **/** **%**). Kesalahan letak koma
+  dan persen yang belum diubah dikenali.
+- **MD12** (Modul Kelas 12), tahap A: 3 tingkat, 19 

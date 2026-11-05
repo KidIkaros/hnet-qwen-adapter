@@ -1,0 +1,76 @@
+﻿# NCD Evidence
+
+เว็บถามตอบจากเอกสาร NCD ภาษาไทย ผู้ใช้ถามคำถาม อ่านคำตอบ และเปิดข้อความต้นทางเพื่อตรวจบริบทได้ ระบบใช้ Gemma ผ่าน class proxy, hybrid retrieval และการตรวจข้อความอ้างอิง
+
+## เริ่มอ่านจากตรงไหน
+
+- [รายงาน PDF ฉบับส่ง — 8 หน้า](docs/submission/NCD_EVIDENCE_SUBMISSION_67070060.pdf) · [ต้นฉบับข้อความ](docs/PROJECT_REPORT_SUBMISSION_TH.md)
+- [ผลประเมินปัจจุบัน](docs/CAPSTONE_CURRENT_EVALUATION_TH.md): เปรียบเทียบการค้นสองแบบบนระบบที่ใช้ส่งงาน
+- [การเทียบ agent รุ่นเก่ากับปัจจุบัน](docs/PAIRED_AGENT_EVALUATION_TH.md): คำถามเดียวกัน 60 คู่ ปิดแคชทั้งคู่ ตรวจครบแล้ว ได้ 56/60 เท่ากัน
+- [คำศัพท์และวิธีอ่านเลขรุ่น](docs/READING_GUIDE_TH.md): React, pipeline, รหัสคำถามและแหล่งอ้างอิง
+- [รายละเอียดทางเทคนิคและประวัติผล](docs/TECHNICAL_RESULTS_TH.md)
+- [สถานะคลิปสาธิตและขอบเขตของภาพ REPLAY](docs/DEMO_STATUS_TH.md)
+- [ที่มาของข้อมูลและส่วนที่นำมาใช้](docs/WORKFLOW_AND_REUSE_TH.md)
+
+## ระบบทำงานอย่างไร
+
+React ส่งคำถามไปยัง FastAPI แล้ว Gemma เรียก `search_docs` ระบบค้นด้วย bge-m3 ร่วมกับ BM25 และจัดอันดับข้อความซ้ำเมื่อเปิด reranker คำตอบผ่านการตรวจ schema และ citations ก่อนแสดงพร้อมหลักฐาน คำถามแต่ละข้อทำงานแยกกัน ไม่มีความจำบทสนทนาข้ามคำถาม
+
+React สร้างหน้าเว็บ เช่น ช่องถาม ปุ่ม และแผงหลักฐาน ส่วน FastAPI รับคำขอฝั่งเซิร์ฟเวอร์ และ Gemma เป็นโมเดลที่ใช้ตอบ ภาพ pipeline คือแผนผังลำดับการทำงานของส่วนเหล่านี้ ไม่ใช่ชื่อเทคโนโลยีหรือรูปที่ React สร้างเอง
+
+**ReAct agent loop** เป็นอีกคำหนึ่ง: โมเดลเลือกเรียกเครื่องมือ รับผลค้นกลับมา แล้วตัดสินใจตอบหรือค้นต่อ แอปใช้วงรอบเรียก `search_docs` ที่จำกัดจำนวนครั้งและตรวจผลก่อนส่งกลับผู้ใช้ ส่วน React ที่สะกดต่างกันเป็นเทคโนโลยีหน้าเว็บ ข้อความ trace แสดงเหตุการณ์เรียกเครื่องมือและตรวจคำตอบ ไม่ใช่ความคิดภายในโมเดล
+
+รุ่นส่งงานใช้ **การค้นแบบผสม (hybrid) และเปิดการจัดอันดับหลักฐานซ้ำ (reranker)** เป็นค่าเริ่มต้น ผู้ใช้ปิดการจัดอันดับซ้ำได้ ผลหลักที่อ้างในงานนี้มาจากรอบ `capstone-current-v2` ซึ่งเป็นชื่อรอบทดลอง ไม่ใช่รุ่นของโมเดล คะแนน v30/v32 เป็นประวัติการทดลองที่เงื่อนไขต่างกัน ดูคำอธิบายในคู่มือด้านบน
+
+เว็บไม่อ่านหรือเขียนแคชคำตอบและคะแนน reranker ในเครื่อง การปิด reranker ข้ามขั้นตอนจัดอันดับซ้ำ แต่ไม่ได้รับประกันว่าคำตอบจะเหมือนเดิมหรือเร็วขึ้นเท่ากันทุกครั้ง
+
+## ติดตั้งและเปิดใช้งาน
+
+เครื่องที่ใช้ตรวจเป็น Windows กับ Python 3.12 ต้องมีพื้นที่สำหรับข้อมูลและ model cache และมีบัญชี class proxy สำหรับเรียก Gemma ส่วน frontend ใช้ Node.js และ npm
+
+```powershell
+git clone https://github.com/Up2mEz/LLM-APP-END2END.git
+cd LLM-APP-END2END
+py -3.12 -m venv .venv312
+.venv312\Scripts\python -m pip install -r requirements-runtime.txt
+Copy-Item .env.example .env
+```
+
+หาก `py -3.12` หา Python ไม่พบ ให้ติดตั้ง Python 3.12 หรือใช้ `uv python install 3.12` แล้ว `uv venv --python 3.12 .venv312` แทนบรรทัดสร้าง environment
+
+ใส่ค่าของบัญชีใน `.env` และเก็บไฟล์นี้ไว้เฉพาะในเครื่อง
+
+```dotenv
+OPENAI_BASE_URL=https://llm.nat-d.uk/v1
+OPENAI_API_KEY=your-class-proxy-key
+NCD_MODEL=gemma-4-E4B-it
+```
+
+ดาวน์โหลดข้อมูลจาก release ที่ระบุใน manifest และเตรียมโมเดล:
+
+```powershell
+.venv312\Scripts\python -B scripts/public_data.py fetch
+$env:HF_HUB_OFFLINE = '0'
+.venv312\Scripts\python -B scripts/prepare_models.py
+$env:HF_HUB_OFFLINE = '1'
+$env:PYTHONPATH = "$PWD\src"
+.venv312\Scripts\python -B -m ncd_gemma.cli doctor --retrieval
+```
+
+สร้างหน้าเว็บแล้วเปิด backend:
+
+```powershell
+npm --prefix frontend ci
+npm --prefix frontend run build
+.\run.ps1
+```
+
+เปิด http://127.0.0.1:8765 การถามครั้งแรกอาจใช้เวลาโหลดโมเดลและ index หาก backend ยังไม่ได้โหลดไว้ ใช้ `npm --prefix frontend run dev` เมื่อต้องการพัฒนา frontend
+
+## การประเมิน pipeline ปัจจุบัน
+
+ประเมินด้วยคำถามและเฉลยที่ตรวจไว้ 30 ข้อจากชุดพัฒนา เปรียบเทียบการค้นด้วยความหมายอย่างเดียวกับการค้นแบบผสม ผ่านระบบค้นและเซิร์ฟเวอร์ปัจจุบัน ทั้งสองวิธีเปิดการจัดอันดับหลักฐานซ้ำและปิดแคช ใช้ GPT-6-Luna ตรวจคำตอบโดยไม่เห็นชื่อวิธีที่ใช้ ดู [วิธีทดลองและผลรายข้อ](docs/CAPSTONE_CURRENT_EVALUATION_TH.md) รหัสรอบนี้คือ `capstone-current-v2`
+
+| สิ่งที่วัด | ค้นด้วยความหมาย (วิธีตั้งต้น) | ค้นแบบผสม (วิธีที่เลือกใช้) |
+| --- | --- | --- |
+| ความครอบคลุมหลักฐานในห้าอันดับแ�

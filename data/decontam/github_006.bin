@@ -1,0 +1,86 @@
+level: Persamaan Linear Satu
+  Variabel (8 level, dari x + a = b sampai pecahan dan kurung di kedua ruas),
+  Sistem Persamaan Linear Dua Variabel (5 level; jawaban dua kotak x dan y), dan
+  Pola Bilangan (6 level: aritmetika, geometri, selisih bertingkat, ×m + c, operasi
+  bergantian, dua pola berselang/Fibonacci; 1–2 kotak suku yang hilang). Soal
+  disusun mundur dari jawaban bulat acak, jadi tiap level punya ratusan sampai
+  ribuan kemungkinan. Kesalahan x/y tertukar dan sebagian benar dikenali.
+- **MD12**, tahap B: Soal Cerita Sistem Persamaan Linear (4 level: harga satu barang,
+  harga gabungan, umur, umur dengan "… tahun yang lalu/lagi"; dirangkai dari kumpulan
+  barang, nama, harga, dan umur acak) dan Penarikan Kesimpulan (4 level, pilihan ganda
+  A–E: modus ponens/tollens, silogisme & kontraposisi, kuantor semua/sebagian,
+  kesetaraan & ingkaran). Pengecoh dibuat dari kesalahan logika umum (membalik
+  implikasi, menyangkal tanpa membalik, kuantor keliru) dan dikenali sebagai jenis
+  kesalahan; urutan pilihan diacak.
+- **MD12**, Statistika (K12-06, 8 level, 3 Nov 2026): soal **tetap** dari naskah guru, bukan buatan aturan.
+  Tabel `mtd_bank_soal` (800 soal, 100 per level, hanya lewat fungsi), aturan `{"jenis":"bank",…}`, bentuk `bank`
+  dengan jenis pg, kompleks (pilih semua yang benar), bs (benar/salah), dan isian (boleh koma). Yang belum pernah
+  muncul didahulukan menurut kode soal; urutan opsi diacak. Diagram di `assets/statistika/`, dan bila gagal dimuat
+  datanya tampil sebagai tabel. Pembahasan dari naskah diambil lewat `mtd_bank_pembahasan` (hanya latihan mandiri
+  dan uji coba guru). "Coba soal serupa" memakai soal sepola. Isi bank dibuat `database_tryout/alat/bank_statistika.js`
+  dari JSON naskah, termasuk koreksi STAT-L8-003. Membuka tingkat/level kini ikut melanjutkan siswa tahapan umum yang
+  sudah tamat.
+- **MD12**, Peluang (K12-07, 4 level, 3 Nov 2026): 400 soal bank tetap, cara kerja sama dengan Statistika. Isi dibuat
+  `database_tryout/alat/bank_soal.js`, diagram di `assets/peluang/` (kolom `gambar` memuat folder). Jenis baru
+  `pecahan`: isian berkunci pecahan dengan kotak pembilang dan penyebut; nilai sama tetapi belum sederhana dinilai
+  "Belum paling sederhana". Gambar soal yang gagal dimuat dicoba ulang 2 kali otomatis, lalu menampilkan tabel datanya
+  (atau pesan bila tanpa tabel) dengan tombol "Muat ulang gambar".
+- **MD12**, Aljabar (K12-10, 5 level, 3 Nov 2026): 500 soal bank tetap, cara kerja sama, gambar di `assets/aljabar/`
+  (35 berkas yang dirujuk naskah; zip naskah memuat 50 berkas lain yang tidak dipakai).
+- **MD12**, Bilangan (K12-09, 4 level, 3 Nov 2026): 400 soal bank tetap, cara kerja sama, diagram di `assets/bilangan/`.
+  BLGN-L4-096 dikoreksi lewat `database_tryout/alat/koreksi_bilangan.json` (pembahasan 0,124).
+- **MD11**, Persentase dalam Kehidupan level 7 (K11-08, 5 Nov 2026): 100 soal bank tetap, narasi gabungan level 1–6, jawaban isian angka; level 1–6 tetap buatan aturan. Dibuat `database_tryout/alat/bank_persen_l7.js` (20 pola × 5 cerita; 50 soal sedikit lebih panjang; kunci dihitung dua jalan), lalu `alat/bank_soal.js`. Dipasang tertutup.
+- **MD12**, Geometri dan Pengukuran (K12-11, 6 level, 5 Nov 2026): 600 soal bank tetap, 50% PG dan 50% isian, 480 gambar SVG di `assets/geometri/`. Dibuat `database_tryout/alat/bank_geometri.js` (60 pola × 10 soal; tiap pola punya pemeriksaan balik), lalu `alat/bank_soal.js`. Dipasang tertutup.
+- **MD12**, Soal Cerita Sistem Persamaan Linear level 5 (K12-03, 5 Nov 2026): 100 soal bank tetap, narasi gabungan level 1–4, jawaban isian angka; level 1–4 tetap buatan aturan. Dibuat `database_tryout/alat/bank_spl_l5.js` (50 soal satu sistem persamaan, 50 soal dua tahap), lalu `alat/bank_soal.js`. Dipasang tertutup.
+- **MD12**, Pola Gambar (K12-04 level 7–8, 5 Nov 2026): 198 soal bank tetap, level 1–6 tetap buatan aturan. Opsi berupa gambar disimpan `gambar:pola_gambar/<berkas>` (`bankOpsiIsi` di umum.js),
+  1.180 PNG di `assets/pola_gambar/`. Dibuat `database_tryout/alat/bank_pola_gambar.js` lalu `alat/bank_soal.js`; PGBR-L1-073 dan 074 kembar dibuang. Dipasang tertutup.
+- **MD12**, Penarikan Kesimpulan level 5 (K12-05, 5 Nov 2026): 90 soal bank tetap, sedangkan level 1–4 tetap buatan aturan. Dibuat `database_tryout/alat/bank_penarikan_kesimpulan.js`
+  (dari naskah 100 soal: 9 kembar dan nomor 10 dibuang; koreksi tercatat di alat itu; huruf opsi dibuang dari pembahasan karena opsi diacak), lalu `alat/bank_soal.js`.
+  Baris baru naskah soal bank kini tampil (`.bank-baris`). Dipasang tertutup.
+- **MD12**, Barisan dan Deret (K12-08, 5 level, 3 Nov 2026): 500 soal bank tetap, cara kerja sama. Diagram di
+  `assets/barisan/`. BRSN-L5-007 dan BRSN-L5-034 dikoreksi lewat `database_tryout/alat/koreksi_barisan.json` (data 400, 600, 900, 1.350; kunci 5.275).
+- **MD11**, tahap B: Mengurutkan Bilangan (3 level; campuran bulat, desimal, pecahan,
+  dan persen; siswa mengetuk bilangan sesuai urutan), Persentase dalam Kehidupan
+  (6 level: diskon, diskon bertingkat, untung/rugi, pajak & tip, nilai & kehadiran,
+  produksi & tabungan; kotak jawaban otomatis Rp atau %), dan Notasi Baku &
+  Eksponen (5 level: a × 10ⁿ bilangan besar dan kecil, × ÷ 10ⁿ, sifat eksponen,
+  pangkat nol/negatif/pecahan). Kesalahan urutan terbalik, belum notasi baku, dan
+  pangkat 10 salah dikenali.
+
+Ketiga modul (MD10, MD11, MD12) sudah lengkap.
+Di tab yang sama, tombol **Coba** membuka level itu di tab baru sebagai **uji coba guru**:
+guru mengerjakan soal seperti siswa tanpa akun siswa (akun sementara `UJI-…`, tidak
+masuk rekap, terhapus sendiri setelah sehari), tetap bisa walau Halaman Latihan ditutup.
+
+Tab **Tahapan Level** di `guru.html` menampilkan 10 soal acak (tombol **Contoh**)
+untuk setiap level, supaya guru bisa memeriksa kesesuaiannya dengan modul. Soal
+tampil tanpa jawaban; centang **Tampilkan Jawaban** untuk kuncinya (beserta
+pembahasan bila server mengirim kolom `pembahasan`), dan **Mode Layar Penuh** untuk
+memproyeksikannya: kisi simetris yang ukuran hurufnya menyesuaikan layar, dengan
+tombol ✕ / ← Kembali (atau Esc, atau tombol Kembali peramban) untuk kembali ke
+halaman sebelumnya.
+
+## Untuk guru
+
+Siswa dan guru memakai **satu alamat** yang sama. Guru mengetuk tautan
+**Guru / pengawas** di bawah kotak masuk siswa (seperti di Tryout), lalu masuk dengan PIN:
+
+- **PIN pribadi guru** (8 angka): **sama dengan PIN guru Asesmen Merdeka (Tryout)**, dibuat admin
+  Matdas (menu Admin → Guru dan PIN masuk) atau operator Tryout (admin.html → tab Guru & PIN).
+  Guru hanya melihat kelompok MD yang diampunya; guru yang tidak mengampu kelompok MD ditolak di
+  halaman ini. Sebelum PIN pribadi dibuat, guru bisa masuk Matdas dengan ID gurunya (mis. G161),
+  tetapi ID itu tidak berlaku di Tryout.
+- **PIN admin Matdas** atau **PIN operator Tryout**: semua kelompok, pengaturan umum, guru & PIN.
+
+**Kartu PIN (PNG)** di menu Admin → Guru dan PIN masuk (satu tabel): kolom **Kartu PIN** di tiap baris —
+*Lihat*, **Bagikan** (HP → WhatsApp → chat pribadi guru), **Salin** (tempel di WhatsApp Web), **Unduh** PNG.
+Centang satu atau beberapa guru untuk *Bagikan kartu terpilih*, *Unduh kartu PNG terpilih*, dan **Unduh XLSX**
+(guru terpilih, atau semua guru aktif bila tidak ada yang dicentang). PIN yang baru dibuat langsung tercentang.
+Kartu dibuat di peramban, tidak dikirim ke server.
+Kartu yang sama tersedia di admin Tryout (tab Guru & PIN).
+
+Daftar guru ditarik dari Data Induk lewat `guru_ekspor` (semua guru aktif + kelompok MD + kelas yang
+diampu), sama dengan yang dipakai Tryout.
+
+- **Ubah waktu sesi** (13 Okt 2026): di Sesi Kegiatan, sesi yang sedang dibuka punya **− Kurangi | N menit | + Tambah** (`mtd_ubah_waktu`). Sesi siswa yang sedang berjalan ikut bergeser sebanyak menit yang sama; halaman siswa membaca sisa waktu dari setiap balasan jawaban, tiap menit (`mtd_sisa_waktu`, ringan), dan sekali lagi sebelum menutup sesi. Pengurangan harus menyisakan paling sedikit 1 menit (untuk mengakhiri: Tutup sekarang). Sebelumnya HP siswa tetap menutup sesi pada waktu lama walau guru menambah waktu.
+- **Membuka sesi mengakhiri latihan mandiri** (13 Okt 2026, kejadian M

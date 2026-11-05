@@ -1,0 +1,188 @@
+ASONB:
+
+| JSON Type | ASON/ASONB Type                                                                         |
+|-----------|-----------------------------------------------------------------------------------------|
+| Number    | `i32`, `i64`, or `u64` if in range; otherwise `f64`                                      |
+| Boolean   | Boolean                                                                                 |
+| String    | String                                                                                  |
+| Array     | List if the elements have the same ASON type after promotion, otherwise an error        |
+| Object    | Object if all keys are valid identifiers; otherwise, Map if its values are homogeneous |
+
+#### 3.3.1 Numbers
+
+Numbers with a decimal point (`.`) or exponent (`e` or `E`) are treated as floating-point values and converted to `f64`. Other numbers are treated as integers and assigned a type based on their range:
+
+- `i32`: if its value is within `[i32::MIN, i32::MAX]`
+- `i64`: if its value is within `[i64::MIN, i64::MAX]`
+- `u64`: if its value is larger than `i64::MAX` and less than or equal to `u64::MAX`
+- `f64`: if an integer is outside the ranges of `i32`, `i64`, and `u64`.
+
+#### 3.3.2 Arrays
+
+An array becomes a List if all its elements have the same ASON type after numeric promotion. Otherwise, conversion fails.
+
+For example:
+
+```json
+[1, 2, 3]
+```
+
+becomes a List of integers. This array cannot be converted because its elements have different types:
+
+```json
+[1, "two", true]
+```
+
+An array's type depends on its elements, not its length. After nested values are converted and numeric promotion is applied, all elements must have the same ASON type. An empty array defaults to a List of `i32` when its type cannot be inferred from context or sibling elements. See the following sections for arrays containing objects or `null`.
+
+For nested arrays, each inner array must be homogeneous, and all inner arrays must have the same ASON type. For example:
+
+```json
+[[1, 2], [3, 4]]
+```
+
+becomes a List of Lists of integers. These arrays cannot be converted: the first has an inner array with mixed element types, and the second has inner arrays with different ASON types.
+
+```json
+[[1, 2], ["one", "two"]]
+```
+
+```json
+[[1], ["one"]]
+```
+
+When possible, an empty nested array takes its type from sibling arrays. Otherwise, it defaults to a List of `i32`. For example:
+
+```json
+[[], ["foo", "bar"]]
+```
+
+becomes a List of Lists of String; the empty inner array is inferred as a List of `String`.
+
+#### 3.3.3 Objects
+
+When converted on its own, an object becomes an ASON/ASONB Object if all its keys are valid identifiers.
+
+For example:
+
+```json
+{"id": 1, "name": "Alice"}
+```
+
+becomes an ASON/ASONB Object.
+
+If any key is not a valid identifier, the object becomes a Map only if all its values have the same ASON type after numeric promotion. Objects in a collection may be promoted to Maps to match other elements; see [Promoting Objects to Maps](#336-promoting-objects-to-maps).
+
+For example, the following object can be converted to a Map:
+
+```json
+{"asonb-derive": "3.0", "proc-macro2": "1.0"}
+```
+
+If a JSON object cannot be converted to an ASON/ASONB Object or Map, conversion fails.
+
+JSON objects with duplicate keys are rejected. Strings containing unpaired surrogate escapes are also rejected because ASON strings require valid Unicode scalar values.
+
+For an array of objects, conversion examines every item to collect the keys and infer value types. A missing key is treated as `null`. For each key, all non-null values must have the same ASON type after numeric promotion; otherwise, conversion fails. Missing and explicitly null values become `Option::None`; non-null values become `Option::Some(value)`.
+
+If context does not provide keys for an empty object, conversion fails because ASON/ASONB Objects must have keys.
+
+#### 3.3.4 Handling `null` Values
+
+A standalone `null` becomes `Option::None` with type `Option<i32>`. A `null` object property uses the same default unless its type can be inferred from context. In an ordinary object, only null-valued properties become Options; other properties are converted independently.
+
+When `null` appears in an array or for a key shared across an array of objects, it becomes `Option::None`; the corresponding non-null values become `Option::Some(value)`. The non-null values determine the Option's type. If all values are null, the type defaults to `Option<i32>`. Conversion fails if the non-null values have incompatible ASON types after numeric promotion.
+
+#### 3.3.5 Numeric Type Promotion
+
+When finding a common ASON type for numeric array elements, Map values, or values for the same key across an array of objects, use these promotion rules:
+
+- `i32` and `i64` values are promoted to `i64`.
+- Signed integer values (`i32` or `i64`) mixed with `u64` values are promoted to `u64` if all values are non-negative; otherwise, conversion fails.
+- Integer values mixed with floating-point values are promoted to `f64`.
+- Other mixtures that cannot be represented by one ASON type cause conversion to fail.
+
+Promotion to `f64` may lose integer precision for large values.
+
+#### 3.3.6 Promoting Objects to Maps
+
+When a collection needs a common ASON type and contains both Objects and Maps, an Object is promoted to a Map if the values can share one ASON type. Each Object field name becomes a String key, and all Object field values and Map values are unified using the numeric promotion rules above. If the values cannot be unified, conversion fails. This promotion occurs only when a Map is already present; Objects are not converted to Maps solely because they appear in a collection.
+
+For example, the first value below is initially an Object and the second is a Map because its key is not a valid identifier:
+
+```json
+[{"id": 1}, {"invalid-key": 2147483648}]
+```
+
+The Object is promoted to a Map, and `1` is promoted to `i64`. The result is a List of `Map<String, i64>` values.
+
+## 4 Command-Line Tools
+
+The `ason-convert-cli` package provides two commands: `ason2b` converts between ASON and ASONB, and `ason2j` converts between ASON/ASONB and JSON.
+
+### 4.1 Installation
+
+From the workspace root, install the CLI tools with Cargo:
+
+```sh
+cargo install --path crates/ason-convert-cli
+```
+
+### 4.2 Commands
+
+#### 4.2.1 `ason2b`
+
+```text
+NAME
+    ason2b - Convert ASON to and from ASONB
+
+SYNOPSIS
+    ason2b [options] [INPUT] [-o OUTPUT]
+
+DESCRIPTION
+    The command determines the conversion direction from the input and output file names. If a file name does not identify the input format, it checks the input header. By default, it converts between ASON and ASONB in either direction.
+
+    Use `-t` to force conversion from ASONB to ASON, or `-b` to force conversion from ASON to ASONB.
+
+    If no input file is specified, input is read from standard input.
+
+    If no output file is specified, output is written to standard output.
+
+OPTIONS
+    -t, --text          Force conversion from ASONB to ASON
+    -b, --binary        Force conversion from ASON to ASONB
+    -o OUTPUT           Specify the output file
+    --complete SHELL    Generate a shell completion script for the specified shell
+                        Supported shells: bash, zsh, fish, powershell
+    -h, --help          Show help information
+    --version           Show version information
+
+EXIT STATUS
+
+    The command exits with one of these status codes:
+    0   Successful conversion
+    1   An error occurred during conversion
+    2   No conversion was performed
+    3   Input is ASONB while `-b` / `--binary` is specified
+    4   Input is ASON while `-t` / `--text` is specified
+    5   ASONB output is directed to a terminal
+
+EXAMPLES
+    * Convert an ASON file to ASONB
+        ason2b input.ason -o output.asonb
+
+    * Convert an ASONB file to ASON
+        ason2b input.asonb -o output.ason
+
+    * Convert ASON from standard input to an ASONB file
+        echo '{key: "value"}' | ason2b -o output.asonb
+
+    * Convert ASON from standard input to ASONB, then back to ASON
+        echo '{key: "value"}' | ason2b | ason2b
+```
+
+#### 4.2.2 `ason2j`
+
+```text
+NAME
+    ason2j - Convert ASON/ASONB to and from

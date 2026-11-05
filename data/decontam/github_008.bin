@@ -1,0 +1,128 @@
+eta tingkat (±3 KB) hanya dikirim saat naik level; halaman
+  siswa menyimpan peta terakhir (`mtd_paket_isi(token, peta)`; `mtd_paket` tetap lengkap). Penting
+  untuk kuota *egress* paket gratis (±5 GB/bulan): 800 siswa × 100 jawaban ≈ 80 MB per sesi, bukan ±320 MB.
+- Rekap: jumlah level terlewati diambil dari urutan yang sudah di-join (keluaran diuji sama persis).
+- Indeks `mtd_jawaban` dibangun ulang (`reindex table concurrently`): 21 MB → 0,7 MB (sisa uji beban
+  4 Okt). Satu jawaban ±225 byte termasuk indeks; batas database paket gratis 500 MB ≈ 2 juta jawaban.
+
+- 800 siswa yang menjawab rata-rata tiap 8 detik ≈ 100 jawaban/detik, kira-kira seperempat
+  satu inti CPU. Kunci data hanya per siswa, jadi siswa tidak saling menunggu. Siswa tidak
+  melakukan polling; server dipanggil hanya saat masuk, menjawab, dan kembali ke halaman.
+- Rekap (Kemajuan dan Daftar siswa, diperbarui tiap 30 detik oleh setiap guru/pengawas)
+  membaca ringkasan per siswa `mtd_ringkas`, yang diperbarui trigger di `mtd_jawaban`
+  (termasuk saat data latihan dihapus), jadi tidak melambat seiring riwayat bertambah.
+- **Tampilkan teratas** (tombol di samping *QR & kode masuk* pada sesi yang dibuka, 8 Okt 2026):
+  papan 10 siswa terbaik kelompok itu dalam layar penuh untuk diproyeksikan — podium juara
+  1–3, peringkat 4–10 dengan batang jawaban benar, ringkasan kelompok, dan sorotan bagi yang
+  naik peringkat. Dimuat ulang tiap 30 detik (bawaan sejak 9 Okt 2026; sebelumnya 8) lewat `mtd_teratas`; hanya dihitung **sejak sesi
+  dibuka**, diurutkan level tuntas → jawaban benar → ketepatan. Guru hanya bisa menampilkan
+  kelompok yang ia ajar. Esc atau *Tutup tampilan* untuk keluar.
+  Satu pembaruan ±0,1 detik kerja server (diukur 8 Okt 2026 pada seluruh riwayat MD10-1),
+  jadi tidak membebani sesi. Guru bisa mengubah jedanya di papan (8 / 15 / 30 / 60 detik);
+  pilihan diingat per perangkat, perangkat yang belum pernah memilih memakai 30 detik.
+  `guru.html?simulasi=teratas` membuka papan dengan 36 siswa contoh yang berlomba (diperbarui
+  tiap 3 detik) — tanpa PIN, tanpa server, tidak menyimpan apa pun; untuk melihat tampilannya.
+- **Uji beban sungguhan 10 Okt 2026** (malam, paket gratis): 800 siswa tiruan tersambung bersamaan lewat API,
+  Matdas menjawab tiap 6–10 detik + English Reading menyimpan tiap ±1 menit + 7 halaman guru memuat rekap.
+  Naik bertahap 5 menit, lalu ±110 panggilan/detik: **8 menit lancar** (waktu tunggu dari Indonesia p50
+  ±130 ms, p95 ±170–230 ms, 0 gagal; server rata-rata 7 ms, sibuk ±0,5 inti). Pada menit ke-8,5 database
+  **macet sesaat** (tulisan disk/WAL: satu jawaban sempat 2,6 dtk di server); antrean koneksi API ikut penuh
+  sehingga ±30 detik banyak permintaan menunggu sampai 15 detik (1.300 dari 37.000 panggilan gagal waktu).
+  Kesimpulan: kapasitas hitung cukup; batasnya **kemampuan tulis disk paket gratis** pada beban puncak
+  terus-menerus. Data aman (jawaban dikirim ulang dengan `p_soal`, tidak dinilai dua kali).
+- Hambatan yang lebih mungkin: **Wi-Fi sekolah**. Satu access point praktis melayani
+  30–50 perangkat. Siswa yang memakai kuota HP sendiri tidak terpengaruh.
+- **Membuka per tingkat dengan jeda 3–5 menit** tidak diperlukan oleh server, tetapi
+  membantu jaringan (lonjakan memuat halaman dan tersambung ke Wi-Fi tersebar) dan pengawas
+  (sempat membuka sesi, membagikan kode akses, menolong yang gagal masuk). Pakai kode akses
+  berbeda per kelompok/ruang: masuk hanya dengan NISN, jadi kode itulah yang mencegah siswa
+  masuk atas nama teman (yang akan menutup sesi temannya).
+- Menguji beban: jangan memasukkan ratusan ribu baris dalam **satu** transaksi ke project
+  ini (trigger ringkasan memperbarui baris yang sama berulang kali tanpa sempat dibersihkan).
+  Pada 4 Okt 2026 uji seperti itu membuat project tidak merespons ±12 menit. Pakai data
+  kecil dan `set local statement_timeout = '60s'`.
+
+## Arsip semester (11 Okt 2026)
+
+Supaya database tetap muat di paket gratis Supabase (500 MB), rincian jawaban dan sesi satu semester
+yang sudah berakhir diarsipkan (rencana lengkap: `RENCANA_MASA_SIMPAN.md` di folder utama).
+
+- **Admin → Ukuran database & arsip semester**: ukuran database (peringatan pada 350 MB) dan daftar
+  semester. Semester ganjil 1 Jul–31 Des, genap 1 Jan–30 Jun (WIB); semester berjalan tidak bisa diarsip.
+- **Arsipkan…** → 1) *Rangkum & unduh berkas*: rekap per siswa dibuat (`mtd_rekap_semester`, sesi
+  kelompok dan latihan mandiri terpisah), lalu seluruh rincian diunduh ke satu berkas SQLite
+  `arsip_matdas_<periode>.sqlite`; jumlah baris berkas dicocokkan dengan server (`mtd_arsip_tandai`).
+  2) Centang "berkas sudah disimpan", ketik `ARSIPKAN 2026/2027 GANJIL`, PIN admin → rincian dihapus
+  bertahap (`mtd_arsip_hapus`, 10.000 per panggilan). Terputus? Tekan lagi — dilanjutkan.
+- Yang **tetap**: posisi, level tuntas, total di Perkembangan Siswa (ringkasan seumur `mtd_ringkas`
+  tidak dikurangi saat arsip). Analisis Siswa menampilkan kartu **Riwayat semester (arsip)**.
+- **Buka Arsip** (`arsip.html`): buka berkas arsip di browser — tanpa server, berkas tidak dikirim ke
+  mana pun; cari siswa, lihat rekap, sesi, dan setiap jawaban (saring jenis/tingkat/yang salah), unduh
+  Excel (CSV bila tanpa internet). Pustaka sql.js (MIT) di `assets/vendor/`.
+- Pemulihan ke database (jarang): `./db.sh pulihkan <berkas>` di folder `database_tryout`.
+- Diukur: rangkum ≤40 ms per 40 siswa, ambil ≤50 ms per 5.000 baris, hapus ≤55 ms per 10.000 baris.
+
+## Memasang
+
+Halaman statis, tanpa proses build. Unggah seluruh isi folder ke repository
+GitHub sendiri (GitHub Pages), sama seperti aplikasi lain. `config.js` sudah
+berisi alamat Supabase Tryout.
+
+
+---
+
+# trade-lab — SANAL işlem denemesi
+
+> ⚠️ Bu tamamen **sanal (paper) trading**. Hiçbir borsaya emir gitmez, gerçek para yoktur.
+> Son güncelleme: 05.11.2026 06:16 (İstanbul)
+
+## Bot A — Kripto 1 saatlik trend (x1)
+
+| | Bugün | Toplam |
+|---|---|---|
+| Net kâr/zarar | +0.00 $ | +0.00 $ |
+| İşlem sayısı | 0 | 0 |
+| Kazanma oranı | %0.0 | %0.0 |
+| Ödenen komisyon/spread | 0.00 $ | 0.00 $ |
+
+**Hesap değeri: 5,000.00 $** (başlangıç 5,000 $, +0.00 $ / %+0.00)
+
+## Bot B5 — Altın: Claude + GPT hemfikir (x10, 25.000 $ pozisyon)
+
+| | Bugün | Toplam |
+|---|---|---|
+| Net kâr/zarar | +207.19 $ | +94.31 $ |
+| İşlem sayısı | 3 | 43 |
+| Kazanma oranı | %100.0 | %46.5 |
+| Ödenen komisyon/spread | 35.52 $ | 511.01 $ |
+
+**Hesap değeri: 5,143.08 $** (başlangıç 5,000 $, +143.08 $ / %+2.86)
+
+Açık pozisyonlar: PAXGUSDT long @ 4119.59 (TP 4131.95 / SL 4111.35)
+
+Son haber analizi (05.11 06:16): Claude puan **+0.40**, güven 0.50 — Dolar zayıflaması ve düşen tahvil getirileri (Demokratların ara seçim zaferi sonrası) altını destekliyor; ancak bu hareketin büyük kısmı zaten fiyatlanmış görünüyor ve İran savaşının sona erme beklentisi petrol fiyatlarını düşürerek jeopolitik güvenli liman talebini zayıflatıyor. Bu nedenle yön pozitif, güven orta düzeyde.
+
+GPT (gpt-6-luna): puan **+0.45**, güven 0.58 — Doların zayıflaması ve önceki haberlerde bildirilen düşen tahvil getirileri altını kısa vadede destekliyor; Kuzey Kore füze denemesi de sınırlı güvenli liman talebi yaratabilir. Ancak yükselişin büyük bölümü seçim sonrası fiyatlanmış görünüyor ve İran geriliminin azalacağı beklentisi güvenli liman t
+
+Son işlemler:
+
+| Kapanış | Parite | Yön | Sonuç | Neden |
+|---|---|---|---|---|
+| 05.11 04:12 | PAXGUSDT | long | +69.07 $ | take profit |
+| 05.11 03:31 | PAXGUSDT | long | +69.06 $ | take profit |
+| 05.11 03:21 | PAXGUSDT | long | +69.06 $ | take profit |
+| 04.11 21:43 | PAXGUSDT | long | -55.99 $ | stop (gap) |
+| 04.11 19:39 | PAXGUSDT | long | +69.06 $ | take profit |
+
+## Bot B5P — Brent petrol: Claude + GPT hemfikir (x10, 25.000 $ pozisyon)
+
+| | Bugün | Toplam |
+|---|---|---|
+| Net kâr/zarar | +0.00 $ | +66.43 $ |
+| İşlem sayısı | 0 | 1 |
+| Kazanma oranı | %0.0 | %100.0 |
+| Ödenen komisyon/spread | 0.00 $ | 17.17 $ |
+
+**Hesap değeri: 5,066.43 $** (başlangıç 5,000 $, +66.43 $ / %+1.33)
+
+Son haber analizi (04.11 13:40): Claude p

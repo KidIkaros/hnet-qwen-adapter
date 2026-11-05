@@ -1,0 +1,188 @@
+cond |
+| Memory | `SYSINFO_MEM` | total, used, available, free, buffers, cached, shared; swap total/used/free; swap in/out per second |
+| Disks | `SYSINFO_DISK` | mounted file systems (device, mount point, type, options, read-only, sizes, inodes); per block device bytes and operations per second and busy % |
+| Network | `SYSINFO_NET` | interfaces (MAC, IPv4 and IPv6 addresses, MTU, up/running, speed) with counters and per-second rates; TCP and UDP socket counts |
+| Processes | `SYSINFO_PROC` | pid, parent, name, command line, executable, state, user and group, nice and priority, threads, start time, CPU %, memory (RSS, virtual, shared, %); a parent/child tree; with `SYSINFO_PROC_IO` and `SYSINFO_PROC_FILES` also I/O per second and open files |
+| Sensors | `SYSINFO_SENSORS` | every hwmon temperature, fan, voltage, power and current input, with labels and limits |
+| GPUs | `SYSINFO_GPU` | vendor, name, driver, PCI slot, utilisation, video memory, temperature, power, clocks (AMD and Intel through sysfs, NVIDIA through `/proc/driver/nvidia` and, with `SYSINFO_GPU_NVSMI`, `nvidia-smi`) |
+| Battery | `SYSINFO_BATTERY` | mains online; per battery: status, capacity, rate, voltage, energy, health, time to empty/full, cycle count |
+
+Helpers: `sysinfo_proc_find`, `sysinfo_proc_children`, `sysinfo_proc_descendants`,
+`sysinfo_proc_filter`, `sysinfo_proc_sort` and `sysinfo_signal`.
+
+## Rules worth knowing
+
+- **Two samples make a rate.** Percentages and per-second values come from the
+  difference between the last two refreshes, timed with the monotonic clock.
+  After `sysinfo_open` they read 0 until the next `sysinfo_refresh`.
+- **Missing data is per field.** A value that cannot be read (no permission,
+  no sensor) is `SYSINFO_NA` (-1) or, for temperatures, `SYSINFO_NA_TEMP`;
+  a string is empty. Every call returns a status code, and each section has
+  its own `status`. Nothing crashes on odd input; the parsers are fuzzed.
+- **Strings are borrowed.** Each string stays valid until the second refresh
+  of its section after the one that set it. Copy what you keep longer.
+- **Refreshing is cheap.** Files are kept open and re-read, buffers are reused,
+  and slow-changing facts (command lines, user names, sensor paths) are read
+  once. See the benchmark below.
+
+## Using it
+
+Add it to `mbuild.mettle` and import `sysinfo`:
+
+```mettle
+fn deps() {
+  mb_dep("sysinfo", "0.1.0");      // or mb_dep_path("sysinfo", "../sysinfo")
+}
+```
+
+`examples/demo.mettle` prints a report of the machine (`mbuild run sysinfo_demo`).
+The full reference is in [docs/api.md](docs/api.md); how it is built and how to
+add a platform is in [docs/design.md](docs/design.md); the standards and the
+libraries it learned from are in [docs/references.md](docs/references.md).
+
+## Tests and benchmark
+
+`mbuild test` (and `mbuild test -r` for release) runs:
+
+- `fixture`: every section read from a fake `/proc`, `/sys`, `/etc` and `/run`
+  tree in `tests/fixtures/linux` (made by `tools/make_fixtures.py`), checked
+  value by value;
+- `rates`: a tree changed between two refreshes, checking percentages exactly
+  and per-second rates by their ratios;
+- `parse`: the parsers on fixed input, including RFC 5952 IPv6 examples and
+  hand-built rtnetlink messages;
+- `fuzz`: random and mutated input to every parser;
+- `live`: a smoke test on the machine running it.
+
+`mbuild bench` times each section's refresh. On a 16-thread Ryzen 7 8845HS laptop
+with 545 processes, a full refresh of every section takes about 20 ms, most of
+it the process list (about 17 µs per process). psutil 7.0 takes about 300 ms for
+the same information on the same machine.
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).
+
+
+---
+
+# Nepal Wallet Platform (Independent Demo)
+
+A React Native + Node.js monorepo for an independent Nepal-focused wallet prototype. It is **not eSewa's source code**, is not affiliated with eSewa, and does not connect to eSewa or any bank/payment network.
+
+## Project structure
+
+```
+apps/
+  api/                 Express + TypeScript + Prisma API
+    prisma/schema.prisma
+    src/
+      index.ts
+      middleware/auth.ts
+      routes/auth.ts
+      routes/wallet.ts
+  mobile/              Expo React Native app (Android, iOS and web)
+    App.tsx
+    app.json
+    src/api.ts
+docker-compose.yml
+.env.example
+package.json
+```
+
+## Requirements
+
+- Node.js 20+
+- npm 10+
+- Docker Desktop (recommended for PostgreSQL), or PostgreSQL 15+
+
+## 1. Configure environment
+
+Copy the root environment template:
+
+```bash
+cp .env.example apps/api/.env
+# Create apps/mobile/.env containing:
+# EXPO_PUBLIC_API_URL=http://localhost:4000
+```
+
+Set a long random `JWT_SECRET` and the PostgreSQL connection string in `apps/api/.env`. For Expo, create `apps/mobile/.env` and set `EXPO_PUBLIC_API_URL`. Never commit either environment file.
+
+## 2. Start PostgreSQL
+
+```bash
+docker compose up -d db
+```
+
+## 3. Install and prepare the API
+
+```bash
+npm install
+npm run db:generate
+npm run db:migrate
+npm run dev:api
+```
+
+API runs at `http://localhost:4000`; health check: `GET /health`.
+
+## 4. Start the app
+
+In another terminal:
+
+```bash
+npm run dev:mobile
+```
+
+- Android: press `a` in Expo CLI (Android Studio/emulator required).
+- iOS: press `i` on macOS with Xcode, or scan the Expo QR code with Expo Go.
+- Website: run `npm run dev:web`.
+
+For a physical phone, set `EXPO_PUBLIC_API_URL` in the mobile app environment to your computer's LAN IP, for example `http://192.168.1.10:4000`. Do not use `localhost` on a physical device.
+
+## API endpoints
+
+All JSON. Protected routes require `Authorization: Bearer <accessToken>`.
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health` | Health check |
+| POST | `/api/auth/register` | Create account + demo wallet |
+| POST | `/api/auth/login` | Sign in |
+| GET | `/api/wallet` | Wallet balance |
+| GET | `/api/wallet/transactions` | Ledger history |
+| POST | `/api/wallet/transfers` | Transfer demo credits to another user |
+
+Registration body: `{ "name": "A User", "email": "a@example.com", "password": "a-long-password" }`
+
+Transfer body: `{ "recipientEmail": "b@example.com", "amount": 100, "note": "Lunch" }`. Amount is NPR and supports up to two decimal places. The API converts amounts to integer paisa and performs both balance updates and ledger writes in one database transaction.
+
+## Database
+
+PostgreSQL via Prisma. Main tables: `User`, `Wallet`, `LedgerEntry`. Wallet balances and ledger amounts are integer paisa (`BigInt`) to avoid floating-point money errors. The ledger records each side of a transfer.
+
+## Current limitations
+
+- New accounts receive NPR 1,000 of clearly labelled demo credits.
+- Transfers move only demo credits between accounts.
+- QR, cash-in/cash-out, mobile top-up, bill payment and card/bank rails are not connected.
+- There is no KYC, AML screening, sanctions screening, reconciliation, dispute handling, production monitoring, or regulator-approved custody.
+- The demo API currently uses bearer access tokens; production needs refresh-token rotation, device/session management, MFA, audit and fraud controls.
+
+## Real payment integration
+
+A production wallet in Nepal requires legal/regulatory assessment, applicable Nepal Rastra Bank authorization or a licensed partner, KYC/AML processes, safeguarding/reconciliation, and contracts with approved payment providers. Integrate only through official partner documentation and credentials. Never scrape, clone, or impersonate eSewa endpoints or use its branding without permission.
+
+## Security checklist before deployment
+
+- Replace demo credit creation with approved funding rails.
+- Add refresh-token rotation, MFA, device/session revocation and account recovery.
+- Add idempotency keys, transfer limits, velocity checks, fraud alerts and immutable audit trails.
+- Add webhook signature verification and reconciliation for provider callbacks.
+- Use TLS, managed secrets, database encryption/backups, monitoring and penetration testing.
+- Complete legal, privacy, KYC/AML and operational reviews.
+
+This repository is a development starter, not a licensed financial service or production-ready store of value.
+
+
+## Added demo modules
+- QR payment request creation and QR-code-string payment be

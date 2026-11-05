@@ -1,0 +1,130 @@
+lld and LLVM tools |
+| `ee/bin`, `iop/bin` | Target-prefixed wrappers (`mips64r5900el-ps2-elf-clang`, `-ar`, ...) and their `.cfg` files |
+| `ee/mips64r5900el-ps2-elf` | EE sysroot |
+| `iop/mipsel-none-elf` | IOP sysroot |
+
+The install is relocatable.
+
+## Usage
+
+Point `CC` at `ee/bin/mips64r5900el-ps2-elf-clang` or `iop/bin/mipsel-none-elf-clang`. The wrapper applies the target configuration, so `mips64r5900el-ps2-elf-clang foo.c -c` needs no further flags. Compile C++ with `--driver-mode=g++`.
+
+- newlib-nano installs `libc_nano.a`, `libm_nano.a` and `libg_nano.a` beside the full libraries; link with `-lc_nano -lm_nano`.
+- C++ links with `-lc++ -lc++abi -lunwind -latomic`. Programs that use exceptions need the `.eh_frame` rules from the SDK linkfile. Build libc++ without exceptions with `LIBCXX_EXCEPTIONS=OFF`.
+- `thread_local` uses emulated TLS (`-femulated-tls`); step 8 adds the runtime to `libclang_rt.builtins-mips64el.a`.
+
+`scripts/sanity-check.sh <install-dir>` compiles and links small EE (C and C++) and IOP programs against an install.
+
+## Local Linux build in Docker
+
+```sh
+docker build -f docker/build-env.Dockerfile -t llvmtc-env .
+LLVM_SRC_DIR=/path/to/llvm NEWLIB_SRC_DIR=/path/to/newlib-llvm docker/run-local.sh <out-dir> [steps]
+```
+
+Sources and build trees live in a Docker volume; the install is bind-mounted to `<out-dir>`. The container is limited to 12 GB of memory and `LLVM_COMPILE_JOBS` (default 6) parallel compiles.
+
+## Releases
+
+Each script builds one platform from a release tag (checked out into a temporary worktree) and writes the zip to `build/release/`. `--publish` creates the tag's GitHub release if needed and uploads the zip to it.
+
+| Script | Output | Requires |
+|---|---|---|
+| `scripts/release-linux.sh <tag>` | `ps2-llvm-toolchain-<version>-linux-amd64.zip` | Docker |
+| `scripts/release-windows.sh <tag>` | `ps2-llvm-toolchain-<version>-windows-amd64.zip` | Docker |
+| `scripts/release-macos.sh <tag>` | `ps2-llvm-toolchain-<version>-darwin-arm64.zip` | macOS with `brew install cmake ninja python zip` |
+
+The Linux and Windows scripts build in a `linux/amd64` container; the Windows script builds the Linux toolchain first and reuses its target libraries. On Apple silicon the container runs under emulation, which makes the LLVM build very slow. `LLVM_COMPILE_JOBS` and `LLVM_LINK_JOBS` limit parallelism.
+
+## Workflows
+
+Build and release workflows are in `.github/workflows` and are currently disabled; releases are built in house.
+
+## License
+
+[CC0 1.0](LICENSE). Built components keep their own licenses, bundled into `LICENSES/` by `scripts/bundle-licenses.sh`.
+
+
+---
+
+# synthetics-swa-containerapp-da47323681594a1683c7ebad77a15389
+Temporary repository for Azure Static Web Apps Container App synthetic test
+
+
+---
+
+# synthetics-swa-test-27d6ac7a48214e919347ea707e2d0e98
+Temporary repository for Azure Static Web Apps synthetic test
+
+
+---
+
+# Hunar05-Demo
+This is my Demo Git Repositry.
+<br>
+Author :- Hunar Verma
+
+
+---
+
+# Matdas — Matematika Dasar
+
+Latihan hitung berjenjang untuk siswa SMA Plus Merdeka Soreang. Siswa naik
+**Tingkat → Level** satu per satu: 10 soal di satu level (jumlahnya bisa diatur), naik ke level
+berikutnya. Bila jawaban salah, siswa *mengulang nomor itu dengan soal pengganti
+sampai benar* (bawaan) atau *lanjut ke nomor berikutnya*, sesuai pengaturan guru. Setelah semua level di satu tingkat tuntas, siswa pindah ke tingkat
+berikutnya.
+
+| Berkas | Untuk siapa | Isi |
+|---|---|---|
+| `index.html` | Siswa | Masuk cukup dengan NISN, mengerjakan soal |
+| `guru.html` | Guru, pengawas | Kemajuan per kelompok, daftar & analisis siswa, tingkat dan level soal, pengaturan |
+| `config.js` | — | Alamat Supabase. **Sama dengan Tryout** (project `Tryout_Guru`) |
+| `assets/dasar.css` | — | Salinan tampilan bersama (harus sama dengan aplikasi lain) |
+| `assets/matdas.css`, `assets/umum.js` | — | Komponen dan fungsi bersama kedua halaman |
+
+Database: tabel dan fungsi berawalan `mtd_` di project Supabase Tryout. Semua
+perubahan lewat [`../database_tryout/`](../database_tryout/README.md)
+(migrasi `…_matdas_tahap_1_kelas_10.sql`, kontrak `kontrak/matdas.sql`).
+
+## Cara kerja untuk siswa
+
+1. Masuk cukup dengan **NISN** (tanpa tanggal lahir). Data siswanya sama dengan Tryout,
+   jadi tidak perlu diunggah lagi. **Hanya anggota kelompok Matematika Dasar**
+   (MD10-1, MD11-2, … di Data Induk → Kelompok Belajar) yang boleh masuk;
+   siswa lain mendapat pesan "belum terdaftar di kelompok Matematika Dasar".
+   Kelompok ikut terbawa saat operator menekan **Tarik dari data induk** di
+   admin Tryout (tab Data siswa). Sebelum kelompok pernah ditarik, semua siswa
+   aktif tetap boleh masuk.
+   **Sesi kelompok vs latihan mandiri (10 Okt 2026, seperti English Reading):** saat guru membuka sesi
+   kelompoknya, siswa wajib mengisi **kode akses** dan keluar halaman diawasi. Di luar sesi, siswa boleh
+   **latihan mandiri** dengan NISN saja: tanpa kode akses, tanpa pengawasan keluar halaman, lama sesi sesuai
+   Pengaturan Umum, dan tidak dikeluarkan saat guru menutup sesi kelompok. Admin bisa mematikannya di
+   Pengaturan Umum → Halaman Latihan → **Latihan mandiri di luar sesi kelompok** (bawaan: boleh). Server
+   membedakan keduanya lewat `mtd_sesi.mode` (`kelas` / `mandiri`).
+   **Kemajuan terpisah:** posisi dan nilai resmi hanya bertambah dari sesi kelompok yang diawasi, supaya latihan
+   tanpa pengawasan (bisa dibantu orang lain atau AI) tidak menaikkan posisi resmi. Latihan mandiri punya posisi
+   sendiri (kunci `M:` + NISN di `mtd_posisi`, `mtd_jawaban`, `mtd_tuntas`, `mtd_ringkas`), dimulai dari posisi
+   resmi siswa saat pertama kali. Rekap, analisis, dan papan teratas memakai kemajuan resmi. Guru tetap melihat
+   latihan mandiri untuk menilai ketekunan: kolom **Latihan mandiri (7 hari)** di Perkembangan Siswa dan rekap
+   Excel, kartu **Latihan mandiri (di luar sesi)** di Analisis Siswa, serta label **Rajin mandiri**,
+   **Tanpa latihan mandiri**, dan **Mandiri jauh di atas sesi** (akurasi mandiri ≥ 25 poin di atas akurasi resmi).
+   Sub-tab **Peringkat → Paling rajin latihan mandiri** (17 Okt 2026) mengurutkan hari berlatih mandiri, lalu soal,
+   lalu waktu, untuk periode 7/30 hari, semester, atau sejak awal (`mtd_peringkat` kolom `m_*`); jenis peringkat lain tetap resmi. Guru hanya melihat kelompok MD miliknya, admin semua.
+   Di halaman siswa, latihan mandiri ditandai pita "Latihan mandiri · kemajuan di sini terpisah".
+   **Latihan mandiri tidak harus sama dengan sesi:** siswa bebas memilih tingkat dan level di kartu
+   **🏠 Latihan mandiri** (`mtd_materi_mandiri`, `mtd_pilih_mandiri`; hanya posisi mandiri yang pindah), serta jumlah
+   soal per level (5/10/15/20) dan tampil jawaban benar (`mtd_pilihan_mandiri`, disimpan di `mtd_sesi.pilihan`).
+   **Tiga pilihan (3 Nov 2026, keputusan user):** kolom **Latihan mandiri** di Pengaturan & Tahapan bagian 3 dan di
+   bilah siswa terpilih (`mtd_mandiri_pilihan`; pilihan siswa mengalahkan pilihan kelompok):
+   **Lanjut dari sesi kegiatan** (bawaan, tanpa baris pengaturan): posisi mandiri mengejar posisi resmi saat masuk, yang
+   lebih maju di jalur yang sama dibiarkan (`mtd_sinkron_lanjut_sesi`), dengan tahapan dan aturan sesi; **Siswa bebas
+   memilih materi**, aturan Pengaturan Umum; **Tahapan khusus** buatan guru, ditempatkan di awal sekali per pemasangan
+   (`mtd_sinkron_tahapan_mandiri`) dengan aturan dasar + profil langkah tahapan itu (`mtd_atur_tahapan_mandiri`).
+   Kemajuan selalu kunci `M:`, tidak pernah menaikkan posisi resmi. Pada lanjut dari sesi dan tahapan khusus siswa tidak
+   memilih materi dan jumlah soal (kartu 🏠 disembunyikan, server menolak) sampai selesai; sesudah selesai kartu muncul
+   di halaman akhir. Mengganti pilihan menutup latihan mandiri yang berjalan. Profil atau saran lama tetap berjalan dan
+   tampil "Aturan lama" sampai guru memilih.
+   **Pantauan:** Perkembangan Siswa → sub-tab **Latihan Mandiri** (`mtd_pantau_mandiri`, satu kelompok): status,
+   posisi mandiri, kemajuan tahapan (x/y, dihitung sejak tahapan dipasang, `jalur_sejak`), hari, soal, akurasi, level
+   tuntas, waktu, terakhir aktif; saringan, periode 7/30 hari/semester/pi

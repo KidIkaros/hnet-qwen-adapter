@@ -1,0 +1,159 @@
+ JSON
+
+SYNOPSIS
+    ason2j [options] [INPUT] [-o OUTPUT]
+
+DESCRIPTION
+    The command determines the input and output formats from the file names. The extensions `.json` and `.jsonc` indicate JSON, `.ason` indicates ASON, and `.asonb` indicates ASONB. If the input has no recognized extension, the command checks its header for ASONB; otherwise, it treats the input as ASON. Use `-r` to treat input without a recognized extension as JSON.
+
+    By default, ASON or ASONB input is converted to JSON. Use `-r` / `--reverse` to convert JSON input to ASON/ASONB. ASON is the default output format; use `-t` / `--text` to select ASON or `-b` / `--binary` to select ASONB.
+
+    If no input file is specified, input is read from standard input.
+
+    If no output file is specified, output is written to standard output.
+
+OPTIONS
+    -r, --reverse       Convert JSON to ASON/ASONB
+    -t, --text          Indicate to convert to ASON (Default)
+    -b, --binary        Indicate to convert to ASONB
+    -o OUTPUT           Specify the output file
+    --complete SHELL    Generate a shell completion script for the specified shell
+                        Supported shells: bash, zsh, fish, powershell
+    -h, --help          Show help information
+    --version           Show version information
+
+EXIT STATUS
+    The command exits with one of these status codes:
+    0   Successful conversion
+    1   An error occurred during conversion
+    2   No conversion was performed
+    3   The output file has the `.ason` extension while `-b` / `--binary` is specified
+    4   The output file has the `.asonb` extension while `-t` / `--text` is specified
+    5   ASONB output is directed to a terminal
+
+EXAMPLES
+    * Convert an ASON or ASONB file to JSON
+        ason2j input.ason -o output.json
+        ason2j input.asonb -o output.json
+
+    * Convert a JSON file to ASON or ASONB
+        ason2j input.json -o output.ason
+        ason2j input.json -o output.asonb
+
+    * Convert JSON from standard input to ASON on standard output
+        echo '{"key": "value"}' | ason2j -r
+
+    * Convert a JSON file to ASONB and pipe it to another command
+        ason2j input.json -b | some_command
+```
+
+## 5 Library Usage
+
+The core library is provided by the `ason-convert` package. It is not yet published to crates.io, so to use a local checkout, add its path to your project's `Cargo.toml`:
+
+```toml
+[dependencies]
+ason-convert = { path = "../ason-converter/crates/ason-convert" }
+```
+
+The conversion functions return `Result<_, ConversionError>`. `ConversionError` implements `std::error::Error`, so it can be propagated with `?`. For example, convert ASON to ASONB, back to ASON, and then to JSON:
+
+```rust
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let input = r#"{name: "Ada"}"#;
+
+    let binary = ason_convert::ason_to_asonb(input)?;
+    let ason = ason_convert::asonb_to_ason(&binary)?;
+    let json = ason_convert::ason_to_json(&ason)?;
+
+    println!("{json}");
+    Ok(())
+}
+```
+
+For JSON or JSONC input, use `json_to_ason` or `json_to_asonb`. `format_json` parses JSONC, removes comments, and returns formatted JSON. `asonb_to_json` converts a complete ASONB document. The reader functions `asonb_reader_to_ason` and `asonb_reader_to_json` accept `Read`/`Write` streams and stream only when the root value is a multi-chunk List.
+
+The `ason-convert` library is separate from `ason-convert-cli`, so depending on it does not add the CLI's `clap` dependencies. Its ASON and ASONB dependencies currently use local absolute paths. To build it outside this development environment, those dependencies must first be changed to portable Git or registry references.
+
+## 6 Links
+
+- [ASON Specification](https://github.com/hemashushu/ason/blob/main/docs/specification.md)
+- [ASONB Specification](https://github.com/hemashushu/asonb/blob/main/README.md)
+- [ASON Library (Rust)](https://github.com/hemashushu/ason)
+- [ASONB Library (Rust)](https://github.com/hemashushu/asonb)
+
+## 7 License
+
+This project is licensed under the MPL 2.0 License with additional terms. See [LICENSE](./LICENSE) and [LICENSE.additional](./LICENSE.additional).
+
+
+---
+
+# Gamethrust — Windows Edition | Latest Stable Release 2026
+
+*Reviewed by the quality-assurance desk · Senior Software Analyst · Updated 2026 · Verified against the official source*
+
+<table>
+<tr>
+<td width="100" valign="middle">
+<img src="https://softyne.com/wp-content/uploads/gamethrust-2143-0.webp" width="80" height="80" alt="Gamethrust icon — Windows edition 2026">
+</td>
+<td valign="middle">
+
+### ⬇️ DOWNLOAD LATEST STABLE RELEASE
+
+[![DOWNLOAD LATEST STABLE RELEASE](https://softyne.com/wp-content/uploads/downloadlatestversion.svg)](https://softyne.com/gamethrust)
+
+**Get the current full version now**
+
+</td>
+</tr>
+</table>
+
+[![Version](https://www.softyne.com/wp-content/uploads/version.svg)]()
+[![Platform](https://www.softyne.com/wp-content/uploads/platform.svg)]()
+[![License](https://www.softyne.com/wp-content/uploads/license.svg)]()
+[![Updated](https://www.softyne.com/wp-content/uploads/updated.svg)]()
+
+> Download Gamethrust — the current version, complete package and full feature set for Windows, straight from the official source in 2026.
+
+## Quick Navigation
+- [Overview](#overview)
+- [Main Features](#main-features)
+- [Key Benefits](#key-benefits)
+- [Changelog Highlights](#changelog-highlights)
+- [System Requirements](#system-requirements)
+- [Screenshots Gallery](#screenshots-gallery)
+- [How to Install](#how-to-install)
+- [Pro Tips](#pro-tips)
+- [FAQ](#faq)
+- [User Testimonials](#user-testimonials)
+- [License Info](#license-info)
+- [Official Links](#official-links)
+
+## Overview
+<a id="overview"></a>
+
+GameThrust is a powerful application designed to optimize your Internet connection for an enhanced online gaming experience. It allows you to make adjustments that can significantly improve the speed of your games. Whether you're competing with others or just enjoying a casual gaming session, GameThrust aims to provide smoother gameplay by optimizing your Internet settings. This Windows edition is user-friendly, making it accessible for gamers of all skill levels. Compared to typical alternatives, GameThrust stands out with its simple interface and effective results.
+
+The latest stable release 2026 offers a full feature set with every premium feature included, ensuring a complete package for users. There are no locked features, making it completely free to download and use. Experience the benefits of GameThrust and optimize your online gaming speed without any hidden paywall.
+
+To get started, download GameThrust from the official source today. Last verified: 2026.
+
+## Main Features
+<a id="main-features"></a>
+
+### Core Functionality
+- **Internet Speed Optimization** — GameThrust adjusts your Internet connection settings to maximize speed, ensuring that your online gaming runs smoothly without lag.
+- **User-friendly Interface** — The application features a straightforward design that allows users to navigate easily and access all functions with minimal effort.
+- **Quick Configuration** — Users can select their connection type and desired speed gain, applying changes with a single button press for instant results.
+- **Performance Testing** — After optimization, players can test their games to see the immediate effects of the adjustments made.
+- **Comprehensive Toolset** — GameThrust is part of a larger suite of tools aimed at enhancing computer performance, making it a valuable addition to any gamer’s toolkit.
+
+### Advanced Capabilities
+- **Custom Speed Settings** — Users have the flexibility to specify the exact speed they wish to target, tailoring the optimization process to their needs.
+- **Compatibility with Various Connections** — Whether using DSL, cable, or fiber, GameThrust accommodates different types of Internet connections for optimal performance.
+- **Real-time Improvements** — Experience enhancements in real-time, allowing gamers to see the benefits of adjustments as they play.
+- **Support for Multiple Games** — GameThrust is designed to work with a wide range of online games, ensuring that various titles can benefit from the optimization process.
+
+#

@@ -1,0 +1,257 @@
+e: the worker writes the
+change and reports the exact command for you to run.
+
+A local commit is the exception you can authorize: when you explicitly
+ask the orchestrator to commit — for you, or for a delegated repo — it
+passes it through the task spec, and the worker commits with a
+conventional message and reports the hash. No user instruction, no
+state change.
+
+## Uninstall
+
+- opencode: delete `agents/orchestrator.md` and
+  `agents/concerto-worker.md` (and `skills/herdr/` if vendored, and
+  `plugins/the-cat-concerto/`). Nothing
+  of ours lives in `~/.config/opencode/AGENTS.md`; a legacy block there
+  is removed by the installer on the next run
+- claude/codex/gemini/pi/omp: delete everything from the
+  `# BEGIN the-cat-concerto` line through the
+  `# END the-cat-concerto` line, markers included
+
+## Herdr plugin
+
+Listed on [herdr.dev/plugins](https://herdr.dev/plugins). With herdr
+installed:
+
+```bash
+herdr plugin install Herdanis/the-cat-concerto
+herdr plugin pane open --plugin the-cat-concerto --entrypoint installer
+```
+
+The pane opens an interactive terminal running install.sh. The curl
+one-liner above remains the primary install path.
+
+## License
+
+MIT — see [LICENSE](LICENSE). The bundled herdr skill snapshot is
+Apache-2.0 — see [NOTICE.md](NOTICE.md).
+
+
+---
+
+# ASON Converter
+
+ASON Converter is a Rust library and a set of command-line tools for converting between ASON, ASONB (ASON's binary format), JSON, and JSONC.
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=4 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1 Features](#1-features)
+- [2 Limitations](#2-limitations)
+- [3 Conversion Rules](#3-conversion-rules)
+  - [3.1 Converting between ASON and ASONB](#31-converting-between-ason-and-asonb)
+  - [3.2 Converting from ASON/ASONB to JSON](#32-converting-from-asonasonb-to-json)
+    - [3.2.1 Numbers](#321-numbers)
+    - [3.2.2 Maps](#322-maps)
+    - [3.2.3 Enumerations](#323-enumerations)
+    - [3.2.4 `Option`](#324-option)
+  - [3.3 Converting from JSON to ASON/ASONB](#33-converting-from-json-to-asonasonb)
+    - [3.3.1 Numbers](#331-numbers)
+    - [3.3.2 Arrays](#332-arrays)
+    - [3.3.3 Objects](#333-objects)
+    - [3.3.4 Handling `null` Values](#334-handling-null-values)
+    - [3.3.5 Numeric Type Promotion](#335-numeric-type-promotion)
+    - [3.3.6 Promoting Objects to Maps](#336-promoting-objects-to-maps)
+- [4 Command-Line Tools](#4-command-line-tools)
+  - [4.1 Installation](#41-installation)
+  - [4.2 Commands](#42-commands)
+    - [4.2.1 `ason2b`](#421-ason2b)
+    - [4.2.2 `ason2j`](#422-ason2j)
+- [5 Library Usage](#5-library-usage)
+- [6 Links](#6-links)
+- [7 License](#7-license)
+
+<!-- /code_chunk_output -->
+
+## 1 Features
+
+- Converts between ASON, ASONB, and JSON.
+- Reads [JSONC](https://jsonc.org/) (JSON with comments).
+- Streams ASONB-to-ASON or ASONB-to-JSON conversions when the input meets the requirements below.
+- Produces formatted ASON and JSON output.
+
+## 2 Limitations
+
+- ASONB-to-ASON and ASONB-to-JSON conversions can stream only when the root value is a multi-chunk List. Conversion to ASONB cannot stream: ASON and JSON do not contain all the schema and type information ASONB requires, so the entire input must be read into memory first.
+- Comments in ASON and JSONC input are discarded.
+- ASONB stores DateTime values as UTC timestamps. Converting an ASON DateTime to ASONB and back loses the original UTC offset. Converting an ASONB DateTime to JSON produces a UTC date-time string.
+- Converting between JSON and ASON/ASONB may lose type information or numeric precision. A round trip may not reproduce the original document exactly.
+- JSON cannot preserve the distinction between Map and List, an Enumeration's type name, or the `Option::Some` wrapper.
+
+## 3 Conversion Rules
+
+### 3.1 Converting between ASON and ASONB
+
+ASON and ASONB share the same data types and constraints, so conversion between them is generally straightforward. For details, see [Conversion to and from ASON](https://github.com/hemashushu/asonb#45-conversion-to-and-from-ason).
+
+### 3.2 Converting from ASON/ASONB to JSON
+
+JSON supports fewer data types than ASON and ASONB. JSON has only six types:
+
+- Null
+- Boolean
+- Number
+- String
+- Array
+- Object
+
+ASON and ASONB types without a direct JSON equivalent are mapped to compatible JSON types.
+
+The table below summarizes how ASON/ASONB types map to JSON:
+
+| ASON/ASONB Type                          | JSON Type                       |
+|------------------------------------------|---------------------------------|
+| Integer                                  | Number                          |
+| Floating-point                           | Number                          |
+| Boolean                                  | Boolean                         |
+| Character                                | String                          |
+| String                                   | String                          |
+| DateTime                                 | String in RFC 3339 format       |
+| Byte data                                | String in Base64 format         |
+| List                                     | Array                           |
+| Tuple                                    | Array                           |
+| Object                                   | Object                          |
+| Map                                      | Array                           |
+| Enumeration                              | Object                          |
+| `Option::Some(value)` / `Option::None`   | `value` / `null`                |
+
+#### 3.2.1 Numbers
+
+- Integers outside the range [-(2^53 - 1), 2^53 - 1] may lose precision when parsed by JSON implementations that use double-precision floating-point numbers, such as JavaScript (see the [ECMAScript specification](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-ecmascript-language-types-number-type)).
+- Special floating-point values, such as `NaN`, `Inf`, and `-Inf`, cannot be represented in JSON and conversion fails.
+- JSON numbers do not preserve whether a value was originally `f32` or `f64`.
+
+Byte data is encoded with the standard Base64 alphabet and `=` padding defined in [RFC 4648, Section 4](https://datatracker.ietf.org/doc/html/rfc4648#section-4).
+
+#### 3.2.2 Maps
+
+Maps become JSON arrays of key-value pair objects. Each object has `key` and `value` fields, and entries remain in their original order:
+
+```text
+[
+  {
+    "key": KEY1,
+    "value": VALUE1
+  },
+  {
+    "key": KEY2,
+    "value": VALUE2
+  }
+]
+```
+
+For example, this ASONB map:
+
+```text
+[
+    "red": "#FF0000",
+    "green": "#00FF00"
+]
+```
+
+becomes:
+
+```json
+[
+    {
+        "key": "red",
+        "value": "#FF0000"
+    },
+    {
+        "key": "green",
+        "value": "#00FF00"
+    }
+]
+```
+
+#### 3.2.3 Enumerations
+
+Enumerations use an adjacent-tagged JSON representation. Each value becomes an object with a `variant` field and, when the variant has a payload, a `value` field:
+
+```text
+{
+  "variant": VARIANT_NAME,
+  "value": VALUE_IF_PRESENT
+}
+```
+
+For example, consider this enumeration:
+
+```rust
+enum Action {
+    Quit,
+    Say(String),
+    Take(String, i32),
+    Move { x: i32, y: i32 },
+}
+```
+
+Its variants map to JSON as follows:
+
+- `Action::Quit`:
+
+```json
+{
+  "variant": "Quit"
+}
+```
+
+- `Action::Say("Hello")`:
+
+```json
+{
+  "variant": "Say",
+  "value": "Hello"
+}
+```
+
+- `Action::Take("Item", 42)`:
+
+```json
+{
+  "variant": "Take",
+  "value": ["Item", 42]
+}
+```
+
+- `Action::Move { x: 10, y: 20 }`:
+
+```json
+{
+  "variant": "Move",
+  "value": {
+    "x": 10,
+    "y": 20
+  }
+}
+```
+
+The JSON representation does not include the enumeration's type name (`Action` here).
+
+Variants whose payload is a single Tuple or Object use the same array or object representation as other tuple-like or struct-like variants.
+
+#### 3.2.4 `Option`
+
+Options map to `null` for `None` and to the contained value for `Some(value)`:
+
+```text
+Option::None -> null
+Option::Some(VALUE) -> VALUE
+```
+
+### 3.3 Converting from JSON to ASON/ASONB
+
+JSON-to-ASON/ASONB conversion considers the entire document because context affects how values such as `null` are interpreted.
+
+The table below summarizes how JSON types map to ASON/

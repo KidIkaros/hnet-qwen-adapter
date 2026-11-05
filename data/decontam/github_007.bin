@@ -1,0 +1,104 @@
+D11-4): `mtd_buka_kelompok` mengakhiri latihan mandiri anggota kelompok yang masih berjalan (`mtd_sesi.alasan = 'sesi_kelompok'`). HP siswa (cek tiap menit / saat menjawab lewat `mtd_sisa_waktu`) kembali ke layar masuk dengan pesan "ketik kode akses yang BARU". Layar guru membedakan **dalam sesi** dan **latihan mandiri** (`n_mandiri` di `mtd_buka_daftar`, `online_mandiri` di `mtd_rekap`).
+- **Kemajuan kelompok**: dipilih per kelompok MD (MD10-1, …), *Semua
+  kelompok*, atau *Tanpa kelompok MD* (siswa yang pernah berlatih lalu keluar
+  dari kelompok). Pindah kelompok di Data Induk tidak mengubah posisi latihan
+  siswa; setelah ditarik ulang ia tampil di kelompok barunya. Isinya: posisi setiap siswa, kemajuan (level terlewati dari
+  seluruh level), akurasi, waktu latihan, dan terakhir aktif. Siswa ditandai
+  *Macet* (3 kali atau lebih memulai ulang level yang sama, atau 8 kali salah
+  di level itu), *Tidak aktif* (7 hari tidak berlatih), *Akurasi rendah*, atau
+  *Belum mulai*. Tersedia **Unduh rekap** (.xlsx berkop: rekap kemajuan + sebaran per tingkat).
+- **Daftar siswa**: semua anggota kelompok MD dengan NISN, NIS, rombel, dan
+  status (*Sedang berlatih*, *Terkunci*, *Belum pernah masuk*), jumlah keluar
+  halaman 7 hari terakhir, pencarian, **Unduh daftar** (.xlsx; *Semua kelompok* = satu lembar per kelompok), dan tombol **Buka kunci**.
+  Diperbarui otomatis tiap 30 detik; **Muat ulang** memperbarui daftar siswa dan kartu Sesi latihan.
+  Saringan *Sedang berlatih* juga menyaring kartu Sesi latihan: hanya kelompok yang sesinya dibuka
+  atau ada siswa berlatih (termasuk mandiri).
+  Centang siswa (atau semua yang tampil, mis. satu tingkat/kelompok) untuk
+  **Atur posisi** (tingkat & level awal berbeda per tingkat/kelompok/siswa; opsi
+  *hanya yang belum pernah masuk*) atau **Hapus data latihan**.
+- **Analisis siswa**: catatan otomatis, grafik level tuntas, jenis kesalahan
+  yang paling sering, akurasi per tingkat, daftar kesalahan terakhir (soal,
+  jawaban siswa, kunci), dan riwayat level tuntas. Di sini juga ada
+  **Pindahkan posisi**, misalnya untuk siswa yang sudah lancar agar bisa
+  melompat ke depan. Juga **Hapus data latihan** satu siswa (mis. setelah uji coba).
+- **Pengaturan Umum (Bawaan)** berlaku untuk semua siswa, **kecuali** yang diatur di
+  **Aturan & Jalur Khusus**. Prioritas: **siswa → jalur → kelompok → umum**.
+- **Aturan & Jalur Khusus**:
+  1. *Profil aturan*: kumpulan aturan bernama yang bisa dipakai ulang (strategi guru,
+     dengan catatan). Bisa dibedakan: halaman dibuka/ditutup, kode akses, tampilkan
+     jawaban benar, bila jawaban salah (lanjut / ulangi sampai benar), jumlah soal
+     per level, batas salah, pecahan sederhana, lama sesi,
+     batas waktu per soal, pengawasan keluar halaman (batas, toleransi, kode buka).
+     Isian kosong mengikuti lapisan di bawahnya; kode "-" = sengaja tanpa kode.
+     Yang boleh masuk dan titik awal siswa baru tetap umum.
+  2. *Aturan per kelompok*: profil dipasang ke kelompok MD.
+  3. *Aturan beberapa siswa*: Daftar siswa → centang → Pasang aturan.
+  4. *Jalur latihan khusus* (remedial/pengayaan): langkah-langkah tingkat + rentang
+     level, ujung *berhenti* atau *lanjut ke urutan biasa*. **Tiap langkah boleh memakai
+     profil aturan sendiri** (13 Okt 2026), mis. Perkalian Dasar Lv 1 = 50 soal, Lv 2 dst = 10 soal:
+     berlaku selama siswa di langkah itu, langsung berganti saat naik ke langkah berikutnya.
+     Ujung *lanjut* boleh memakai **profil sesudah tahapan** untuk urutan umum sesudahnya
+     (kosong = ikut profil kelompok); dilepas bila guru memasang tahapan lain, memindah posisi,
+     memilih Ikut kelompok, atau melepas tahapan kelompok.
+     Tahapan juga punya **aturan dasar** (berlaku di semua langkah; kosong = Pengaturan Umum).
+     **Satu pilihan per kelompok** (13 Okt 2026): tahapan khusus ATAU urutan umum + profil
+     (database menolak keduanya bersamaan); memasang tahapan melepas profil kelompok dan sebaliknya.
+     Lapisan: umum ← aturan dasar (profil kelompok / aturan dasar tahapan) ← langkah tahapan / sesudah tahapan ← siswa.
+     Latihan mandiri memakai "Aturan latihan mandiri" (kelompok/siswa): Pengaturan Umum (bawaan), profil, atau
+     **Sama dengan sesi kelompok** (lapisan sesi dihitung dari posisi mandiri; profil mandiri siswa di atasnya).
+     Penyusun tahapan: bagian bernomor (nama, langkah, sesudah tahapan) + ringkasan alur. Dipasang lewat Daftar siswa → Pasang jalur. Pindahkan posisi manual
+     melepas jalur.
+  Analisis siswa menampilkan *Aturan yang berlaku* beserta asal tiap aturan.
+- **Pengaturan Umum**, dikelompokkan seperti *Pengaturan ujian* di Dasbor Hasil Tryout:
+  - *Halaman Latihan*: dibuka/ditutup, yang boleh masuk (anggota kelompok MD
+    saja / semua siswa aktif), tampilkan jawaban benar saat salah, bila jawaban
+    salah (*Lanjut nomor berikutnya*: tuntas setelah nomor terakhir selama salah
+    tidak melewati batas; *Ulangi sampai benar*: soal pengganti di nomor yang sama), kode akses.
+  - *Pengawasan keluar halaman* (sama dengan Tryout: alarm bunyi + getar,
+    layar peringatan, klik kanan dan salin dicegah): batas keluar (tercapai → latihan dikunci),
+    toleransi detik (lebih singkat hanya dicatat), kode buka untuk pengawas
+    (kosong = PIN guru atau PIN admin). Kunci bertahan walau
+    siswa keluar lalu masuk lagi, sampai dibuka atau waktu sesinya habis.
+  - *Aturan naik level*: jumlah soal per level (kunci `n_benar`), batas salah, batas waktu per
+    soal, pecahan wajib paling sederhana.
+  - *Sesi & titik awal*: lama sesi dan titik awal siswa baru (Penjumlahan
+    Dasar, atau tingkat pertama sesuai kelompoknya: MD11 → MD11).
+  - *Kosongkan data latihan*: hapus data latihan **semua** siswa, hanya dengan
+    **PIN kepala sekolah** (`tka_privat.pin_kepsek_matdas`, bukan PIN guru) dan
+    mengetik KOSONGKAN. Data siswa, pengaturan, tingkat & level tetap.
+
+## Rekapitulasi perkembangan kelas (22 Okt 2026)
+
+Sub-tab Per Kelompok digabung ke Rekapitulasi (22 Okt 2026, keputusan user): kotak ringkasan, sebaran posisi, dan tabel
+perbandingan kini di bagian bawah Rekapitulasi dengan judul "Ringkasan keseluruhan" (angka sejak awal, tidak mengikuti periode;
+id `pk-kelompok` tetap). Sub-tab yang tersisa: Rekapitulasi, Per Siswa, Peringkat.
+
+Sub-tab pertama di Perkembangan Siswa (RENCANA_REKAP_PERKEMBANGAN.md di folder induk; contoh tampilan yang disetujui user:
+https://claude.ai/artifact/HjMzbMoujyt6mRRSc2AJ9U).
+
+- Data dari `mtd_rekap_periode(p_pin, p_kelompok, p_dari, p_sampai)` (migrasi `database_tryout/.../20261022090000_matdas_rekap_periode.sql`):
+  rentang dikunci di dalam semester berjalan (`tka_periode_batas`) dan tidak melewati hari ini; pembanding = rentang sama panjang
+  tepat sebelumnya (juga dipotong di awal semester). Kemajuan resmi saja (mandiri = kunci `M:` + NISN, tidak dihitung).
+  Hak akses sama dengan `mtd_rekap`. Admin satu semester ±0,5 dtk, rapor satu kelompok ±0,1 dtk (data 22 Okt 2026).
+- Satu kelompok dipilih → rapor: kalimat ringkas, 4 kotak angka (vs pembanding), peta posisi (lintasan tingkat, titik per siswa),
+  level per hari latihan + akurasi (target 80%), di mana siswa macet (rumus Macet halaman: percobaan ≥ 3 atau salah ≥ 8),
+  Perlu perhatian & Bintang. "Semua kelompok" → perbandingan: level per siswa + % berlatih, peta keaktifan per minggu.
+- Periode 7 hari / 30 hari / Semester ini / Pilih tanggal (diingat di localStorage `mtd_rekap_periode`).
+- Grafik digambar `assets/rekap.js` (SVG tanpa pustaka, gaya disisipkan sendiri; dipakai ulang English Reading).
+  Warna status lolos validator dataviz: #A8432E / #B7862A / #2F7A4C.
+
+## Ujian bersama (ratusan siswa sekaligus)
+
+Diukur 4 Okt 2026 di server Supabase Tryout (paket gratis, Tokyo) dengan 800 siswa tiruan
+dalam 24 kelompok:
+
+| Panggilan | Waktu di server |
+|---|---|
+| Masuk (`mtd_masuk`) | ±3,5 ms |
+| Menjawab (`mtd_jawab`) | ±2,5 ms |
+| Lapor keluar halaman | ±0,3 ms |
+| Rekap 1 kelompok (riwayat ±1.500 jawaban/siswa) | ±45 ms |
+
+Diukur ulang 10 Okt 2026 (dengan aturan/saran latihan mandiri): masuk ±4 ms, menjawab ±2,1 ms,
+rekap semua siswa (683) ±140 ms. Optimasi hari itu:
+- **Balasan menjawab ±4 KB → ±1 KB.** P

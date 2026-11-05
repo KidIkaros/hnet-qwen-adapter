@@ -59,22 +59,10 @@ print(f"[train] {MODEL} | {len(hn.layers)} layers | "
       f"DeltaNet {len(lin_idx)} | enc {ENC} dec {DEC} (start {dec_start})",
       flush=True)
 
-# ---- data: wikitext train docs, 8kB chunks
-wt = snapshot_download("Salesforce/wikitext")
-tr = open(f"{wt}/wikitext-103-raw-v1/wikitext-103-raw.train.tokens",
-          "rb").read()
-docs, buf = [], []
-for para in tr.split(b"\n\n"):
-    para = para.strip()
-    if len(para) < 200:
-        continue
-    buf.append(para)
-    if sum(map(len, buf)) > 8192:
-        docs.append(b" ".join(buf)[:8192]); buf = []
-    if len(docs) >= 80:
-        break
-fit_docs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))[:4]]
-train_docs, held_docs = docs[:60], docs[60:64]
+# ---- data: decontam docs for the dry run (no external download needed)
+all_docs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))]
+fit_docs = all_docs[:4]
+train_docs, held_docs = all_docs[4:38], all_docs[38:44]
 print(f"[data] {len(train_docs)} train + {len(held_docs)} held + "
       f"{len(fit_docs)} adapter-fit docs", flush=True)
 

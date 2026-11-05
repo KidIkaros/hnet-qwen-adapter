@@ -160,7 +160,7 @@ class HNetQwen(nn.Module):
         # pool: encoder hidden state at each chunk's LAST byte
         patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
         if self.w_main is not None:
-            patch = patch @ self.w_main.T
+            patch = patch @ self.w_main
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
         ctx_v = self.dechunk(glob)                            # (C, D)
         x = hs.clone()

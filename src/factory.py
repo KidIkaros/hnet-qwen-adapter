@@ -184,14 +184,14 @@ def corpus_stream(mix, n_docs, cap=4096, seed=0):
     return docs
 
 
-DOLMA_MIX = {
-    "cc_all_dressed": 0.35,
+DOLMA_MIX = {   # rebalanced: code + multilingual up (domain evals were weak)
+    "cc_all_dressed": 0.25,
     "common_pile_wiki": 0.10,
     "common_pile_textbook": 0.10,
-    "dolma_code": 0.10,
-    "the-stack-v2": 0.10,
-    "finemath": 0.10,
-    "hplt": 0.10,
+    "dolma_code": 0.15,
+    "the-stack-v2": 0.15,
+    "finemath": 0.05,
+    "hplt": 0.15,
     "cc_all_dressed_addons": 0.05,
 }
 

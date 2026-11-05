@@ -162,6 +162,7 @@ class HNetQwen(nn.Module):
             hs_enc = layer(hs_enc, position_embeddings=None,
                            attention_mask=None, position_ids=None)
         enc = hs_enc[0]                                       # (T, D)
+        self.last_p = self.boundary.probs(enc) if self.training else None
         if boundaries is None:
             boundaries = self.boundary.route(enc, hard=True)  # (T,)
         starts = boundaries.nonzero().flatten()               # chunk start indices

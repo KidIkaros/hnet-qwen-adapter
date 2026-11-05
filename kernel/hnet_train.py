@@ -75,7 +75,10 @@ def doc_loss(byte_ids):
     bp, _, _ = hn(byte_ids, boundaries=periodic(T, P), ctx="retrieve",
                   n_ctx=1, super_k=4, head_first=trunk["head"].first)
     nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
-    return nll.mean()
+    # boundary aux: mean boundary prob -> target 1/P (H-Net compression
+    # ratio loss — without it, learned routing collapses to ~1.8 spans)
+    aux = (hn.last_p.mean() - 1.0 / P) ** 2
+    return nll.mean() + 1.0 * aux
 
 
 def eval_bpb(byte_ids):

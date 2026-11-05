@@ -55,23 +55,31 @@ bmap = byte_token_map(tok)
 pe = PatchEmbedder(model, tok)
 head = ByteHead(tok)
 
-# ---- corpus: wikitext-103 (leaderboard) + decontam; markdown for continuity
-CORPUS = "wikitext"
+# ---- corpus: fineweb-edu (recent CommonCrawl English — recency = less contaminated)
 sh("pip", "install", "-q", "datasets")
 from datasets import load_dataset  # noqa: E402
 
-wt = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1")
-join = lambda rows, cap: b"\n".join(x.encode() for x in rows)[:cap]  # noqa: E731
-tr_j = join(wt["train"]["text"], 12_000_000)
-te_j = join(wt["test"]["text"], 600_000)
+fw = load_dataset("HuggingFaceFW/fineweb-edu", name="sample-10BT",
+                  split="train", streaming=True)
+tr_j, te_j = bytearray(), bytearray()
+for i, row in enumerate(fw):
+    if i < 4000:
+        tr_j += row["text"].encode() + b"\n\n"
+    elif i < 4800:
+        te_j += row["text"].encode() + b"\n\n"
+    else:
+        break
+    if len(tr_j) > 12_000_000 and len(te_j) > 600_000:
+        break
+tr_j, te_j = bytes(tr_j[:12_000_000]), bytes(te_j[:600_000])
 train_docs = [tr_j[i:i + 8192] for i in range(0, len(tr_j) - 8192, 8192)]
 eval_docs = [te_j[i:i + 8192] for i in range(0, len(te_j) - 8192, 8192)]
 wt_te = eval_docs[3:]
 eval_docs = eval_docs[:3]
 train_docs += [open(f, "rb").read() for f in
                __import__("glob").glob("data/decontam/*.bin")]
-print(f"[corpus] {len(train_docs)} train (wt103+decontam) + {len(eval_docs)} eval"
-      f" + {len(wt_te)} wt-test held", flush=True)
+print(f"[corpus] {len(train_docs)} train (fineweb-edu+decontam) + {len(eval_docs)} eval"
+      f" + {len(wt_te)} fw-test held", flush=True)
 
 P = 6
 chunker = PeriodicChunker(P)

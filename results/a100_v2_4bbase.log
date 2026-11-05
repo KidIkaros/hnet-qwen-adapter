@@ -1,0 +1,35 @@
+[setup] cloning
+[setup] model
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/426 [00:00<?, ?it/s]
+[corpus] 13 train + 3 eval
+[init] ridge->BPE SVD-32 init (top sv [1.49 1.26 1.22 1.19])
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[v2] patch projection trained inline (6 epochs)
+/content/qt/hnet-qwen-adapter/src/decoder.py:32: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.enc = nn.TransformerEncoder(layer, n_layers)
+/usr/local/lib/python3.13/dist-packages/torch/nn/modules/transformer.py:431: UserWarning: Support for mismatched src_key_padding_mask and mask is deprecated. Use same type for both instead.
+  src_key_padding_mask = F._canonical_mask(
+/tmp/ipykernel_664/3718670890.py:193: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  ep_tot += float(loss) * int(lm.sum()); ep_n += int(lm.sum()); step += 1
+[d256x4] interior train bpb 4.3023 | 7.23M params | 44s
+    [v2] FULL-BYTE bpb on eval docs (markdown): 5.1125 (24576 bytes)
+    [v2] FULL-BYTE bpb on hnet val split (cross-domain): 4.2061 (85796 bytes)
+[d384x6] interior train bpb 4.1414 | 16.75M params | 76s
+    [v2] FULL-BYTE bpb on eval docs (markdown): 5.1465 (24576 bytes)
+    [v2] FULL-BYTE bpb on hnet val split (cross-domain): 4.3047 (85796 bytes)
+[refs] byte-level 5.57 | constructed-sum eff 5.56 | v1 eff 5.27 | stock BPE 4.92 (eval docs)
+
+[generate:markdown] '# Report\n\n## Introduction\n\n¢  \x16st\x9ahes.\nÛ\n| | LG\x0e\n0.\x9d-üâ\x88\x92¯2-T` {rv. L\x9722` v'
+
+[generate:english] 'The history of the¢c  ws\x9ahes,\nÛ\nw***L8\n\n| \x9d2üâ\x88\x92¯2 â\x88\x92{ive. \x97A7u`2'
+[save] /content/byte_decoder.pt

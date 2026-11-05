@@ -132,12 +132,12 @@ for d in docs[:4]:
     patch = hn.w_main(enc[torch.tensor([b - 1 for b in range(P, n * P + 1, P)],
                                       device="cuda")][None])
     glob = hn.run_stack(hn.main, patch)[0]                     # (C, D)
-    emb_x = text.embed_tokens(tids).float()
+    emb_x = text.embed_tokens(tids)
     resid = hn.w_in(emb_x) - emb_x                             # target residual
     for ci in range(1, n):
         a, b = ci * P, min((ci + 1) * P, len(d))
         for p_ in range(a, b):
-            G.append(glob[ci - 1].float())
+            G.append(glob[ci - 1])
             Rres.append(resid[p_])
     del patch, glob
     torch.cuda.empty_cache()

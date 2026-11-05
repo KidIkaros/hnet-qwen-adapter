@@ -4,7 +4,14 @@ Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [adapt] 8 docs
 [adapt] pairs 65536 | dec_start 5 main_start 3 | w_main pairs 5460
-[adapt] no w_main  | prev     byte bpb 8.1012
-[adapt] no w_main  | retrieve byte bpb 8.1012
-[adapt] +w_main    | prev     byte bpb 8.1012
-[adapt] +w_main    | retrieve byte bpb 8.1012
+[0;31m---------------------------------------------------------------------------[0m[0;31mRuntimeError[0m                              Traceback (most recent call last)[0;32m/tmp/ipykernel_1664/323262770.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    134[0m     [0mglob[0m [0;34m=[0m [0mhn[0m[0;34m.[0m[0mrun_stack[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mmain[0m[0;34m,[0m [0mpatch[0m[0;34m)[0m[0;34m[[0m[0;36m0[0m[0;34m][0m                     [0;31m# (C, D)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    135[0m     [0memb_x[0m [0;34m=[0m [0mtext[0m[0;34m.[0m[0membed_tokens[0m[0;34m([0m[0mtids[0m[0;34m)[0m[0;34m.[0m[0mfloat[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 136[0;31m     [0mresid[0m [0;34m=[0m [0mhn[0m[0;34m.[0m[0mw_in[0m[0;34m([0m[0memb_x[0m[0;34m)[0m [0;34m-[0m [0memb_x[0m                             [0;31m# target residual[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    137[0m     [0;32mfor[0m [0mci[0m [0;32min[0m [0mrange[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mn[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    138[0m         [0ma[0m[0;34m,[0m [0mb[0m [0;34m=[0m [0mci[0m [0;34m*[0m [0mP[0m[0;34m,[0m [0mmin[0m[0;34m([0m[0;34m([0m[0mci[0m [0;34m+[0m [0;36m1[0m[0;34m)[0m [0;34m*[0m [0mP[0m[0;34m,[0m [0mlen[0m[0;34m([0m[0md[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/construct.py[0m in [0;36m<lambda>[0;34m(base)[0m
+[1;32m     45[0m     [0mXtX[0m [0;34m=[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mX[0m [0;34m+[0m [0mlam[0m [0;34m*[0m [0mtorch[0m[0;34m.[0m[0meye[0m[0;34m([0m[0mX[0m[0;34m.[0m[0mshape[0m[0;34m[[0m[0;36m1[0m[0;34m][0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdtype[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mX[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     46[0m     [0mW[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mlinalg[0m[0;34m.[0m[0msolve[0m[0;34m([0m[0mXtX[0m[0;34m,[0m [0mX[0m[0;34m.[0m[0mT[0m [0;34m@[0m [0mY[0m[0;34m)[0m[0;34m.[0m[0mto[0m[0;34m([0m[0mpatch_sums[0m[0;34m.[0m[0mdtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 47[0;31m     [0;32mreturn[0m [0;32mlambda[0m [0mbase[0m[0;34m:[0m [0mbase[0m [0;34m@[0m [0mW[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;31mRuntimeError[0m: expected mat1 and mat2 to have the same dtype, but got: float != c10::BFloat16

@@ -111,20 +111,18 @@ class HNetQwen(nn.Module):
                        position_ids=pos)
         return hs
 
-    def decoder_attn_pass(self, x_bytes, ctx, spans, n_ctx_layers=1):
+    def decoder_attn_pass(self, x_bytes, ctx, chunk_of, n_ctx_layers=1):
         """BLT-style chunk retrieval: one checkpoint attention layer over the
         interleaved [ctx_1..ctx_C, byte tokens] sequence — bytes attend to
-        chunk states STRICTLY before their own chunk (causal, no leakage)."""
-        T = x_bytes.shape[1]; C = len(spans)
+        chunk states STRICTLY before their own chunk (causal, no leakage).
+        chunk_of (T,) maps each byte to its chunk index."""
+        T = x_bytes.shape[1]; C = ctx.shape[0]
         seq = torch.cat([ctx[None], x_bytes], dim=1)               # (1, C+T, D)
         neg = torch.finfo(torch.float32).min
         N = C + T
         allow = torch.zeros(N, N, dtype=torch.bool, device=x_bytes.device)
         allow[:C, :C] = torch.tril(torch.ones(C, C, dtype=torch.bool,
                                               device=x_bytes.device))
-        chunk_of = torch.zeros(T, dtype=torch.long, device=x_bytes.device)
-        for ci, (a, b) in enumerate(spans):
-            chunk_of[a:b] = ci
         ctx_pos = torch.arange(C, device=x_bytes.device)
         allow[C:, :C] = ctx_pos[None, :] < chunk_of[:, None]       # past ctx only
         allow[C:, C:] = torch.tril(torch.ones(T, T, dtype=torch.bool,
@@ -138,9 +136,12 @@ class HNetQwen(nn.Module):
         return seq[:, C:]                                          # byte part
 
     def chunks(self, boundaries):
-        """Group byte positions into chunk spans given a 0/1 boundary vector."""
-        bounds = boundaries.nonzero().flatten().tolist() + [len(boundaries)]
-        return [(a, b) for a, b in zip(bounds, bounds[1:])]
+        """Group byte positions into (start, end) spans given a 0/1 boundary
+        vector — boundary=1 at p means a new chunk starts at p."""
+        starts = boundaries.nonzero().flatten()
+        stops = torch.cat([starts[1:], torch.tensor(
+            [len(boundaries)], device=starts.device)])
+        return list(zip(starts.tolist(), stops.tolist()))
 
     # ---- the H-Net forward --------------------------------------------------
     def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev",
@@ -160,9 +161,12 @@ class HNetQwen(nn.Module):
         enc = hs_enc[0]                                       # (T, D)
         if boundaries is None:
             boundaries = self.boundary.route(enc, hard=True)  # (T,)
-        spans = self.chunks(boundaries)
-        # pool: encoder hidden state at each chunk's LAST byte
-        patch = torch.stack([enc[b - 1] for _, b in spans])[None]  # (1, C, D)
+        starts = boundaries.nonzero().flatten()               # chunk start indices
+        stops = torch.cat([starts[1:], torch.tensor(
+            [T], device=starts.device)])                      # chunk end indices
+        chunk_of = boundaries.long().cumsum(0) - 1            # (T,) chunk idx
+        # pool: encoder hidden state at each chunk's LAST byte (pure gather)
+        patch = enc[stops - 1][None]                          # (1, C, D)
         if self.w_main is not None:
             patch = self.w_main(patch)
         glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
@@ -174,12 +178,13 @@ class HNetQwen(nn.Module):
         x = hs.clone() if self.w_enc is None else hs + self.w_enc(enc[None])
         if ctx == "retrieve":
             # bytes attend past-chunk ctx with their OWN queries — no broadcast
-            x = x + self.decoder_attn_pass(x, ctx_v, spans)
+            x = x + self.decoder_attn_pass(x, ctx_v, chunk_of)
         else:
-            for ci, (a, b) in enumerate(spans):
-                src = ci if ctx == "own" else ci - 1
-                if src >= 0:
-                    x[0, a:b] += ctx_v[src]
+            src = chunk_of if ctx == "own" else (chunk_of - 1)
+            valid = src >= 0
+            gather = src.clamp(min=0)
+            x[0, valid] += ctx_v[gather[valid]]               # vectorized dechunk
+        spans = list(zip(starts.tolist(), stops.tolist()))
         hs_dec = x if self.w_in is None else self.w_in(x)
         for layer in self.dec:
             hs_dec = layer(hs_dec, position_embeddings=None,

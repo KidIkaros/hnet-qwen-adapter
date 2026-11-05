@@ -114,9 +114,9 @@ Ymain_p = torch.cat(Ymain_p)
 
 print(f"[adapt] pairs {len(Xin)} | dec_start {dec_start} main_start {main_start} "
       f"| w_main pairs {len(Xmain)}", flush=True)
-hn.w_in = ridge_to_bpe(Xin[:200_000], Yin[:200_000])
-hn.w_out = ridge_to_bpe(Xout[:200_000], Yout[:len(Xout)])
-hn.w_main = ridge_to_bpe(Xmain[:200_000], Ymain_p[:200_000])
+hn.w_in = ridge_to_bpe(Xin[:200_000].to(torch.bfloat16), Yin[:200_000].to(torch.bfloat16))
+hn.w_out = ridge_to_bpe(Xout[:200_000].to(torch.bfloat16), Yout[:len(Xout)].to(torch.bfloat16))
+hn.w_main = ridge_to_bpe(Xmain[:200_000].to(torch.bfloat16), Ymain_p[:200_000].to(torch.bfloat16))
 
 # ---- eval grid: adapters on/off x ctx prev/retrieve
 T = 8192

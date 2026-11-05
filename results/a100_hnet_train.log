@@ -1,25 +1,17 @@
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
-Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
-  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
 Downloading bytes:           |  0.00B            
 Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
 Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
 Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [train] Qwen/Qwen3.5-2B-Base | 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
 [data] 34 train + 6 held + 4 adapter-fit docs
-[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
-[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 [fit] w_in/w_out/w_enc ridges fit (frozen during training)
-[0;31m---------------------------------------------------------------------------[0m[0;31mAttributeError[0m                            Traceback (most recent call last)[0;32m/tmp/ipykernel_19766/957471679.py[0m in [0;36m<cell line: 0>[0;34m()[0m
-[1;32m    115[0m [0;31m# ---- trainable: enc, dec, dechunk, boundary — with grad checkpointing[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    116[0m [0;32mfor[0m [0mlayer[0m [0;32min[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0menc[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdec[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 117[0;31m     [0mlayer[0m[0;34m.[0m[0mgradient_checkpointing_enable[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    118[0m [0mtrainable[0m [0;34m=[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0menc[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdec[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m[0;31m [0m[0;31m\[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    119[0m     [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mdechunk[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m [0;34m+[0m [0mlist[0m[0;34m([0m[0mhn[0m[0;34m.[0m[0mboundary[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m__getattr__[0;34m(self, name)[0m
-[1;32m   1966[0m             [0;32mif[0m [0mname[0m [0;32min[0m [0mmodules[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1967[0m                 [0;32mreturn[0m [0mmodules[0m[0;34m[[0m[0mname[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1968[0;31m         raise AttributeError(
-[0m[1;32m   1969[0m             [0;34mf"'{type(self).__name__}' object has no attribute '{name}'"[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1970[0m         )
-[0;31mAttributeError[0m: 'Qwen3_5DecoderLayer' object has no attribute 'gradient_checkpointing_enable'
+[train] 827.9M trainable params (rest frozen)
+  step 0    loss 4.7471 |gn| 53.25 | held bpb 20.9685
+/tmp/ipykernel_19766/1767501389.py:151: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  print(f"  step {step:<4} loss {float(loss):.4f} |gn| {float(gn):.2f} "
+  step 10   loss 3.9732 |gn| 6.41 | held bpb 5.7210
+  step 20   loss 9.5632 |gn| 6.69 | held bpb 5.2949
+  step 30   loss 3.6175 |gn| 0.59 | held bpb 5.0908
+  step 33   loss 3.5011 |gn| 1.00 | held bpb 4.9278
+[train] dry-run complete

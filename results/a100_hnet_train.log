@@ -8,3 +8,59 @@ Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
 [train] Qwen/Qwen3.5-2B-Base | 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/84 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/32 [00:00<?, ?it/s]
+[data] 400 train + 6 held + 4 adapter-fit docs
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[fit] w_in/w_out/w_enc ridges fit (frozen during training)
+[train] 832.1M trainable params (rest frozen)
+  step 0    loss 4.5994 |gn| 50.50 | held bpb 14.6064
+/tmp/ipykernel_27300/1856290797.py:174: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  print(f"  step {step:<4} loss {float(loss):.4f} |gn| {float(gn):.2f} "
+  step 10   loss 3.6923 |gn| 6.53 | held bpb 5.8108
+  step 20   loss 2.5652 |gn| 1.35 | held bpb 8.8485
+  step 30   loss 2.9251 |gn| 8.31 | held bpb 6.5884
+  step 40   loss 2.0825 |gn| 4.41 | held bpb 8.2822
+  step 50   loss 1.6713 |gn| 11.50 | held bpb 6.5062
+  step 60   loss 1.2944 |gn| 3.20 | held bpb 6.0327
+  step 70   loss 1.2822 |gn| 1.76 | held bpb 6.0373
+  step 80   loss 3.3364 |gn| 2.17 | held bpb 5.8173
+  step 90   loss 1.5491 |gn| 2.89 | held bpb 7.2294
+  step 100  loss 1.3701 |gn| 3.91 | held bpb 6.2315
+  step 110  loss 1.2434 |gn| 7.12 | held bpb 5.8298
+  step 120  loss 1.2129 |gn| 3.66 | held bpb 6.3138
+  step 130  loss 1.1809 |gn| 1.82 | held bpb 6.1426
+  step 140  loss 2.5654 |gn| 6.22 | held bpb 5.3828
+  step 150  loss 3.5111 |gn| 2.50 | held bpb 5.5842
+  step 160  loss 2.9626 |gn| 0.51 | held bpb 5.1569
+  step 170  loss 3.1534 |gn| 0.94 | held bpb 4.5829
+  step 180  loss 2.6522 |gn| 0.70 | held bpb 4.5767
+  step 190  loss 1.5175 |gn| 2.75 | held bpb 4.7953
+  step 200  loss 2.7998 |gn| 1.19 | held bpb 4.8423
+  step 210  loss 2.5119 |gn| 1.00 | held bpb 4.6084
+  step 220  loss 2.4495 |gn| 0.91 | held bpb 4.7048
+  step 230  loss 2.2013 |gn| 0.55 | held bpb 4.5248
+  step 240  loss 2.4426 |gn| 1.21 | held bpb 4.5485
+  step 250  loss 2.1674 |gn| 0.68 | held bpb 4.8454
+  step 260  loss 2.1049 |gn| 0.63 | held bpb 4.3762
+  step 270  loss 2.0343 |gn| 0.58 | held bpb 4.5581
+  step 280  loss 2.0363 |gn| 0.71 | held bpb 4.7223
+  step 290  loss 2.0837 |gn| 0.55 | held bpb 4.2913
+  step 300  loss 2.0368 |gn| 0.67 | held bpb 4.4867
+  step 310  loss 2.0738 |gn| 0.84 | held bpb 4.6774
+  step 320  loss 1.9115 |gn| 0.71 | held bpb 4.2079
+  step 330  loss 1.9363 |gn| 0.77 | held bpb 4.3872
+  step 340  loss 1.7868 |gn| 0.75 | held bpb 4.6922
+  step 350  loss 1.8527 |gn| 0.80 | held bpb 4.2623
+  step 360  loss 1.8673 |gn| 0.70 | held bpb 4.3933
+  step 370  loss 1.7855 |gn| 0.80 | held bpb 4.6620
+  step 380  loss 1.7803 |gn| 0.73 | held bpb 4.1682
+  step 390  loss 1.7631 |gn| 0.86 | held bpb 4.4593
+  step 399  loss 1.8277 |gn| 0.81 | held bpb 4.8043
+[rsi] round-2 on worst 200 docs (worst bpb 5.040)
+[rsi] round-2 held bpb 4.7451 (['3.872', '4.294', '3.858', '4.342', '4.149', '7.955'])
+[train] dry-run complete

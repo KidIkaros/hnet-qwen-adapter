@@ -55,18 +55,20 @@ bmap = byte_token_map(tok)
 pe = PatchEmbedder(model, tok)
 head = ByteHead(tok)
 
-# ---- corpus
-buf = []
-for name in sorted(os.listdir("/content/qt/hnet-kaggle/docs")):
-    if name.endswith(".md"):
-        buf.append(open(os.path.join("/content/qt/hnet-kaggle/docs", name), "rb").read())
-joined = b"\n".join(buf)
-NDOCS = int(os.environ.get("NDOCS", "16"))
-docs = [joined[i:i + 8192] for i in range(0, len(joined) - 8192, 8192)][:NDOCS]
-train_docs, eval_docs = docs[:-3], docs[-3:]
+# ---- corpus: wikitext-103 (leaderboard) + decontam; markdown for continuity
+CORPUS = "wikitext"
+sh("pip", "install", "-q", "datasets")
+from datasets import load_dataset  # noqa: E402
+
+wt = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1")
+wt_tr = [x.encode() for x in wt["train"]["text"] if len(x) >= 8192][:1200]
+wt_te = [x.encode() for x in wt["test"]["text"] if len(x) >= 8192][:24]
+train_docs = [x[:8192] for x in wt_tr]
 train_docs += [open(f, "rb").read() for f in
                __import__("glob").glob("data/decontam/*.bin")]
-print(f"[corpus] {len(train_docs)} train + {len(eval_docs)} eval", flush=True)
+eval_docs = [x[:8192] for x in wt_te[:3]]
+print(f"[corpus] {len(train_docs)} train (wt103+decontam) + {len(eval_docs)} eval"
+      f" + {len(wt_te)} wt-test held", flush=True)
 
 P = 6
 chunker = PeriodicChunker(P)
@@ -174,6 +176,19 @@ def full_byte_bpb(dec, ds, label):
 
 vdocs = ValDocs("/content/val").docs(8, min_len=4096) if os.path.isdir("/content/val") else []
 
+# ---- leaderboard floors on wikitext-103 test: stock + byte-level
+from src.adapter import qwen_byte_bpb, ChunkLM                     # noqa: E402
+lm1 = ChunkLM(model, tok, period=1, agg="sum", byte_head=head)
+_sb = _bb = _tb = 0.0
+for d in wt_te[3:]:
+    qb, _, nb = qwen_byte_bpb(model, tok, d)
+    _sb += qb * nb
+    fb = lm1.byte_nll(d)
+    _bb += 8.0 * len(d) + float(fb.sum())
+    _tb += len(d)
+print(f"[floor] wt-test stock {_sb / _tb:.4f} byte {_bb / _tb:.4f} ({int(_tb)} B)",
+      flush=True)
+
 DECS = {}
 for d_dec, n_layers, epn in ((256, 4, 8), (384, 6, 12)):
     name = f"d{d_dec}x{n_layers}"
@@ -196,7 +211,8 @@ for d_dec, n_layers, epn in ((256, 4, 8), (384, 6, 12)):
     tr = ep_tot / ep_n / np.log(2)
     print(f"[{name}] interior train bpb {tr:.4f} | {sum(p.numel() for p in dec.parameters()) / 1e6:.2f}M "
           f"params | {time.time() - t0:.0f}s", flush=True)
-    full_byte_bpb(dec, eval_docs, "eval docs (markdown)")
+    full_byte_bpb(dec, eval_docs, "eval docs (wikitext held)")
+    full_byte_bpb(dec, wt_te[3:], "WIKITEXT-103 TEST (leaderboard)")
     if vdocs:
         full_byte_bpb(dec, vdocs, "hnet val split (cross-domain)")
     DECS[name] = dec

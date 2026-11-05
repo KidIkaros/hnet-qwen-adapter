@@ -52,7 +52,6 @@ if not hasattr(text, "layers"):
 all_docs = sorted(glob.glob("data/decontam/*.bin"))
 fit_docs = [open(f, "rb").read() for f in all_docs[:6]]
 eval_docs = [open(f, "rb").read()[:8192] for f in all_docs[6:10]]
-eval_docs.append(open("data/val.md", "rb").read()[:8192])
 print(f"[eval] fit {len(fit_docs)} | held-out {len(eval_docs)} docs", flush=True)
 
 lin_idx = [i for i, l in enumerate(hn.layers) if l.block_type == "linear_attention"]

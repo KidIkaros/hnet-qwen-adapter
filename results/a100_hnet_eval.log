@@ -1,0 +1,11 @@
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[0;31m---------------------------------------------------------------------------[0m[0;31mFileNotFoundError[0m                         Traceback (most recent call last)[0;32m/tmp/ipykernel_1664/4065951174.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m     53[0m [0mfit_docs[0m [0;34m=[0m [0;34m[[0m[0mopen[0m[0;34m([0m[0mf[0m[0;34m,[0m [0;34m"rb"[0m[0;34m)[0m[0;34m.[0m[0mread[0m[0;34m([0m[0;34m)[0m [0;32mfor[0m [0mf[0m [0;32min[0m [0mall_docs[0m[0;34m[[0m[0;34m:[0m[0;36m6[0m[0;34m][0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[1;32m     54[0m [0meval_docs[0m [0;34m=[0m [0;34m[[0m[0mopen[0m[0;34m([0m[0mf[0m[0;34m,[0m [0;34m"rb"[0m[0;34m)[0m[0;34m.[0m[0mread[0m[0;34m([0m[0;34m)[0m[0;34m[[0m[0;34m:[0m[0;36m8192[0m[0;34m][0m [0;32mfor[0m [0mf[0m [0;32min[0m [0mall_docs[0m[0;34m[[0m[0;36m6[0m[0;34m:[0m[0;36m10[0m[0;34m][0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 55[0;31m [0meval_docs[0m[0;34m.[0m[0mappend[0m[0;34m([0m[0mopen[0m[0;34m([0m[0;34m"data/val.md"[0m[0;34m,[0m [0;34m"rb"[0m[0;34m)[0m[0;34m.[0m[0mread[0m[0;34m([0m[0;34m)[0m[0;34m[[0m[0;34m:[0m[0;36m8192[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     56[0m [0mprint[0m[0;34m([0m[0;34mf"[eval] fit {len(fit_docs)} | held-out {len(eval_docs)} docs"[0m[0;34m,[0m [0mflush[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     57[0m [0;34m[0m[0m
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'data/val.md'

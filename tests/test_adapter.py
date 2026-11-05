@@ -120,6 +120,15 @@ def test_byte_head_padded_vocab():
     assert abs(bpb - float(-torch.log2(p[5] + p[325]))) < 1e-4
 
 
+def test_unmapped_chunk_becomes_zero_vector():
+    """A chunk whose every byte is unmappable (a lone UTF-8 continuation byte at period 1) must not
+    kill the doc: it embeds as a zero 'hole' and shows up in the input coverage."""
+    lm = ChunkLM(FakeModel(), FakeTok(), period=1, device="cpu", dtype=torch.float32)
+    bpb, n, (cov, tcov) = lm.first_byte_bpb(b"AB\x80CD")   # 0x80 is unmapped: 5 chunks, one hole
+    assert cov == 0.8                                     # one of five chunks empty
+    assert n == 3                                         # 4 prediction slots; the 0x80 target skipped
+
+
 def test_qwen_byte_bpb_accounting():
     """The same-weights reference: token CE weighted by each token's byte length, over total bytes."""
     model = FakeModel()

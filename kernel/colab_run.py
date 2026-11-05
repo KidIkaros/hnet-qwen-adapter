@@ -74,14 +74,17 @@ _shared_head = ByteHead(tok)
 
 def adapter_score(period, agg):
     lm = ChunkLM(model, tok, period=period, agg=agg, byte_head=_shared_head)
-    tot = n = 0.0; covs = []
+    tot = n = 0.0; covs = []; skipped = 0
     for d in docs:
         try:
             bpb, k, c = lm.first_byte_bpb(d)
             tot += bpb * k; n += k; covs.append(c)
-        except ValueError:
-            continue
-    return tot / max(n, 1), int(n), float(np.mean([c for c, _ in covs])), float(np.mean([t for _, t in covs]))
+        except ValueError as e:
+            skipped += 1
+            print(f"        [skip] doc at period {period}/{agg}: {e}", flush=True)
+    ci = float(np.mean([c for c, _ in covs])) if covs else float("nan")
+    ct = float(np.mean([t for _, t in covs])) if covs else float("nan")
+    return tot / max(n, 1), int(n), ci, ct, skipped
 
 
 t0 = time.time()
@@ -91,13 +94,13 @@ for d in docs:
     qb_tot += qb * len(d); qb_n += len(d)
 print(f"stock Qwen3.5-0.8B (native BPE): full-byte bpb {qb_tot / max(qb_n, 1):.4f} over {int(qb_n)} bytes", flush=True)
 
-print(f"\n{'period':>6} {'agg':>5} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7}", flush=True)
+print(f"\n{'period':>6} {'agg':>5} {'first-byte bpb':>15} {'n_preds':>9} {'in_cov':>7} {'tg_cov':>7} {'skipped':>8}", flush=True)
 for period in (1, 2, 3, 6, 12):
     for agg in ("sum", "mean"):
         if period == 1 and agg == "mean":
             continue                                    # sum == mean for one-byte chunks
-        bpb, n, ci, ct = adapter_score(period, agg)
-        print(f"{period:>6} {agg:>5} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f}", flush=True)
+        bpb, n, ci, ct, sk = adapter_score(period, agg)
+        print(f"{period:>6} {agg:>5} {bpb:>15.4f} {n:>9} {ci:>7.4f} {ct:>7.4f} {sk:>8}", flush=True)
 
 print(f"\ntrained 18.6M H-Net (published, full-byte): 1.4177", flush=True)
 print(f"[timing] {time.time() - t0:.0f}s", flush=True)

@@ -75,8 +75,9 @@ def forward_bp(hn, trunk, ids, cap=CAP):
     import torch
     from src.factory import periodic
     x = torch.tensor(ids[-cap:], device="cuda")
-    bp, _, _ = hn(x, boundaries=periodic(x.shape[0], P), ctx="retrieve",
-                  n_ctx=1, super_k=4, head_first=trunk["head"].first)
+    with torch.no_grad():
+        bp, _, _ = hn(x, boundaries=periodic(x.shape[0], P), ctx="retrieve",
+                      n_ctx=1, super_k=4, head_first=trunk["head"].first)
     return bp
 
 
@@ -84,10 +85,11 @@ def cand_score(hn, trunk, pid, cand, cap=CAP):
     """Mean logprob of cand bytes after prompt (teacher-forced)."""
     import torch
     ids = (pid + cand)[-cap:]
-    bp = forward_bp(hn, trunk, ids)
-    n0 = len(ids) - len(cand)
-    lp = bp[0, n0 - 1:-1].gather(
-        1, torch.tensor(ids[n0:], device="cuda").unsqueeze(1)).squeeze(1)
+    with torch.no_grad():
+        bp = forward_bp(hn, trunk, ids)
+        n0 = len(ids) - len(cand)
+        lp = bp[0, n0 - 1:-1].gather(
+            1, torch.tensor(ids[n0:], device="cuda").unsqueeze(1)).squeeze(1)
     return float(lp.mean())
 
 

@@ -38,6 +38,7 @@ from src.probe_common import (RESULTS, build_model, cand_score,  # noqa: E402
 
 ENC = os.environ.get("ENCODER", "BAAI/bge-small-en-v1.5")
 TAU = float(os.environ.get("TAU", "0.01"))
+NOUL_TAU = float(os.environ.get("NOUL_TAU", "0.55"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "60"))
 GEN_LEN = int(os.environ.get("GEN_LEN", "300"))
 SKIP = int(os.environ.get("SKIP", "1224"))
@@ -89,7 +90,7 @@ for i, r in enumerate(ds):
         break
 print(f"[exam] {len(items)} items | S1={ENC} tau={TAU}", flush=True)
 
-pick1 = esc_n = closed_n = noul_hit = declared = 0
+pick1 = esc_n = closed_n = noul_hit = declared = noul_n = 0
 for k, it in enumerate(items):
     names = [t[0] for t in it["tools"]]
     ue = embed([it["user"]])
@@ -100,6 +101,11 @@ for k, it in enumerate(items):
     gold_in = it["gold"] in names
     declared += gold_in
 
+    if sims[order[0]] < NOUL_TAU:        # abstention floor: nothing fits
+        noul_n += 1
+        print(f"  item {k:2d} [NOUL] top-sim {sims[order[0]]:.3f} "
+              f"gold={it['gold'][:20]} declared={gold_in}", flush=True)
+        continue
     if margin >= TAU:                    # S1 answers
         pred, tier = names[order[0]], "S1"
     else:                                # S2 byte-scorer (schema-arg probe)
@@ -134,11 +140,11 @@ for k, it in enumerate(items):
           f"call={gen[:55]!r}", flush=True)
 
 n = len(items)
-res = {"tau": TAU, "n": n, "declared": declared, "pick1": pick1,
-       "escalated": esc_n, "closed": closed_n,
-       "noul_emit_on_undeclared": noul_hit}
+res = {"tau": TAU, "noul_tau": NOUL_TAU, "n": n, "declared": declared,
+       "pick1": pick1, "escalated": esc_n, "closed": closed_n,
+       "noul": noul_n, "noul_emit_on_undeclared": noul_hit}
 json.dump(res, open(f"{RESULTS}/pipeline_{int(time.time())}.json", "w"))
 print(f"[pipeline] pick@1 {pick1}/{declared} declared ({n} total) | "
-      f"S2 esc {esc_n} | closed {closed_n}/{n} | "
+      f"S2 esc {esc_n} | NOUL {noul_n} | closed {closed_n}/{n} | "
       f"undeclared-emitted {noul_hit}", flush=True)
 print("[pipeline] complete", flush=True)

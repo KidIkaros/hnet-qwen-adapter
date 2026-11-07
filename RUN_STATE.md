@@ -133,3 +133,10 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
 ### Session state
 - `hrun6` alive (A100) with ckpt at /content/ckpt + repo at /content/qt/. hrun4/hrun5 died earlier; all artifacts safe locally.
 - Local disk was full — cleaned /tmp + uv cache (~5.6GB); old leg ckpts (.leg3/.leg4/.leg5/.leg7, leg6/) still in checkpoints/resume_best/ ~9.6GB if space needed.
+
+### RSI design note (2026-11-07, papers reviewed)
+- Recursa (arXiv:2611.04035): knowledge gap vs behavior gap — our constrained-scoring find was a BEHAVIOR gap; fix at the system layer (decision layer), not retraining. Thesis: adapt the whole system, not just the model.
+- Terminal-RSI: verified trajectories -> policy update loop; verifier gates what feeds back. Our verified-replay = same loop minus RL machinery.
+- MetaExp (arXiv:2610.21492): experience that transfers ACROSS episodes = the multi-step orchestration piece (Jev-Mem working trace).
+- DECISION: self-improve at behavior layer, not weight layer. Verified-only replay (conformal-confirmed correct calls, capped fraction). Verdict-outcome -> gate feedback (ErrorModel-lite). NO unverified self-generation into weights (collapse). Conformal layer = the verifier that makes mild RSI safe.
+- S1+S2 measured: enc 87.3% / byte 71.4% / union 92.9% / routed(margin>=.01) 89.7% @ esc~10% on n=126 clean (74/200 dropped undeclared-gold = natural Noul set). jev_decide.py = fusion+conformal+routed tier.

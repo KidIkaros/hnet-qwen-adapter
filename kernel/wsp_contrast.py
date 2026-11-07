@@ -46,15 +46,26 @@ CALL_RE = re.compile(r"([A-Za-z_][\w]*)\s*\(")
 LAYER_NAMES = ([f"enc_{i}" for i, _ in enumerate(hn.enc)]
                + [f"main_{i}" for i, _ in enumerate(hn.main)]
                + [f"dec_{i}" for i, _ in enumerate(hn.dec)])
-ACTS = {n: [] for n in LAYER_NAMES}
-GEN_START = [0]                       # positions >= this are "gen"
+
+
+class Capture:
+    """Hook-target state: acts per layer + the gen-span start position.
+    Wraps what used to be a module-global dict + a [0] mutable cell."""
+
+    def __init__(self, names):
+        self.acts = {n: [] for n in names}
+        self.gen_start = 0
+
+
+cap = Capture(LAYER_NAMES)
 
 
 def hook(name):
     def h(mod, inp, out):
         t = out[0] if isinstance(out, (tuple, list)) else out
         if isinstance(t, torch.Tensor) and t.dim() == 3:
-            ACTS[name].append(t[0, GEN_START[0]:].mean(0).float().cpu())
+            cap.acts[name].append(
+                t[0, cap.gen_start:].mean(0).float().cpu())
     return h
 
 
@@ -105,12 +116,12 @@ means = {p_: {n: [] for n in LAYER_NAMES} for p_ in pop}
 for p_, pairs in pop.items():
     for pid, ids in pairs:
         for n in LAYER_NAMES:
-            ACTS[n].clear()
-        GEN_START[0] = max(len(pid), len(ids) - CAP)
+            cap.acts[n].clear()
+        cap.gen_start = max(len(pid), len(ids) - CAP)
         forward_bp(hn, trunk, ids)
         for n in LAYER_NAMES:
-            if ACTS[n]:
-                means[p_][n].append(torch.stack(ACTS[n]).mean(0))
+            if cap.acts[n]:
+                means[p_][n].append(torch.stack(cap.acts[n]).mean(0))
 
 # ---- contrast directions + separation ranking
 sep, dirs = {}, {}

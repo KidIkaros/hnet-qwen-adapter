@@ -103,6 +103,39 @@ print(f"[conformal] coverage {covered:.3f} (target {1-ALPHA:.2f}) "
       f"| mean set {sizes.mean():.1f}", flush=True)
 
 conf = P_f.max(1); correct = P_f.argmax(1) == y_ev
+
+# ---- routed tier: S1 (enc) answers when top-2 sim margin is decisive,
+# else escalate to S2 (byte scorer). tau fitted on CAL.
+def margins(S, idx):
+    out = np.zeros(len(idx))
+    for j, i in enumerate(idx):
+        k = int(np.isfinite(S[i]).sum())
+        s = np.sort(S[i, :k])[::-1]
+        out[j] = (s[0] - s[1]) if k > 1 else 9.9
+    return out
+
+
+def routed_acc(tau, m, P_e, P_b, y):
+    picks = np.where(m >= tau,
+                     P_e.argmax(1), P_b.argmax(1))
+    return (picks == y).mean(), float((m < tau).mean())
+
+
+m_cal = margins(S_enc, CAL)
+m_ev = margins(S_enc, EV)
+P_b_cal = probs(S_byte, T_b, CAL)
+
+best_tau, best_acc, best_esc = 0.0, -1, 0
+for tau in np.linspace(0, 0.08, 33):
+    a, e = routed_acc(tau, m_cal, P_e_cal, P_b_cal, y_cal)
+    if a > best_acc or (a == best_acc and e < best_esc):
+        best_tau, best_acc, best_esc = tau, a, e
+P_b_ev = probs(S_byte, T_b, EV)
+acc_r, esc_r = routed_acc(best_tau, m_ev, P_e, P_b_ev, y_ev)
+print(f"[route] tau={best_tau:.3f} | routed acc {acc_r:.3f} "
+      f"(esc rate {esc_r:.2f}) vs enc {float((P_e.argmax(1)==y_ev).mean()):.3f}",
+      flush=True)
+
 thr = protocol.coverage_at_precision(P_f, onehot(y_ev), TARGET)
 print(f"[verdicts] flat fused acc {correct.mean():.3f} | curve:", flush=True)
 for c in protocol.selective_curve(P_f, onehot(y_ev)):

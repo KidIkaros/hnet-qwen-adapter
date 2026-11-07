@@ -4,14 +4,13 @@ instruct model (donor - base) and what 9 legs of CPT wrote into our adapter
 concentration tells us WHERE the competence lives and whether it's a small
 transplantable subspace.
 
-    colab exec -s hrun6 -f kernel/hnet_weight_autopsy.py
+    colab exec -s hrunX -f kernel/hnet_weight_autopsy.py
     env: MODEL, DONOR (default Qwen/Qwen3.5-2B), CKPT_PREFIX, TOPN (15)
 """
 import os, sys, glob, subprocess
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 REPO = "/content/qt/hnet-qwen-adapter"
-RESULTS = f"{REPO}/results"
 
 
 def sh(*cmd):
@@ -22,11 +21,6 @@ def sh(*cmd):
     return r.stdout
 
 
-import torch                                                     # noqa: E402
-import numpy as np                                               # noqa: E402
-import json, time                                                # noqa: E402
-from transformers import AutoModelForCausalLM                    # noqa: E402
-
 if os.path.exists(REPO):
     sh("git", "-C", REPO, "pull", "-q")
 else:
@@ -34,6 +28,11 @@ else:
        "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)
 sys.path.insert(0, REPO)
 os.chdir(REPO)
+
+import torch                                                     # noqa: E402
+import json, time                                                # noqa: E402
+from transformers import AutoModelForCausalLM                    # noqa: E402
+from src.probe_common import RESULTS, sync_repo                  # noqa: E402
 from src.factory import build_hnet, load_trunk                   # noqa: E402
 
 MODEL = os.environ.get("MODEL", "Qwen/Qwen3.5-2B-Base")
@@ -45,9 +44,8 @@ hn, meta = build_hnet(trunk, enc_layers=6, dec_layers=8)
 
 PREFIX = os.environ.get("CKPT_PREFIX", "hnet_resume_best")
 glue = enc = dec = None
-for d in [RESULTS, "/content/ckpt"]:
+for d in [f"{REPO}/results", "/content/ckpt"]:
     try:
-        glue = torch.load(f"{d}/{PREFIX}_glue.pt", map_location="cuda")
         enc = torch.load(f"{d}/{PREFIX}_enc.pt", map_location="cuda")
         dec = torch.load(f"{d}/{PREFIX}_dec.pt", map_location="cuda")
         break
@@ -66,7 +64,7 @@ def eff_rank(sv, frac=0.95):
 
 
 def autopsy(label, pairs):
-    """pairs: (tensor_name, delta_tensor). Returns per-layer + per-type profile."""
+    """pairs: (tensor_name, delta_tensor). Ranked profile + group totals."""
     rows = []
     for name, D in pairs:
         D2 = D.float()
@@ -80,7 +78,6 @@ def autopsy(label, pairs):
     for r in rows[:TOPN]:
         print(f"  {r['name'][:52]:52s} |d| {r['norm']:8.3f} "
               f"erank95 {r['erank95']:4d}/{r['rank']}", flush=True)
-    # per-layer-group totals (attn vs mlp vs conv vs norm)
     groups = {}
     for r in rows:
         g = ("mlp" if "mlp" in r["name"] else

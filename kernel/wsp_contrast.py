@@ -1,19 +1,15 @@
-"""WSP contrast driver: generate toolace calls, label right vs hallucinated,
-capture per-layer gen-span mean activations, compute contrast directions.
+"""WSP contrast collection: generate on toolace items, bucket outputs into
+right / hallucinated / no-call populations, harvest gen-span mean activations
+across enc/main/dec, and rank layers by population separation — the diagnosis
+step for a WSP suppression edit.
 
-    colab exec -s hrun4 -f kernel/wsp_contrast.py
-    env: MODEL, CKPT_PREFIX, N_ITEMS (default 30), GEN_LEN (512), SKIP (2500)
-
-Mirrors stage-2 diagnosis of wsp-reproduction: d_hat = normalized
-mean(act_hall) - mean(act_right) per layer; prints separation ranking so the
-edit target can be chosen empirically. Saves results/wsp_contrast.npz + .json.
+    colab exec -s hrun6 -f kernel/wsp_contrast.py
+    env: MODEL, CKPT_PREFIX, N_ITEMS (30), GEN_LEN (512), SKIP (2500)
 """
 import os, sys, glob, subprocess
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 REPO = "/content/qt/hnet-qwen-adapter"
-RESULTS = f"{REPO}/results"
-P = 6
 
 
 def sh(*cmd):
@@ -24,11 +20,6 @@ def sh(*cmd):
     return r.stdout
 
 
-import torch                                                     # noqa: E402
-import numpy as np                                               # noqa: E402
-import re, json, hashlib, time                                   # noqa: E402
-from datasets import load_dataset                                # noqa: E402
-
 if os.path.exists(REPO):
     sh("git", "-C", REPO, "pull", "-q")
 else:
@@ -36,45 +27,27 @@ else:
        "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)
 sys.path.insert(0, REPO)
 os.chdir(REPO)
-from src.factory import (build_hnet, fit_adapters, load_trunk,   # noqa: E402
-                         periodic)
 
-trunk = load_trunk(os.environ.get("MODEL", "Qwen/Qwen3.5-2B-Base"))
-hn, meta = build_hnet(trunk, enc_layers=6, dec_layers=8)
-all_docs = [open(f, "rb").read() for f in sorted(glob.glob("data/decontam/*.bin"))]
-fit_adapters(hn, trunk, meta, [d[:4096] for d in all_docs[:4]], P=P)
+import torch                                                     # noqa: E402
+import numpy as np                                               # noqa: E402
+import re, json                                                  # noqa: E402
+from src.probe_common import (CAP, RESULTS, build_model,         # noqa: E402
+                              forward_bp, load_ckpt,
+                              stream_toolace)
 
-PREFIX = os.environ.get("CKPT_PREFIX", "hnet_resume_best")
-glue = enc = dec = None
-for d in [RESULTS, "/content/ckpt"]:
-    try:
-        glue = torch.load(f"{d}/{PREFIX}_glue.pt", map_location="cuda")
-        enc = torch.load(f"{d}/{PREFIX}_enc.pt", map_location="cuda")
-        dec = torch.load(f"{d}/{PREFIX}_dec.pt", map_location="cuda")
-        break
-    except FileNotFoundError:
-        continue
-hn.w_sup.load_state_dict(glue["w_sup"])
-for i, l in enumerate(hn.enc):
-    l.load_state_dict(enc[f"enc_{i}"])
-for i, l in enumerate(hn.dec):
-    l.load_state_dict(dec[f"dec_{i}"])
-print(f"[ckpt] loaded {PREFIX}_* from {d}", flush=True)
-hn.train()
+trunk, hn, meta = build_model()
+load_ckpt(hn)
 
 N_ITEMS = int(os.environ.get("N_ITEMS", "30"))
 GEN_LEN = int(os.environ.get("GEN_LEN", "512"))
 SKIP = int(os.environ.get("SKIP", "2500"))
-CAP = 4096
 CALL_RE = re.compile(r"([A-Za-z_][\w]*)\s*\(")
-TOOL_RE = re.compile(r'"name"\s*:\s*"([\w]+)"')
 
-# activation capture: {layer_name: [gen-span mean vectors]}
 LAYER_NAMES = ([f"enc_{i}" for i, _ in enumerate(hn.enc)]
                + [f"main_{i}" for i, _ in enumerate(hn.main)]
                + [f"dec_{i}" for i, _ in enumerate(hn.dec)])
 ACTS = {n: [] for n in LAYER_NAMES}
-GEN_START = [0]                       # mutable: positions >= this are "gen"
+GEN_START = [0]                       # positions >= this are "gen"
 
 
 def hook(name):
@@ -97,29 +70,14 @@ handles = ([l.register_forward_hook(hook(f"enc_{i}"))
 def generate(prompt_ids, max_new):
     ids = list(prompt_ids)
     for _ in range(max_new):
-        x = torch.tensor(ids[-CAP:], device="cuda")
-        bp, _, _ = hn(x, boundaries=periodic(x.shape[0], P), ctx="retrieve",
-                      n_ctx=1, super_k=4, head_first=trunk["head"].first)
+        bp = forward_bp(hn, trunk, ids)
         ids.append(int(bp[0, -1].argmax()))
         if ids[-6:] == list(b"\n\nUSER:") or ids[-2:] == list(b"\n\n"):
             break
     return ids
 
 
-ds = load_dataset("Team-ACE/ToolACE", split="train", streaming=True)
-items = []
-for i, r in enumerate(ds):
-    if i < SKIP:
-        continue
-    conv = r.get("conversations") or []
-    u = next((c["value"] for c in conv if c.get("from") == "user"), None)
-    a = next((c["value"] for c in conv if c.get("from") == "assistant"), None)
-    gold = CALL_RE.findall(a) if a else []
-    if u and gold:
-        items.append({"sys": r["system"], "user": u, "gold": gold,
-                      "tools": set(TOOL_RE.findall(r["system"]))})
-    if len(items) >= N_ITEMS:
-        break
+items = stream_toolace(SKIP, N_ITEMS)
 print(f"[exam] {len(items)} items", flush=True)
 
 # ---- pass 1: generate + label
@@ -130,7 +88,7 @@ for k, it in enumerate(items):
     ids = generate(pid, GEN_LEN)
     gen = bytes(ids[len(pid):]).decode("utf-8", "replace")
     calls = CALL_RE.findall(gen)
-    if set(it["gold"]) & set(calls):
+    if it["gold"] in calls:
         lab = "right"
     elif any(c not in it["tools"] for c in calls):
         lab = "hall"
@@ -149,9 +107,7 @@ for p_, pairs in pop.items():
         for n in LAYER_NAMES:
             ACTS[n].clear()
         GEN_START[0] = max(len(pid), len(ids) - CAP)
-        x = torch.tensor(ids[-CAP:], device="cuda")
-        hn(x, boundaries=periodic(x.shape[0], P), ctx="retrieve",
-           n_ctx=1, super_k=4, head_first=trunk["head"].first)
+        forward_bp(hn, trunk, ids)
         for n in LAYER_NAMES:
             if ACTS[n]:
                 means[p_][n].append(torch.stack(ACTS[n]).mean(0))

@@ -86,6 +86,13 @@ res = {"mode": "constrained", "n": len(prompts), "loops": loops,
        "closed": closed}
 json.dump(res, open(f"{RESULTS}/emit_constrain_{int(time.time())}.json",
                     "w"))
+from src.edit_ledger import record                                # noqa: E402
+record({"method": "decode-constraint",
+        "target": "greedy_emit: run-mask + arg-dup stop",
+        "teach_gain": f"loops {loops}/{len(prompts)}",
+        "neighbor_cost": f"closed {closed}",
+        "n_eval": len(prompts),
+        "receipt": f"emit_constrain_{int(time.time())}.json"})
 print(f"[result] loops {loops}/{len(prompts)} closed {closed} | "
       f"vs base 21/40 cl29, edit 17/40 cl29-30", flush=True)
 print("[constrain] complete", flush=True)

@@ -158,6 +158,16 @@ res = {"npz": npz, "layers": chosen, "topk": TOPK,
        "base_closed": closed0, "edit_closed": closed1,
        "n": len(prompts)}
 json.dump(res, open(f"{RESULTS}/loop_edit_{int(time.time())}.json", "w"))
+from src.edit_ledger import record                                # noqa: E402
+record({"method": "direction-subtraction",
+        "target": "; ".join(f"{c}@L{l}.down_proj[{TOPK} cols]"
+                            for l, _, c in edits),
+        "teach_gain": f"loops {loops0}/{len(prompts)} -> "
+                      f"{loops1}/{len(prompts)}",
+        "neighbor_cost": f"closed {closed0} -> {closed1}",
+        "n_eval": len(prompts),
+        "receipt": f"loop_edit_{int(time.time())}.json",
+        "edit_norms": edit_norms})
 print(f"[result] loops {loops0}->{loops1} closed {closed0}->{closed1} "
       f"(n={len(prompts)})", flush=True)
 print("[loop_edit] complete", flush=True)

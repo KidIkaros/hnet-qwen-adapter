@@ -90,16 +90,14 @@ def capture_slice(skip, n):
 
 def build_xy(rows):
     """(X, y): step t is positive if an onset lands in (t, t+W]."""
-    X, Y, G = [], [], []
-    for gi, r in enumerate(rows):
+    X, Y = [], []
+    for r in rows:
         st = r["steps"]
-        n = len(st)
-        onset = r["onset"] or 10 ** 9
-        for t in range(n):
+        onset = 10 ** 9 if r["onset"] is None else r["onset"]
+        for t in range(len(st)):
             X.append(st[t])
             Y.append(1.0 if onset - W <= t < onset else 0.0)
-            G.append(gi)
-    return np.stack(X).astype(np.float32), np.array(Y), np.array(G)
+    return np.stack(X).astype(np.float32), np.array(Y)
 
 
 t0 = time.time()
@@ -112,8 +110,8 @@ np.savez(f"{RESULTS}/onset_states_{int(time.time())}.npz",
 print(f"[probe] captured {len(train_rows)}+{len(val_rows)} items "
       f"in {time.time()-t0:.0f}s", flush=True)
 
-Xtr, ytr, gtr = build_xy(train_rows)
-Xva, yva, gva = build_xy(val_rows)
+Xtr, ytr = build_xy(train_rows)
+Xva, yva = build_xy(val_rows)
 
 # item-level split already holds (train vs val disjoint); probe = LR on GPU
 dev = "cuda"
@@ -124,7 +122,7 @@ w = torch.zeros(xt.shape[1], device=dev, requires_grad=True)
 b = torch.zeros(1, device=dev, requires_grad=True)
 opt = torch.optim.Adam([w, b], lr=3e-3)
 pos_w = (yt.numel() - yt.sum()) / yt.sum().clamp(min=1)
-for ep in range(300):
+for _ in range(300):
     opt.zero_grad()
     loss = torch.nn.functional.binary_cross_entropy_with_logits(
         xt @ w + b, yt, pos_weight=pos_w)

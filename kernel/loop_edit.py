@@ -43,29 +43,50 @@ GEN_LEN = int(os.environ.get("GEN_LEN", "300"))
 TOP_LAYERS = int(os.environ.get("TOP_LAYERS", "2"))
 TOPK = int(os.environ.get("TOPK", "64"))
 
-npz = sorted(glob.glob(f"{RESULTS}/loop_sums_*.npz"))[-1]
+npz = sorted(glob.glob(f"{RESULTS}/loop_sums_v2_*.npz"))[-1]
 Z = np.load(npz)
-L = sum(1 for k in Z.files if k.startswith("sum_loop_"))
-n_loop, n_clean = int(Z["n_loop"]), int(Z["n_clean"])
-print(f"[dir] {npz} | loop-steps {n_loop} clean-steps {n_clean}",
-      flush=True)
+L = sum(1 for k in Z.files if k.startswith("argdup_"))
+PHENOS = ("argdup", "runaway")
+print(f"[dir] {npz} | " + " ".join(
+    f"{c}={int(Z[f'n_{c}'])}" for c in (*PHENOS, "pre", "clean")), flush=True)
 
-dirs = []
-norms = []
-for i in range(L):
-    d = Z[f"sum_loop_{i}"] / max(n_loop, 1) - \
-        Z[f"sum_clean_{i}"] / max(n_clean, 1)
-    norms.append(float(np.linalg.norm(d)))
-    dirs.append(d / max(np.linalg.norm(d), 1e-9))
-order = np.argsort(-np.array(norms))
-print("[dir] layer separation norms (top8): "
-      + " ".join(f"L{i}={norms[i]:.1f}" for i in order[:8]), flush=True)
-chosen = [int(i) for i in order[:TOP_LAYERS]]
-print(f"[dir] editing layers {chosen}", flush=True)
+
+def direction(cls, base="pre"):
+    """mean(cls) - mean(base), normalized, per layer."""
+    out, norms = [], []
+    for i in range(L):
+        d = Z[f"{cls}_{i}"] / max(int(Z[f"n_{cls}"]), 1) - \
+            Z[f"{base}_{i}"] / max(int(Z[f"n_{base}"]), 1)
+        norms.append(float(np.linalg.norm(d)))
+        out.append(d / max(np.linalg.norm(d), 1e-9))
+    return out, norms
+
 
 trunk, hn, meta = build_model()
 load_ckpt(hn)
 hn.eval()
+
+# score each phenotype direction by best down_proj column alignment
+best = None
+for cls in PHENOS:
+    dirs, norms = direction(cls)
+    order = np.argsort(-np.array(norms))
+    li = int(order[0])
+    W = hn.layers[li].mlp.down_proj.weight
+    d = torch.tensor(dirs[li], device=W.device, dtype=W.dtype)
+    cos = (W.T @ d) / (W.T.norm(dim=1) + 1e-9)
+    mc = float(cos.abs().max())
+    print(f"[dir] {cls}: top layer L{li} norm {norms[li]:.1f} "
+          f"max|cos| {mc:.3f} | top8 "
+          + " ".join(f"L{i}={norms[i]:.1f}" for i in order[:8]), flush=True)
+    if best is None or mc > best[0]:
+        best = (mc, cls, dirs, norms)
+
+mc, CLS, dirs, norms = best
+print(f"[dir] using {CLS} direction (max|cos| {mc:.3f})", flush=True)
+order = np.argsort(-np.array(norms))
+chosen = [int(i) for i in order[:TOP_LAYERS]]
+print(f"[dir] editing layers {chosen}", flush=True)
 
 ARG = re.compile(rb'(\w+)="')
 

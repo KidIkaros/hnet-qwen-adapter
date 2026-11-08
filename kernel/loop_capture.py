@@ -50,7 +50,7 @@ for layer in hn.layers:
 else:
     raise SystemExit("no mlp.gate_proj found on trunk layers")
 
-# capture last-position MLP input per layer
+# capture last-position MLP output per layer (write-side direction)
 CUR = {"x": [None] * L}
 hooks = []
 for i, layer in enumerate(hn.layers):
@@ -59,19 +59,20 @@ for i, layer in enumerate(hn.layers):
         continue
 
     def mk(i):
-        def f(m, inp):
-            CUR["x"][i] = inp[0][0, -1].detach().float().cpu()
+        def f(m, inp, out):
+            o = out[0] if isinstance(out, tuple) else out
+            CUR["x"][i] = o[0, -1].detach().float().cpu()
         return f
-    hooks.append(mlp.register_forward_pre_hook(mk(i)))
-tapped = sum(x is not None for x in hooks)
-print(f"[capture] tapped {tapped}/{L} layer MLPs", flush=True)
+    hooks.append(mlp.register_forward_hook(mk(i)))
+tapped = len(hooks)
+print(f"[capture] tapped {tapped}/{L} layer MLPs (output)", flush=True)
 
 items = stream_toolace(SKIP, N_ITEMS)
 ARG = re.compile(rb'(\w+)="')
 
 
-def dup_onset(text: bytes):
-    """Byte offset where duplication starts, else None."""
+def dup_class(text: bytes):
+    """(onset, phenotype): 'argdup' | 'runaway', or (None, None) if clean."""
     seen, pos = set(), None
     for m in ARG.finditer(text):
         if m.group(1) in seen:
@@ -81,19 +82,20 @@ def dup_onset(text: bytes):
     m2 = re.search(rb"\]\s*\[", text)
     if m2 and (pos is None or m2.start() < pos):
         pos = m2.start()
-    if pos is None and len(text) > 240 and b"]" not in text:
-        pos = 240
-    return pos
+    if pos is not None:
+        return pos, "argdup"
+    if len(text) > 240 and b"]" not in text:
+        return 240, "runaway"
+    return None, None
 
 
-sum_loop = [np.zeros(HID, dtype=np.float64) for _ in range(L)]
-sum_clean = [np.zeros(HID, dtype=np.float64) for _ in range(L)]
-n_loop = n_clean = 0
+sums = {c: [np.zeros(HID, dtype=np.float64) for _ in range(L)]
+        for c in ("argdup", "runaway", "pre", "clean")}
+cnt = dict.fromkeys(sums, 0)
 rows = []
 
 for k, it in enumerate(items):
     pid = list(f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: [".encode())
-    # collect last-pos MLP input per step
     steps = []
     ids = list(pid)
     for _ in range(GEN_LEN):
@@ -105,29 +107,29 @@ for k, it in enumerate(items):
         if ids[-2:] == list(b"]\n") or ids[-6:] == list(b"\n\nUSER"):
             break
     text = bytes(ids[len(pid):])
-    onset = dup_onset(text)
-    loop = onset is not None
+    onset, pheno = dup_class(text)
     for t, snap in enumerate(steps):
-        tgt = sum_loop if (loop and t >= onset) else sum_clean
-        if loop and t >= onset:
-            n_loop += 1
-        elif not loop:
-            n_clean += 1
+        if pheno is None:
+            cls = "clean"
+        elif t >= onset:
+            cls = pheno
         else:
-            continue  # pre-onset steps of loop items: neither class
+            cls = "pre"
+        cnt[cls] += 1
         for li, x in enumerate(snap):
             if x is not None:
-                tgt[li] += x.numpy()[:HID]
-    rows.append({"k": k, "gold": it["gold"], "loop": loop,
+                sums[cls][li] += x.numpy()[:HID]
+    rows.append({"k": k, "gold": it["gold"], "pheno": pheno,
                  "onset": onset, "emit": text.decode("utf-8", "replace")[:300]})
-    print(f"  item {k:2d} {'LOOP@' + str(onset) if loop else 'clean':10s} "
+    print(f"  item {k:2d} {f'{pheno}@{onset}' if pheno else 'clean':14s} "
           f"{text[:60]!r}", flush=True)
 
-np.savez(f"{RESULTS}/loop_sums_{int(time.time())}.npz",
-         **{f"sum_loop_{i}": s for i, s in enumerate(sum_loop)},
-         **{f"sum_clean_{i}": s for i, s in enumerate(sum_clean)},
-         n_loop=n_loop, n_clean=n_clean)
-json.dump(rows, open(f"{RESULTS}/loop_rows_{int(time.time())}.json", "w"))
-print(f"[capture] loop {sum(r['loop'] for r in rows)}/{len(rows)} | "
-      f"loop-steps {n_loop} clean-steps {n_clean}", flush=True)
+np.savez(f"{RESULTS}/loop_sums_v2_{int(time.time())}.npz",
+         **{f"{c}_{i}": s for c, arr in sums.items()
+            for i, s in enumerate(arr)},
+         **{f"n_{c}": cnt[c] for c in cnt})
+json.dump(rows, open(f"{RESULTS}/loop_rows_v2_{int(time.time())}.json",
+                     "w"))
+print(f"[capture] {dict((c, cnt[c]) for c in cnt)} steps | "
+      f"items {len(rows)}", flush=True)
 print("[capture] complete", flush=True)

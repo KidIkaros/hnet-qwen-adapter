@@ -33,7 +33,7 @@ from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402
                               forward_bp, greedy_emit, load_ckpt,
                               stream_toolace)
 from src.compress import (calibrate_hessians, quantize_linear,     # noqa: E402
-                          wanda_prune)
+                          trunk_linears, wanda_prune)
 
 BITS = int(os.environ.get("BITS", "4"))
 ROTATE = os.environ.get("ROTATE", "1") == "1"
@@ -73,10 +73,7 @@ calib = stream_toolace(1224, N_CALIB)
 calib_ids = [list(f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: [".encode())
              for it in calib]
 
-targets = [(n, m) for n, m in hn.named_modules()
-           if isinstance(m, torch.nn.Linear)
-           and n.split(".")[-1] in ("q_proj", "k_proj", "v_proj", "o_proj",
-                                    "gate_proj", "up_proj", "down_proj")]
+targets = trunk_linears(hn)
 print(f"[quant] {len(targets)} linear targets", flush=True)
 
 H = calibrate_hessians(hn, [n for n, _ in targets], calib_ids,

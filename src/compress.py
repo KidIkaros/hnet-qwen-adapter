@@ -124,3 +124,14 @@ def wanda_prune(lin, H, sparsity):
     mask = torch.zeros_like(W)
     mask.scatter_(1, idx, 1.0)
     lin.weight.data.mul_(mask.to(lin.weight.dtype))
+
+
+TRUNK_LINEAR_SUFFIXES = ("q_proj", "k_proj", "v_proj", "o_proj",
+                         "gate_proj", "up_proj", "down_proj")
+
+
+def trunk_linears(model):
+    """(name, module) for every quantizable trunk Linear."""
+    return [(n, m) for n, m in model.named_modules()
+            if isinstance(m, torch.nn.Linear)
+            and n.split(".")[-1] in TRUNK_LINEAR_SUFFIXES]

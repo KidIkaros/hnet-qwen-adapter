@@ -33,7 +33,8 @@ import numpy as np                                                  # noqa: E402
 import torch                                                       # noqa: E402
 from src.probe_common import (RESULTS, build_model, forward_bp,    # noqa: E402
                               load_ckpt, stream_toolace)
-from src.compress import calibrate_hessians, quantize_linear       # noqa: E402
+from src.compress import (calibrate_hessians, quantize_linear,     # noqa: E402
+                          trunk_linears)
 from src.pack import (bits_per_weight, rans_decode, rans_encode)   # noqa: E402
 
 BITS = int(os.environ.get("BITS", "3"))
@@ -44,10 +45,7 @@ trunk, hn, meta = build_model()
 load_ckpt(hn)
 hn.eval()
 
-targets = [(n, m) for n, m in hn.named_modules()
-           if isinstance(m, torch.nn.Linear)
-           and n.split(".")[-1] in ("q_proj", "k_proj", "v_proj", "o_proj",
-                                    "gate_proj", "up_proj", "down_proj")]
+targets = trunk_linears(hn)
 calib = stream_toolace(1224, N_CALIB)
 calib_ids = [list(f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: [".encode())
              for it in calib]

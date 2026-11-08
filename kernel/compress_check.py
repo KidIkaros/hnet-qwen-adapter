@@ -77,14 +77,15 @@ targets = [(n, m) for n, m in hn.named_modules()
 print(f"[quant] {len(targets)} linear targets", flush=True)
 
 H = calibrate_hessians(hn, [n for n, _ in targets], calib_ids,
-                       lambda ids: forward_bp(hn, trunk, ids))
+                       lambda ids: forward_bp(hn, trunk, ids, cap=256))
 meta_q = {}
 with torch.no_grad():
     for name, lin in targets:
         h = H[name]
         if h is None:
             continue
-        meta_q[name] = quantize_linear(lin, h, bits=BITS)
+        meta_q[name] = quantize_linear(lin, h.to(lin.weight.device),
+                                       bits=BITS)
 print(f"[quant] quantized {len(meta_q)} linears at {BITS} bits", flush=True)
 
 loops1, closed1 = run_emit()

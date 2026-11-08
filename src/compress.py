@@ -95,7 +95,7 @@ def calibrate_hessians(model, layer_names, calib_ids, forward_fn):
     def mk(name):
         def f(m, inp):
             x = inp[0].detach().float()
-            x = x.reshape(-1, x.shape[-1])
+            x = x.reshape(-1, x.shape[-1]).cpu()
             hh = x.T @ x
             H[name] = hh if H[name] is None else H[name] + hh
         return f

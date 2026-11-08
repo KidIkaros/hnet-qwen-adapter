@@ -140,3 +140,26 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
 - MetaExp (arXiv:2610.21492): experience that transfers ACROSS episodes = the multi-step orchestration piece (Jev-Mem working trace).
 - DECISION: self-improve at behavior layer, not weight layer. Verified-only replay (conformal-confirmed correct calls, capped fraction). Verdict-outcome -> gate feedback (ErrorModel-lite). NO unverified self-generation into weights (collapse). Conformal layer = the verifier that makes mild RSI safe.
 - S1+S2 measured: enc 87.3% / byte 71.4% / union 92.9% / routed(margin>=.01) 89.7% @ esc~10% on n=126 clean (74/200 dropped undeclared-gold = natural Noul set). jev_decide.py = fusion+conformal+routed tier.
+
+### emit_score correctness audit (2026-11-08, hrun8, slice skip=2500 n=40)
+- New locked-exam scorer `src/emit_eval.py::score_emission` — 4 labels:
+  parse_ok / tool_valid / args_valid / gold_match (+ legacy phenotype/closed).
+  Driver `kernel/emit_score.py` (MODE=base|constrain). 10 unit tests.
+- RESULT — the "closed" metric was inflated ~5x:
+    base:      loops 19  closed 29  parse 35  tool_valid 6  args_valid 4  gold_match 1
+    constrain: loops  0  closed 35  parse 35  tool_valid 6  args_valid 4  gold_match 1
+  Constrain changed ZERO correctness labels — every "fixed" call is the same
+  hallucinated name in a force-closed wrapper. Decode rules treat symptoms.
+- Declared subset (gold in tools, n=27): tool==gold 6/27, gold_match 1/27,
+  tool_valid 6/27 — and ALL 6 valid calls were the correct tool (6/6
+  precision). Capability exists but is gated by grounding: model attends
+  schema only ~22% of the time; failures are fuzzy-name hallucinations
+  (legalClauseCategories~Library, getTeamsResponses~TeamStats).
+- NEW phenotype seen in emits: post-call prompt regurgitation — after `)]`
+  the model recites the system prompt instead of stopping (`)]You are an
+  expert...`). Stop rules catch `]\n`/`\n\nUSER` but not `)]`+prose.
+- VERDICT: bottleneck is schema-grounded tool SELECTION, not degeneration.
+  Supports selector architecture (name from declared list) over free-gen.
+  Glial/onset gate's real target = predict ungrounded emission
+  (tool_valid failure), a semantic label no regex names.
+- Receipts: results/emit_score_{base,constrain}_*.json (this slice).

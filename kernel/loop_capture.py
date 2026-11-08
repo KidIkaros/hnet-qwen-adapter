@@ -32,8 +32,8 @@ sys.path.insert(0, REPO)
 
 import numpy as np                                                  # noqa: E402
 import torch                                                       # noqa: E402
-from src.probe_common import (RESULTS, build_model, forward_bp,    # noqa: E402
-                              load_ckpt, stream_toolace)
+from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402
+                              forward_bp, load_ckpt, stream_toolace)
 
 N_ITEMS = int(os.environ.get("N_ITEMS", "60"))
 SKIP = int(os.environ.get("SKIP", "1224"))
@@ -68,25 +68,6 @@ tapped = len(hooks)
 print(f"[capture] tapped {tapped}/{L} layer MLPs (output)", flush=True)
 
 items = stream_toolace(SKIP, N_ITEMS)
-ARG = re.compile(rb'(\w+)="')
-
-
-def dup_class(text: bytes):
-    """(onset, phenotype): 'argdup' | 'runaway', or (None, None) if clean."""
-    seen, pos = set(), None
-    for m in ARG.finditer(text):
-        if m.group(1) in seen:
-            pos = m.start()
-            break
-        seen.add(m.group(1))
-    m2 = re.search(rb"\]\s*\[", text)
-    if m2 and (pos is None or m2.start() < pos):
-        pos = m2.start()
-    if pos is not None:
-        return pos, "argdup"
-    if len(text) > 240 and b"]" not in text:
-        return 240, "runaway"
-    return None, None
 
 
 sums = {c: [np.zeros(HID, dtype=np.float64) for _ in range(L)]

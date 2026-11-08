@@ -34,8 +34,8 @@ sys.path.insert(0, REPO)
 
 import numpy as np                                                  # noqa: E402
 import torch                                                       # noqa: E402
-from src.probe_common import (RESULTS, build_model, forward_bp,    # noqa: E402
-                              load_ckpt, stream_toolace)
+from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402
+                              greedy_emit, load_ckpt, stream_toolace)
 
 VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
@@ -43,20 +43,25 @@ GEN_LEN = int(os.environ.get("GEN_LEN", "300"))
 TOP_LAYERS = int(os.environ.get("TOP_LAYERS", "2"))
 TOPK = int(os.environ.get("TOPK", "64"))
 
-npz = sorted(glob.glob(f"{RESULTS}/loop_sums_v2_*.npz"))[-1]
-Z = np.load(npz)
-L = sum(1 for k in Z.files if k.startswith("argdup_"))
+npzs = sorted(glob.glob(f"{RESULTS}/loop_sums_v2_*.npz"))
+if not npzs:
+    raise SystemExit(f"no loop_sums_v2_*.npz in {RESULTS} — run "
+                     "loop_capture.py first")
+npz = npzs[-1]
+sums = np.load(npz)
+L = sum(1 for k in sums.files if k.startswith("argdup_"))
 PHENOS = ("argdup", "runaway")
 print(f"[dir] {npz} | " + " ".join(
-    f"{c}={int(Z[f'n_{c}'])}" for c in (*PHENOS, "pre", "clean")), flush=True)
+    f"{c}={int(sums[f'n_{c}'])}" for c in (*PHENOS, "pre", "clean")),
+    flush=True)
 
 
 def direction(cls, base="pre"):
     """mean(cls) - mean(base), normalized, per layer."""
     out, norms = [], []
     for i in range(L):
-        d = Z[f"{cls}_{i}"] / max(int(Z[f"n_{cls}"]), 1) - \
-            Z[f"{base}_{i}"] / max(int(Z[f"n_{base}"]), 1)
+        d = sums[f"{cls}_{i}"] / max(int(sums[f"n_{cls}"]), 1) - \
+            sums[f"{base}_{i}"] / max(int(sums[f"n_{base}"]), 1)
         norms.append(float(np.linalg.norm(d)))
         out.append(d / max(np.linalg.norm(d), 1e-9))
     return out, norms
@@ -83,12 +88,14 @@ for cls in PHENOS:
         best = (mc, cls, dirs, norms)
 
 ALL_DIRS = os.environ.get("ALL_DIRS", "1") == "1"
-edits = []                          # (layer, direction)
+edits = []                    # (layer, direction, pheno) triples
+edit_norms = {}
 if ALL_DIRS:
     for cls in PHENOS:
         d2, n2 = direction(cls)
-        edits.append((int(np.argsort(-np.array(n2))[0]),
-                      d2[int(np.argsort(-np.array(n2))[0])], cls))
+        li = int(np.argsort(-np.array(n2))[0])
+        edits.append((li, d2[li], cls))
+        edit_norms[f"{cls}@L{li}"] = n2[li]
     chosen = [e[0] for e in edits]
     print(f"[dir] editing ALL phenotypes: "
           + ", ".join(f"{c}@L{l}" for l, _, c in edits), flush=True)
@@ -97,35 +104,14 @@ else:
     order = np.argsort(-np.array(norms))
     chosen = [int(i) for i in order[:TOP_LAYERS]]
     edits = [(li, dirs[li], CLS) for li in chosen]
+    edit_norms = {f"{CLS}@L{li}": norms[li] for li in chosen}
     print(f"[dir] using {CLS} direction (max|cos| {mc:.3f}) "
           f"layers {chosen}", flush=True)
-
-ARG = re.compile(rb'(\w+)="')
-
-
-def dup_onset(text: bytes):
-    seen, pos = set(), None
-    for m in ARG.finditer(text):
-        if m.group(1) in seen:
-            pos = m.start()
-            break
-        seen.add(m.group(1))
-    m2 = re.search(rb"\]\s*\[", text)
-    if m2 and (pos is None or m2.start() < pos):
-        pos = m2.start()
-    if pos is None and len(text) > 240 and b"]" not in text:
-        pos = 240
-    return pos
-
 
 @torch.no_grad()
 def emit(pid):
     ids = list(pid)
-    for _ in range(GEN_LEN):
-        bp = forward_bp(hn, trunk, ids)
-        ids.append(int(bp[0, -1].argmax()))
-        if ids[-2:] == list(b"]\n") or ids[-6:] == list(b"\n\nUSER"):
-            break
+    greedy_emit(hn, trunk, ids, GEN_LEN)
     return bytes(ids[len(pid):])
 
 
@@ -140,7 +126,7 @@ def run(tag):
     for k, pid in enumerate(prompts):
         t = emit(list(pid))
         closed += b"]" in t
-        loop = dup_onset(t) is not None
+        loop = dup_class(t)[0] is not None
         loops += loop
         emits.append(t)
         if k < 12:
@@ -169,7 +155,8 @@ with torch.no_grad():
 loops1, closed1, e1 = run("edit")
 
 res = {"npz": npz, "layers": chosen, "topk": TOPK,
-       "norms": norms, "base_loops": loops0, "edit_loops": loops1,
+       "edit_norms": edit_norms,
+       "base_loops": loops0, "edit_loops": loops1,
        "base_closed": closed0, "edit_closed": closed1,
        "n": len(prompts)}
 json.dump(res, open(f"{RESULTS}/loop_edit_{int(time.time())}.json", "w"))

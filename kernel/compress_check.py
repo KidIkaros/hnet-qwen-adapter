@@ -35,6 +35,7 @@ from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402
 from src.compress import calibrate_hessians, quantize_linear       # noqa: E402
 
 BITS = int(os.environ.get("BITS", "4"))
+ROTATE = os.environ.get("ROTATE", "1") == "1"
 N_CALIB = int(os.environ.get("N_CALIB", "64"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
 VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
@@ -85,7 +86,7 @@ with torch.no_grad():
         if h is None:
             continue
         meta_q[name] = quantize_linear(lin, h.to(lin.weight.device),
-                                       bits=BITS)
+                                       bits=BITS, rotate=ROTATE)
 print(f"[quant] quantized {len(meta_q)} linears at {BITS} bits", flush=True)
 
 loops1, closed1 = run_emit()

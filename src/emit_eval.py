@@ -24,13 +24,3 @@ def dup_class(text: bytes):
     if len(text) > RUNAWAY_ONSET and b"]" not in text:
         return RUNAWAY_ONSET, "runaway"
     return None, None
-
-
-def greedy_emit(hn, trunk, ids, max_new):
-    """Greedy byte decode from prompt ids; returns emitted bytes."""
-    for _ in range(max_new):
-        bp = forward_bp(hn, trunk, ids)
-        ids.append(int(bp[0, -1].argmax()))
-        if ids[-2:] == list(b"]\n") or ids[-6:] == list(b"\n\nUSER"):
-            break
-    return bytes(ids)

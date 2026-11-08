@@ -121,3 +121,14 @@ def stream_toolace(skip, n_items, want_gold=True, max_tools=24):
 
 
 from src.emit_eval import RUNAWAY_ONSET, dup_class  # noqa
+
+
+def greedy_emit(hn, trunk, ids, max_new):
+    """Greedy byte decode from prompt ids; returns emitted tail bytes."""
+    n0 = len(ids)
+    for _ in range(max_new):
+        bp = forward_bp(hn, trunk, ids)
+        ids.append(int(bp[0, -1].argmax()))
+        if ids[-2:] == list(b"]\n") or ids[-6:] == list(b"\n\nUSER"):
+            break
+    return bytes(ids[n0:])

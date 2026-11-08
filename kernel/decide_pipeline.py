@@ -35,7 +35,7 @@ import re, json, time                                           # noqa: E402
 from datasets import load_dataset                                # noqa: E402
 from transformers import AutoModel, AutoTokenizer                # noqa: E402
 from src.probe_common import (RESULTS, build_model, cand_score,  # noqa: E402
-                              forward_bp, load_ckpt)
+                              forward_bp, greedy_emit, load_ckpt)
 
 ENC = os.environ.get("ENCODER", "BAAI/bge-small-en-v1.5")
 TAU = float(os.environ.get("TAU", "0.01"))
@@ -93,11 +93,7 @@ else:
 
 @torch.no_grad()
 def greedy_from(ids, max_new):
-    for _ in range(max_new):
-        bp = forward_bp(hn, trunk, ids)
-        ids.append(int(bp[0, -1].argmax()))
-        if ids[-2:] == list(b"]\n") or ids[-6:] == list(b"\n\nUSER"):
-            break
+    greedy_emit(hn, trunk, ids, max_new)
     return ids
 
 

@@ -110,9 +110,7 @@ else:
 
 @torch.no_grad()
 def emit(pid):
-    ids = list(pid)
-    greedy_emit(hn, trunk, ids, GEN_LEN)
-    return bytes(ids[len(pid):])
+    return greedy_emit(hn, trunk, list(pid), GEN_LEN)
 
 
 items = stream_toolace(VSKIP, N_ITEMS)

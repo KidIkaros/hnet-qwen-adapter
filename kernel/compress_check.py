@@ -32,10 +32,12 @@ import torch                                                       # noqa: E402
 from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402
                               forward_bp, greedy_emit, load_ckpt,
                               stream_toolace)
-from src.compress import calibrate_hessians, quantize_linear       # noqa: E402
+from src.compress import (calibrate_hessians, quantize_linear,     # noqa: E402
+                          wanda_prune)
 
 BITS = int(os.environ.get("BITS", "4"))
 ROTATE = os.environ.get("ROTATE", "1") == "1"
+PRUNE = float(os.environ.get("PRUNE", "0"))
 N_CALIB = int(os.environ.get("N_CALIB", "64"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
 VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
@@ -85,6 +87,8 @@ with torch.no_grad():
         h = H[name]
         if h is None:
             continue
+        if PRUNE > 0:
+            wanda_prune(lin, h.to(lin.weight.device), PRUNE)
         meta_q[name] = quantize_linear(lin, h.to(lin.weight.device),
                                        bits=BITS, rotate=ROTATE)
 print(f"[quant] quantized {len(meta_q)} linears at {BITS} bits", flush=True)

@@ -144,7 +144,8 @@ with torch.no_grad():
         W = mlp.down_proj.weight            # [hidden, inter]
         d = torch.tensor(dv, device=W.device, dtype=W.dtype)
         cos = (W.T @ d) / (W.T.norm(dim=1) + 1e-9)   # per-column cosine
-        cols = cos.abs().argsort(descending=True)[:TOPK]
+        imp = W.norm(dim=0) * cos.abs()                 # ticket importance
+        cols = imp.argsort(descending=True)[:TOPK]
         proj = W[:, cols].T @ d                        # [K]
         W[:, cols] -= d[:, None] * proj[None, :]       # [hidden,K]
         print(f"[edit] L{li} down_proj: {TOPK} cols, max|cos| "

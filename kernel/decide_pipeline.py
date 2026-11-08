@@ -4,7 +4,8 @@
 Also scores undeclared-gold items to measure Noul behavior.
 
     colab exec -s hrun6 -f kernel/jev_pipeline.py
-    env: ENCODER, TAU (0.01), N_ITEMS (60), SKIP (1224), GEN_LEN (300)
+    env: S1 (bge|startlux), ENCODER, TAU (0.01), NOUL_TAU, N_ITEMS (60),
+         SKIP (1224), GEN_LEN (300), MODEL_DIR (StartLux local dir)
 """
 import os, sys, subprocess
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
@@ -49,18 +50,45 @@ ARG_RE = re.compile(r'"(properties|parameters)"\s*:\s*\{\s*"([\w]+)"')
 
 trunk, hn, meta = build_model()
 load_ckpt(hn)
-tok = AutoTokenizer.from_pretrained(ENC)
-enc = AutoModel.from_pretrained(ENC, dtype=torch.float32).cuda()
+S1 = os.environ.get("S1", "bge")
+MDIR = os.environ.get("MODEL_DIR", "/content/StartLux-0.8B")
 
+if S1 == "startlux":
+    if not os.path.exists(MDIR):
+        subprocess.run(["hf", "download",
+                        "startlux-models/StartLux-Decision-v1-0.8B",
+                        "--local-dir", MDIR], check=True)
+    sys.path.insert(0, MDIR)
+    os.environ.setdefault("STARTLUX_ALLOW_SLOW", "1")
+    from startlux_decision import StartLuxDecision
+    lux = StartLuxDecision(MDIR)
 
-@torch.no_grad()
-def embed(texts):
-    t = tok(texts, padding=True, truncation=True, max_length=256,
-            return_tensors="pt").to("cuda")
-    h = enc(**t).last_hidden_state
-    m = t["attention_mask"].unsqueeze(-1)
-    v = (h * m).sum(1) / m.sum(1)
-    return torch.nn.functional.normalize(v, dim=-1)
+    def s1_scores(it, names):
+        crit = {n: (d or n) for n, d in it["tools"]}
+        ans, _ = lux.decide(
+            {"request": it["user"][:1500], "system": it["sys"][:2000]},
+            {"tool": {"type": "choice",
+                      "instructions": "Which function should be called?",
+                      "criteria": crit}})
+        pr = ans["tool"]["probabilities"]
+        return np.array([pr.get(n, 0.0) for n in names])
+else:
+    tok = AutoTokenizer.from_pretrained(ENC)
+    enc = AutoModel.from_pretrained(ENC, dtype=torch.float32).cuda()
+
+    @torch.no_grad()
+    def embed(texts):
+        t = tok(texts, padding=True, truncation=True, max_length=256,
+                return_tensors="pt").to("cuda")
+        h = enc(**t).last_hidden_state
+        m = t["attention_mask"].unsqueeze(-1)
+        v = (h * m).sum(1) / m.sum(1)
+        return torch.nn.functional.normalize(v, dim=-1)
+
+    def s1_scores(it, names):
+        ue = embed([it["user"]])
+        te = embed([f"{n}: {d}" for n, d in it["tools"]])
+        return (ue * te).sum(1).cpu().numpy()
 
 
 @torch.no_grad()
@@ -88,14 +116,13 @@ for i, r in enumerate(ds):
                       "gold": gold[0], "tools": tools[:24]})
     if len(items) >= N_ITEMS:
         break
-print(f"[exam] {len(items)} items | S1={ENC} tau={TAU}", flush=True)
+print(f"[exam] {len(items)} items | S1={S1} tau={TAU} noul={NOUL_TAU}",
+      flush=True)
 
 pick1 = esc_n = closed_n = noul_hit = declared = noul_n = 0
 for k, it in enumerate(items):
     names = [t[0] for t in it["tools"]]
-    ue = embed([it["user"]])
-    te = embed([f"{n}: {d}" for n, d in it["tools"]])
-    sims = (ue * te).sum(1).cpu().numpy()
+    sims = s1_scores(it, names)
     order = np.argsort(-sims)
     margin = (sims[order[0]] - sims[order[1]]) if len(sims) > 1 else 9.9
     gold_in = it["gold"] in names
@@ -103,7 +130,7 @@ for k, it in enumerate(items):
 
     if sims[order[0]] < NOUL_TAU:        # abstention floor: nothing fits
         noul_n += 1
-        print(f"  item {k:2d} [NOUL] top-sim {sims[order[0]]:.3f} "
+        print(f"  item {k:2d} [NOUL] top {sims[order[0]]:.3f} "
               f"gold={it['gold'][:20]} declared={gold_in}", flush=True)
         continue
     if margin >= TAU:                    # S1 answers

@@ -34,7 +34,7 @@ import torch                                                       # noqa: E402
 from src.probe_common import (RESULTS, build_model, forward_bp,    # noqa: E402
                               load_ckpt, stream_toolace)
 from src.compress import calibrate_hessians, quantize_linear       # noqa: E402
-from src.pack import rans_encode, rans_decode                      # noqa: E402
+from src.pack import (bits_per_weight, rans_decode, rans_encode)   # noqa: E402
 
 BITS = int(os.environ.get("BITS", "3"))
 N_CALIB = int(os.environ.get("N_CALIB", "24"))
@@ -55,12 +55,13 @@ H = calibrate_hessians(hn, [n for n, _ in targets], calib_ids,
                        lambda ids: forward_bp(hn, trunk, ids, cap=256))
 
 fp16_bytes = sum(m.weight.numel() * 2 for _, m in targets)
-packed_bytes = 0
-max_err = 0.0
+est_bytes = 0.0          # entropy estimate for every matrix
+max_err = 0.0            # exact rANS round-trip on a sample
+n_sample = 4
 qmax = 2 ** BITS - 1
 t0 = time.time()
 with torch.no_grad():
-    for name, lin in targets:
+    for k, (name, lin) in enumerate(targets):
         h = H[name]
         if h is None:
             continue
@@ -68,27 +69,28 @@ with torch.no_grad():
         info = quantize_linear(lin, h.to(lin.weight.device),
                                bits=BITS, rotate=ROTATE)
         Wq = lin.weight.data.clone()
-        # codes from the dequantized weights
         s = info["scale"].to(Wq.device).clamp(min=1e-8)
         z = info["zero"].to(Wq.device)
         codes = ((Wq / s) + z).round().clamp(0, qmax).to(torch.int64)
-        data, tab = rans_encode(codes.cpu().numpy(), qmax + 1)
-        dec = rans_decode(data, tab)
-        codes_rt = torch.tensor(dec.reshape(codes.shape),
-                                dtype=torch.int64, device=Wq.device)
-        rec = (codes_rt.float() - z) * s
-        max_err = max(max_err, float((rec - Wq).abs().max()))
-        packed_bytes += len(data)
+        cn = codes.cpu().numpy()
+        est_bytes += bits_per_weight(cn, qmax + 1) * cn.size / 8
+        if k < n_sample:                   # exact pack/unpack check
+            data, tab = rans_encode(cn, qmax + 1)
+            dec = rans_decode(data, tab)
+            codes_rt = torch.tensor(dec.reshape(codes.shape),
+                                    dtype=torch.int64, device=Wq.device)
+            rec = (codes_rt.float() - z) * s
+            max_err = max(max_err, float((rec - Wq).abs().max()))
         lin.weight.data.copy_(W0)          # restore, no cross-layer drift
 
 print(f"[artifact] {BITS}bit | fp16 {fp16_bytes/2**20:.0f}MiB | "
-      f"packed {packed_bytes/2**20:.0f}MiB | ratio "
-      f"{packed_bytes/fp16_bytes:.3f} | recon max_err {max_err:.2e} | "
+      f"est packed {est_bytes/2**20:.0f}MiB | ratio "
+      f"{est_bytes/fp16_bytes:.3f} | sample recon max_err {max_err:.2e} | "
       f"{time.time()-t0:.0f}s", flush=True)
 
 res = {"bits": BITS, "fp16_mib": round(fp16_bytes / 2**20, 1),
-       "packed_mib": round(packed_bytes / 2**20, 1),
-       "ratio": round(packed_bytes / fp16_bytes, 4),
+       "est_packed_mib": round(est_bytes / 2**20, 1),
+       "ratio": round(est_bytes / fp16_bytes, 4),
        "recon_max_err": max_err, "n_targets": len(targets)}
 json.dump(res, open(f"{RESULTS}/artifact_{int(time.time())}.json", "w"))
 print("[artifact] complete", flush=True)

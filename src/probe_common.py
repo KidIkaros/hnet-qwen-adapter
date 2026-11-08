@@ -114,6 +114,7 @@ def stream_toolace(skip, n_items, want_gold=True, max_tools=24):
             out.append({"sys": r["system"], "user": u,
                         "gold": gold[0] if gold else None,
                         "gold_call": (a or "")[:160],
+                        "gold_full": a or "",
                         "tools": tools[:max_tools]})
         if len(out) >= n_items:
             break

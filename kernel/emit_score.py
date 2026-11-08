@@ -52,9 +52,9 @@ prompts = [f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: [".encode()
 
 
 @torch.no_grad()
-def emit(pid, constrain):
-    ids = list(pid)
-    n0 = len(ids)
+def emit(pid, constrain, force=b""):
+    ids = list(pid) + list(force)
+    n0 = len(pid)                     # tail includes forced prefix
     for _ in range(GEN_LEN):
         bp = forward_bp(hn, trunk, ids)
         logits = bp[0, -1].clone()
@@ -75,9 +75,12 @@ def emit(pid, constrain):
 
 rows = []
 for k, (it, pid) in enumerate(zip(items, prompts)):
-    t = emit(pid, constrain=(MODE == "constrain"))
+    force = (f"{it['gold']}(".encode()
+             if MODE == "goldname" and it["gold"] else b"")
+    t = emit(pid, constrain=(MODE == "constrain"), force=force)
     v = score_emission(t, tools=it["tools"], sys_text=it["sys"],
-                       gold_name=it["gold"], gold_call=it["gold_call"])
+                       gold_name=it["gold"],
+                       gold_call=it.get("gold_full") or it["gold_call"])
     v.update({"k": k, "gold": it["gold"], "emit": t[:200].decode(
         "latin-1", "replace")})
     rows.append(v)

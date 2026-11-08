@@ -77,11 +77,12 @@ def gptq_quantize(W, H, bits=3, blocksize=128, damp=0.01, sym=True):
 def quantize_linear(lin, H, bits=3, rotate=True):
     """Rotate (optional) + GPTQ one nn.Linear; writes back dequantized fp."""
     W = lin.weight.data
+    Wf, Hf = W.float(), H.float()
     if rotate and W.shape[1] & (W.shape[1] - 1) == 0:
-        h = hadamard(W.shape[1]).to(W.device, W.dtype)
-        W = W @ h
-        H = h.T @ H @ h
-    Wq, s, z = gptq_quantize(W, H, bits=bits)
+        h = hadamard(W.shape[1]).to(W.device, torch.float32)
+        Wf = Wf @ h
+        Hf = h.T @ Hf @ h
+    Wq, s, z = gptq_quantize(Wf, Hf, bits=bits)
     lin.weight.data.copy_(Wq.to(lin.weight.dtype))
     return {"scale": s.cpu(), "zero": z.cpu(), "bits": bits}
 

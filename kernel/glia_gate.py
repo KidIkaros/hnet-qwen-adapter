@@ -67,14 +67,15 @@ class GlialField(torch.nn.Module):
     def __init__(self, dim, hid, decay):
         super().__init__()
         self.decay, self.w_in = decay, torch.nn.Linear(dim, hid)
-        self.w_out = torch.nn.Linear(hid, 1)
+        self.w_out = torch.nn.Linear(dim + hid, 1)
 
     def forward(self, x):                    # x [T, dim] -> p [T]
         h = torch.zeros(self.w_out.in_features, device=x.device)
         out = []
         for t in range(x.shape[0]):
             h = self.decay * h + torch.tanh(self.w_in(x[t]))
-            out.append(torch.sigmoid(self.w_out(h)))
+            out.append(torch.sigmoid(
+                self.w_out(torch.cat([x[t], h]))))
         return torch.cat(out)
 
 

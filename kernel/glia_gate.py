@@ -93,8 +93,10 @@ for ep in range(EPOCHS):
     loss = 0.0
     for x, y in zip(tr_seqs, tr_y):
         p = field(x.to(dev))
-        loss = loss + torch.nn.functional.binary_cross_entropy(
-            p, y.to(dev), pos_weight=pos_w)
+        yy = y.to(dev)
+        loss = loss - (pos_w * yy * torch.log(p.clamp(min=1e-7))
+                       + (1 - yy) * torch.log((1 - p).clamp(min=1e-7))
+                       ).mean()
     (loss / len(tr_seqs)).backward()
     opt.step()
     if ep % 100 == 0:

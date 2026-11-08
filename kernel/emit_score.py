@@ -29,6 +29,8 @@ else:
        "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)
 os.chdir(REPO)
 sys.path.insert(0, REPO)
+for _m in [k for k in sys.modules if k.startswith("src.")]:
+    del sys.modules[_m]                     # stale-module guard (colab kernel)
 
 import torch                                                       # noqa: E402
 from src.probe_common import (RESULTS, build_model, dup_class,     # noqa: E402

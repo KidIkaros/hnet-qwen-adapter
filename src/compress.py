@@ -115,11 +115,12 @@ def calibrate_hessians(model, layer_names, calib_ids, forward_fn):
 @torch.no_grad()
 def wanda_prune(lin, H, sparsity):
     """Wanda importance pruning: |W_ij| * ||X_j||, keep top-k per row."""
+    if not 0.0 <= sparsity < 1.0:
+        raise ValueError(f"sparsity must be in [0, 1), got {sparsity}")
     W = lin.weight.data.float()
-    imp = W.abs() * torch.sqrt(H.diag().clamp(min=1e-8)).to(W.device)
-    k = max(1, int(W.shape[1] * (1.0 - sparsity)))
-    idx = imp.argsort(dim=1, descending=True)[:, :k]
+    importance = W.abs() * torch.sqrt(H.diag().clamp(min=1e-8)).to(W.device)
+    keep = max(1, int(W.shape[1] * (1.0 - sparsity)))
+    idx = importance.argsort(dim=1, descending=True)[:, :keep]
     mask = torch.zeros_like(W)
     mask.scatter_(1, idx, 1.0)
     lin.weight.data.mul_(mask.to(lin.weight.dtype))
-    return float(mask.mean())

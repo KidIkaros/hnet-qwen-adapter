@@ -82,11 +82,23 @@ for cls in PHENOS:
     if best is None or mc > best[0]:
         best = (mc, cls, dirs, norms)
 
-mc, CLS, dirs, norms = best
-print(f"[dir] using {CLS} direction (max|cos| {mc:.3f})", flush=True)
-order = np.argsort(-np.array(norms))
-chosen = [int(i) for i in order[:TOP_LAYERS]]
-print(f"[dir] editing layers {chosen}", flush=True)
+ALL_DIRS = os.environ.get("ALL_DIRS", "1") == "1"
+edits = []                          # (layer, direction)
+if ALL_DIRS:
+    for cls in PHENOS:
+        d2, n2 = direction(cls)
+        edits.append((int(np.argsort(-np.array(n2))[0]),
+                      d2[int(np.argsort(-np.array(n2))[0])], cls))
+    chosen = [e[0] for e in edits]
+    print(f"[dir] editing ALL phenotypes: "
+          + ", ".join(f"{c}@L{l}" for l, _, c in edits), flush=True)
+else:
+    mc, CLS, dirs, norms = best
+    order = np.argsort(-np.array(norms))
+    chosen = [int(i) for i in order[:TOP_LAYERS]]
+    edits = [(li, dirs[li], CLS) for li in chosen]
+    print(f"[dir] using {CLS} direction (max|cos| {mc:.3f}) "
+          f"layers {chosen}", flush=True)
 
 ARG = re.compile(rb'(\w+)="')
 
@@ -143,10 +155,10 @@ loops0, closed0, e0 = run("base")
 
 # ---- the edit ----
 with torch.no_grad():
-    for li in chosen:
+    for li, dv, _cls in edits:
         mlp = hn.layers[li].mlp
         W = mlp.down_proj.weight            # [hidden, inter]
-        d = torch.tensor(dirs[li], device=W.device, dtype=W.dtype)
+        d = torch.tensor(dv, device=W.device, dtype=W.dtype)
         cos = (W.T @ d) / (W.T.norm(dim=1) + 1e-9)   # per-column cosine
         cols = cos.abs().argsort(descending=True)[:TOPK]
         proj = W[:, cols].T @ d                        # [K]

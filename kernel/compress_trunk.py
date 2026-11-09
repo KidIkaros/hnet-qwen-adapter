@@ -298,6 +298,24 @@ res = {"model": MODEL, "bits": BITS, "prune": PRUNE, "rotate": ROTATE,
 _rcpt = f"{RESULTS}/compress_trunk_{TS}.json"
 json.dump(res, open(_rcpt, "w"))
 print(f"[compress_trunk] receipt {_rcpt}", flush=True)
+
+# ---- optional: persist quantized trunk for HF backup / reuse ----
+SAVE_DIR = os.environ.get("SAVE_DIR", "")
+if SAVE_DIR:
+    print(f"[save] save_pretrained -> {SAVE_DIR}", flush=True)
+    _t0 = time.time()
+    model.save_pretrained(SAVE_DIR, safe_serialization=True)
+    tok.save_pretrained(SAVE_DIR)
+    _du = subprocess.run(["du", "-sh", SAVE_DIR], capture_output=True,
+                         text=True).stdout.strip()
+    print(f"[save] done {_du} in {time.time() - _t0:.0f}s", flush=True)
+    json.dump({"artifact": "qwen27b-gptq4-toolace", "base_model": MODEL,
+               "method": f"GPTQ {BITS}-bit + rotate={ROTATE} Hessian-calib "
+                         f"N={N_CALIB}", "dtype_stored": "bfloat16 "
+                         "(dequantized)", "quant_exam": quant,
+               "ts": TS},
+              open(f"{SAVE_DIR}/QUANT_MANIFEST.json", "w"), indent=1)
+
 from src.edit_ledger import record                                # noqa: E402
 record({"method": "gptq-trunk-27b",
         "target": f"{MODEL} linears x{len(meta_q)} @ {BITS}bit"

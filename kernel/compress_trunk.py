@@ -9,10 +9,15 @@ Verification = the pinned name-selection exam (teacher_score prefix
 protocol, sum logprob) before/after on the same slice — baseline was
 27/27 declared. This is the behavior gate for the compressed-host path.
 
-CAVEAT (v1): loads bf16 with GPU/CPU offload (54GB > 40GB VRAM) —
+CAVEAT (v2): loads bf16 with GPU/CPU offload (54GB > 40GB VRAM) —
 slow forwards, and GPTQ on CPU-resident layers is the bottleneck.
-quantize_linear needs REAL float weights: the resident nf4 model's
-packed 4bit weights are NOT quantizable, so it is evicted first.
+CPU-offloaded Linear params stay on `meta`; real weights live in the
+accelerate hook's weight maps. _RW resolves them up front (early abort
+if unresolved) and quantize_real writes dequantized values back into
+whichever tensor forward() actually uses. Learned the hard way: v1
+crashed at block 9/16 on `Cannot copy out of meta tensor`, and hrun8
+died before a receipt could be written — hence the early base dump and
+progress log.
 
     colab exec -s hrun8 -f kernel/compress_trunk.py
     env: BITS (4), PRUNE (0), ROTATE (1), N_CALIB (48), BLOCK_LAYERS (4),
@@ -53,8 +58,8 @@ for _m in [k for k in sys.modules if k.startswith("src.")]:
 
 import torch                                                       # noqa: E402
 from src.probe_common import RESULTS, stream_toolace                # noqa: E402
-from src.compress import (calibrate_hessians, quantize_linear,     # noqa: E402
-                          trunk_linears, wanda_prune)
+from src.compress import (calibrate_hessians, trunk_linears,        # noqa: E402
+                          gptq_quantize, hadamard)
 
 BITS = int(os.environ.get("BITS", "4"))
 ROTATE = os.environ.get("ROTATE", "1") == "1"
@@ -63,8 +68,10 @@ N_CALIB = int(os.environ.get("N_CALIB", "48"))
 BLOCK = int(os.environ.get("BLOCK_LAYERS", "4"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
 VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
+SKIP_BASE = os.environ.get("SKIP_BASE", "0") == "1"
 MODEL = os.environ.get(
     "MODEL", "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored")
+TS = int(time.time())
 
 # ---- model: evict ALL resident GPU holders, load bf16 + offload ----
 # nf4/8bit weights are packed — quantize_linear needs real float weights.
@@ -86,6 +93,66 @@ model.eval()
 print(f"[trunk] loaded {MODEL} bf16 device_map=auto", flush=True)
 
 items = stream_toolace(VSKIP, N_ITEMS)
+
+
+# ---- meta-weight resolution -------------------------------------------
+# device_map="auto" offloads ~half the layers to CPU via accelerate hooks:
+# those params stay on the `meta` device and the REAL bf16 tensors live in
+# the hook's weight maps (swapped in during forward). quantize_linear's
+# lin.weight.data access hits meta -> crash (seen at block 9/16). Resolve
+# every target's effective tensor ONCE, up front, and abort early if any
+# cannot be found — before burning exam+calibration time.
+def _hook_dicts(hook, depth=0):
+    if hook is None or depth > 5:
+        return
+    for attr in ("weights_map", "offload_weights", "weights", "parameters"):
+        d = getattr(hook, attr, None)
+        if isinstance(d, dict):
+            yield d
+    for sub in getattr(hook, "hooks", None) or []:
+        yield from _hook_dicts(sub, depth + 1)
+
+
+_RW = {}
+for _n, _m in model.named_modules():
+    for _d in _hook_dicts(getattr(_m, "_hf_hook", None)):
+        for _k, _v in _d.items():
+            if torch.is_tensor(_v) and not _v.is_meta:
+                _RW[f"{_n}.{_k}"] = _v
+print(f"[trunk] hook weight-map: {len(_RW)} real tensors", flush=True)
+
+
+def _real_weight(name, lin):
+    """Effective weight tensor for a Linear whose param may be meta."""
+    w = lin.weight
+    if not w.is_meta:
+        return w
+    t = _RW.get(name + ".weight")
+    if t is None:
+        raise RuntimeError(f"meta weight unresolved: {name}")
+    return t
+
+
+@torch.no_grad()
+def quantize_real(name, lin, H, bits, rotate):
+    """Rotate + GPTQ one Linear via its EFFECTIVE weight; compute on GPU.
+
+    Writes dequantized values back into whichever tensor forward() uses
+    (param itself, or the hook's offload map) so the exam sees the
+    quantized model.
+    """
+    Wt = _real_weight(name, lin)
+    Wf = Wt.detach().float().to("cuda")
+    Hf = H.detach().float().to("cuda")
+    if rotate and Wf.shape[1] & (Wf.shape[1] - 1) == 0:
+        h = hadamard(Wf.shape[1]).to("cuda", torch.float32)
+        Wf = Wf @ h
+        Hf = h.T @ Hf @ h
+    Wq, s, z = gptq_quantize(Wf, Hf, bits=bits)
+    Wt.data.copy_(Wq.to(device=Wt.device, dtype=Wt.dtype))
+    del Wf, Hf, Wq
+    torch.cuda.empty_cache()
+    return {"scale": s.cpu(), "zero": z.cpu(), "bits": bits}
 
 
 @torch.no_grad()
@@ -119,14 +186,29 @@ def name_exam():
             "none": none_n, "n": len(items)}
 
 
+# ---- targets + early meta-resolution check (before burning exam time) ----
+targets = trunk_linears(model)
+_meta_t = [(n, l) for n, l in targets if l.weight.is_meta]
+_resolved = sum(1 for n, _ in _meta_t if _RW.get(n + ".weight") is not None)
+print(f"[quant] {len(targets)} linear targets "
+      f"({len(_meta_t)} meta-offloaded, {_resolved} resolved)", flush=True)
+if _meta_t and _resolved < len(_meta_t):
+    for n, l in _meta_t[:5]:
+        h = getattr(l, "_hf_hook", None)
+        print(f"  UNRESOLVED {n} hook={type(h).__name__ if h else None} "
+              f"attrs={[a for a in dir(h)[:15]] if h else []}", flush=True)
+    raise SystemExit("meta weights unresolved — aborting before exam")
+
+prog = open(f"{RESULTS}/compress_trunk_{TS}.progress.log", "a")
+
 print("[exam] measuring BASE name-selection...", flush=True)
-base = name_exam()
+base = {"skipped": True} if SKIP_BASE else name_exam()
 print(f"[base] {base}", flush=True)
+json.dump({"stage": "base", "base": base},
+          open(f"{RESULTS}/compress_trunk_{TS}_base.json", "w"))
+prog.write(f"base {base}\n"); prog.flush()
 
 # ---- chunked Hessian calibration + quantize, per layer block ----
-targets = trunk_linears(model)
-print(f"[quant] {len(targets)} linear targets", flush=True)
-
 # group targets by transformer layer index; sub-chunk oversized groups
 import re as _re
 blocks = {}
@@ -161,31 +243,46 @@ for bi, blk in enumerate(flat):
             if h is None:
                 continue
             if PRUNE > 0:
-                wanda_prune(lin, h.to(lin.weight.device), PRUNE)
-            meta_q[name] = quantize_linear(
-                lin, h.to(lin.weight.device), bits=BITS, rotate=ROTATE)
+                Wt = _real_weight(name, lin)
+                W = Wt.detach().float().to("cuda")
+                imp = (W.abs() * torch.sqrt(
+                    h.detach().float().diag().clamp(min=1e-8)).to("cuda"))
+                keep = max(1, int(W.shape[1] * (1.0 - PRUNE)))
+                idx = imp.argsort(1, descending=True)[:, :keep]
+                mask = torch.zeros_like(W)
+                mask.scatter_(1, idx, 1.0)
+                Wt.data.copy_((W * mask).to(Wt.dtype).to(Wt.device))
+                del W, imp, mask
+                torch.cuda.empty_cache()
+            meta_q[name] = quantize_real(name, lin, h, BITS, ROTATE)
     del H
-    print(f"[quant] block {bi + 1}/{len(blocks)} done "
+    prog.write(f"block {bi + 1}/{len(flat)} done cum={len(meta_q)}\n")
+    prog.flush()
+    print(f"[quant] block {bi + 1}/{len(flat)} done "
           f"({len(meta_q)} linears)", flush=True)
 
 print(f"[quant] quantized {len(meta_q)} linears @ {BITS}bit", flush=True)
+prog.write(f"quantized {len(meta_q)}\n"); prog.flush()
 
 print("[exam] measuring QUANT name-selection...", flush=True)
 quant = name_exam()
 print(f"[quant] {quant}", flush=True)
+prog.write(f"quant_exam {quant}\n"); prog.flush()
 
 res = {"model": MODEL, "bits": BITS, "prune": PRUNE, "rotate": ROTATE,
        "n_targets": len(meta_q), "n_calib": N_CALIB, "n": N_ITEMS,
        "skip": VSKIP, "base": base, "quant": quant}
-json.dump(res, open(f"{RESULTS}/compress_trunk_{int(time.time())}.json",
-                    "w"))
+_rcpt = f"{RESULTS}/compress_trunk_{TS}.json"
+json.dump(res, open(_rcpt, "w"))
+print(f"[compress_trunk] receipt {_rcpt}", flush=True)
 from src.edit_ledger import record                                # noqa: E402
 record({"method": "gptq-trunk-27b",
         "target": f"{MODEL} linears x{len(meta_q)} @ {BITS}bit"
                   + (f" prune {PRUNE}" if PRUNE else ""),
-        "teach_gain": f"declared {base['decl_right']}/{base['declared']}"
-                      f" -> {quant['decl_right']}/{quant['declared']}",
-        "neighbor_cost": f"none-picks {base['none']}->{quant['none']}",
+        "teach_gain": (f"declared {base.get('decl_right')}/"
+                       f"{base.get('declared')} -> "
+                       f"{quant['decl_right']}/{quant['declared']}"),
+        "neighbor_cost": f"none-picks {base.get('none')}->{quant['none']}",
         "n_eval": N_ITEMS,
-        "receipt": f"compress_trunk_{int(time.time())}.json"})
+        "receipt": f"compress_trunk_{TS}.json"})
 print("[compress_trunk] complete", flush=True)

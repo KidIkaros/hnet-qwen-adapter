@@ -308,3 +308,30 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   save_quant could persist it -> compress_trunk rerun in flight with
   SAVE_DIR to persist artifact in the same run.
 - Receipt: results/big_exam_1794217042_resident.json
+
+### Eval-gate suite built (2026-11-09) — upload gated on evidence
+User directive: qwen27b-gptq4-toolace HF release happens ONLY after
+evals pass; it is the BASE compressed artifact (pre-H-Net). A separate
+trunk+adapter artifact follows later. Lineage stamped in manifest.
+
+Drivers (all committed):
+- kernel/trunk_call_eval.py — call_synth pipeline on TRUNK prefix_lp
+  scorer, ToolACE pinned slice (skip=2500 n=40) + SKIP override; direct
+  comparison vs 2B call_synth (gold_match 3/40, name ~49%). Uses
+  gold_full (untruncated) — noted gold-source difference.
+- kernel/bfcl_name_eval.py — Phase A: name-selection on official
+  BFCL_v3 simple+multiple (gorilla-llm dataset), N_PER_CAT=100.
+- kernel/bfcl_call_eval.py — Phase B: name->argnames->per-arg-conditioned
+  extractive values -> AST-equivalent check vs ground_truth.
+  Required-args-only v1, extra-arg penalty.
+- kernel/hf_upload.py — gated upload to PRIVATE KidIkaros repo,
+  README card marks pre-H-Net lineage. Needs --env HF_TOKEN (verified).
+
+EVAL ORDER on hrun9 after compress_trunk saves artifact:
+  1. trunk_call_eval (resident quant)      ~15min
+  2. bfcl_name_eval   (resident quant)     ~10min
+  3. bfcl_call_eval   (resident quant)     ~25min
+  4. big_exam MODE=base -> fresh bf16      ~25min (one reload)
+  5. bfcl_name_eval + trunk_call_eval SKIP=0 N=100 on fresh = base refs
+PASS = quant≈fresh delta small AND absolute numbers respectable;
+replacement-vs-2B decision is a separate later comparison.

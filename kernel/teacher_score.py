@@ -25,7 +25,17 @@ def sh(*cmd):
 
 
 if os.path.exists(REPO):
-    sh("git", "-C", REPO, "pull", "-q")
+    sh("git", "-C", REPO, "fetch", "-q", "origin")
+    up = set(sh("git", "-C", REPO, "ls-tree", "-r", "--name-only",
+                "origin/main").split())
+    for _r, _, _fs in os.walk(REPO):
+        for _f in _fs:
+            _p = os.path.join(_r, _f)
+            _rel = os.path.relpath(_p, REPO)
+            if _rel in up and "??" in sh(
+                    "git", "-C", REPO, "status", "--porcelain", "--", _rel):
+                os.remove(_p)
+    sh("git", "-C", REPO, "merge", "-q", "origin/main")
 else:
     sh("git", "clone", "-q",
        "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)

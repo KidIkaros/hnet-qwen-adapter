@@ -36,3 +36,15 @@
   H-Net Phase A on int4 trunk: HNetQwen(enc=6,dec=8) + fit_adapters
   (closed-form ridge) + byte-bpb held/enwik8 — validates path + first
   27B-trunk bpb vs 2B baseline enwik8-test 1.4317. No grad training yet.
+
+## 2026-11-09 — hnet-train27b spawned (Phase B gradient training)
+- app ap-fBUrmp7IFmtiFZr8dNO4Pu, call fc-01M70N5T985EMJ2KYE88WYF1BC
+- recipe = proven 2B hnet_train ported to Modal: enc4+dec4 DeltaNet slices
+  + dechunk/boundary/w_sup trainable, ridge adapters frozen, trunk frozen
+- N_TRAIN=1000 dolma-mix docs, eval held+enwik8 every 100 steps,
+  ckpts -> /artifacts/hnet27b_{best,latest}_{glue,enc,dec}.pt
+- Phase A result (hnet-refit, complete): path works on 27B —
+  enc6/dec8/main16 forward OK, 32.7k dechunk pairs; untrained bpb
+  enwik8 8.81 / held 9.35 = expected pre-train regime (0.8B adapters-only
+  was ~7.7; trained 2B = 1.4317). Training is the required next step.
+- EVAL partial: int4 MMLU-5shot 932/1140 = 81.75% (strong; bf16+HE pending)

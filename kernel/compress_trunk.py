@@ -316,7 +316,11 @@ if SAVE_DIR:
     _du = subprocess.run(["du", "-sh", SAVE_DIR], capture_output=True,
                          text=True).stdout.strip()
     print(f"[save] done {_du} in {time.time() - _t0:.0f}s", flush=True)
-    json.dump({"artifact": "qwen27b-gptq4-toolace", "base_model": MODEL,
+    json.dump({"artifact": "qwen27b-gptq4-toolace",
+               "lineage": "BASE compressed trunk — pre-H-Net. A separate "
+                          "artifact (trunk + refit H-Net adapter) will "
+                          "follow; do not conflate.",
+               "base_model": MODEL,
                "method": f"GPTQ {BITS}-bit + rotate={ROTATE} Hessian-calib "
                          f"N={N_CALIB}", "dtype_stored": "bfloat16 "
                          "(dequantized)", "quant_exam": quant,

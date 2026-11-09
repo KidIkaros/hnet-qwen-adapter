@@ -55,20 +55,24 @@ from src.probe_common import RESULTS, stream_toolace                # noqa: E402
 SKIP = int(os.environ.get("SKIP", "0"))
 N = int(os.environ.get("N", "500"))
 RELOAD_BASE = os.environ.get("RELOAD_BASE", "1") == "1"
+MODE = os.environ.get("MODE", "both")  # resident | base | both
 MODEL = os.environ.get(
     "MODEL", "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored")
 TS = int(time.time())
 
 _g = globals()
 
+# Whitelist eviction: anything not needed for phase-2 dies. compress_trunk
+# leaves `flat`/`blocks`/`targets` holding all 256 Linear modules — an
+# allowlist-pop missed them once and pinned ~35GB, OOMing the reload.
+_KEEP = {"items", "_exam", "_evict", "_load", "sh", "stream_toolace",
+         "RESULTS", "torch", "json", "os", "sys", "subprocess", "time",
+         "gc", "SKIP", "N", "RELOAD_BASE", "MODE", "MODEL", "TS", "_g"}
+
 
 def _evict():
     for _k in list(_g.keys()):
-        if _k in ("model", "tok", "trunk", "hn", "meta", "lux",
-                  "teacher_model", "teacher_tok", "proj", "opt", "sc",
-                  "rows", "items", "H", "m", "targets", "meta_t",
-                  "unres", "_RW", "Wt", "Wf", "Hf", "Wq", "h", "ids",
-                  "out", "base_res", "fresh_res", "res"):
+        if _k not in _KEEP:
             _g.pop(_k, None)
     import gc
     gc.collect()
@@ -117,23 +121,26 @@ def _exam(items):
 
 
 items = stream_toolace(SKIP, N)
-print(f"[exam] {len(items)} items skip={SKIP}", flush=True)
+print(f"[exam] {len(items)} items skip={SKIP} mode={MODE}", flush=True)
+
+res_q = res_b = None
 
 # ---- phase 1: resident model (quantized on hrun9) ----
-if _g.get("model") is None or _g.get("tok") is None:
-    print("[exam] no resident model — loading bf16", flush=True)
-    _load()
-res_q = _exam(items)
-print(f"[resident] { {k: v for k, v in res_q.items() if k != 'rows'} }",
-      flush=True)
-json.dump({"phase": "resident", "skip": SKIP, "n": N,
-           **{k: v for k, v in res_q.items() if k != "rows"},
-           "rows": res_q["rows"]},
-          open(f"{RESULTS}/big_exam_{TS}_resident.json", "w"))
-print(f"[resident] receipt big_exam_{TS}_resident.json", flush=True)
+if MODE in ("resident", "both"):
+    if _g.get("model") is None or _g.get("tok") is None:
+        print("[exam] no resident model — loading bf16", flush=True)
+        _load()
+    res_q = _exam(items)
+    print(f"[resident] { {k: v for k, v in res_q.items() if k != 'rows'} }",
+          flush=True)
+    json.dump({"phase": "resident", "skip": SKIP, "n": N,
+               **{k: v for k, v in res_q.items() if k != "rows"},
+               "rows": res_q["rows"]},
+              open(f"{RESULTS}/big_exam_{TS}_resident.json", "w"))
+    print(f"[resident] receipt big_exam_{TS}_resident.json", flush=True)
 
 # ---- phase 2: fresh bf16 base on identical items ----
-if RELOAD_BASE:
+if MODE in ("base", "both") and (RELOAD_BASE or MODE == "base"):
     print("[exam] evicting + reloading fresh bf16 for base", flush=True)
     _evict()
     _load()
@@ -145,8 +152,10 @@ if RELOAD_BASE:
                "rows": res_b["rows"]},
               open(f"{RESULTS}/big_exam_{TS}_fresh.json", "w"))
     print(f"[fresh] receipt big_exam_{TS}_fresh.json", flush=True)
+
+if res_q is not None and res_b is not None:
     json.dump({"resident": {k: v for k, v in res_q.items() if k != "rows"},
                "fresh": {k: v for k, v in res_b.items() if k != "rows"},
                "skip": SKIP, "n": N},
               open(f"{RESULTS}/big_exam_{TS}.json", "w"))
-    print("[big_exam] complete", flush=True)
+print("[big_exam] complete", flush=True)

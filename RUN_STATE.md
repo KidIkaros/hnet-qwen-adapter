@@ -196,3 +196,22 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
        margin-gated escalation, or teacher distillation
 - This is the System-1 shape realized: every level a scored closed-set
   decision, verifier-gated, abstention preserved.
+
+### call_synth v2-v3 (2026-11-08, hrun8) — deterministic, ceiling measured
+- Fixes: schema arg order now tuple (was frozenset → hash-order nondeterminism);
+  value candidates n<=4 + bare digit forms + ".0" float variants; gold_args
+  stored per row; self-healing git sync in driver preamble.
+- RESULT (3 runs, identical — pinned-exam reproducibility confirmed):
+    tool_valid 39/39 answered | args_valid 36/39 | gold_match 3/40
+    name_acc 19/39 (49%) | abstained 1 | loops 0
+- Extractive ceiling measured: 43/65 gold arg values (66%) verbatim in query;
+  misses = JSON-structured args (~10, need generative composition),
+  normalization (~8, partially fixed via .0 variants), absent (~4).
+- PER-ARG truth: value-exact 8/36 overall, 8/33 on name-correct — the scorer
+  picks plausible spans but only ~22-24% exact even when extractable.
+  gold_match=3 is all-or-nothing compounding, not the capability number.
+- VERDICT: name_acc 49% is now the dominant gate (everything downstream
+  multiplies by it). Value selection ~22% is second. Next lever: name
+  selection accuracy — teacher-ceiling run (27B prefix scoring, same slice)
+  to measure achievable bound before choosing distill vs escalate.
+- Receipt: results/call_synth_1794189751.json

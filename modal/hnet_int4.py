@@ -22,7 +22,8 @@ image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("git")
     .pip_install("torch", "transformers", "safetensors", "accelerate",
-                 "huggingface_hub", "datasets", "numpy")
+                 "huggingface_hub", "datasets", "numpy",
+                 "flash-linear-attention")
     .add_local_dir("src", "/root/repo/src")
 )
 

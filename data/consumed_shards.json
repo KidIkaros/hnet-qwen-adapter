@@ -1,0 +1,55 @@
+{
+ "the-stack-v2": [
+  "the-stack-v2/Common_Lisp/quality_p50/shard_00000108.jsonl.zst",
+  "the-stack-v2/Pascal/quality_p90/shard_00000119.jsonl.zst",
+  "the-stack-v2/Verilog/quality_p95/shard_00000105.jsonl.zst",
+  "the-stack-v2/TypeScript/quality_p15/shard_00000154.jsonl.zst",
+  "the-stack-v2/Swift/quality_p30/shard_00000083.jsonl.zst",
+  "the-stack-v2/C-Sharp/quality_p50/shard_00000021.jsonl.zst",
+  "the-stack-v2/Java/quality_p00/shard_00000776.jsonl.zst",
+  "the-stack-v2/Clojure/quality_p20/shard_00000092.jsonl.zst"
+ ],
+ "common_pile_code": [
+  "common_pile_code/stackexchange/shard_00000146_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa40.json.zst",
+  "common_pile_code/stackexchange/shard_00000128_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa25.json.zst",
+  "common_pile_code/stackexchange/shard_00000136_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa40.json.zst",
+  "common_pile_code/stackexchange/shard_00000100_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa40.json.zst",
+  "common_pile_code/stackexchange/shard_00000035_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa30.json.zst",
+  "common_pile_code/github_archive/shard_00000003_vim.json.zst",
+  "common_pile_code/stackexchange/shard_00000143_creative_commons___attribution_share_alike___httpscreativecommonsorglicensesby_sa25.json.zst",
+  "common_pile_code/github_archive/shard_00000001_bsd_2_clause.json.zst"
+ ],
+ "ultrachat": [],
+ "dolma_code_prose": [
+  "dolma_code_prose/quality_p60/shard_00000106.jsonl.zst",
+  "dolma_code_prose/quality_p70/shard_00000034.jsonl.zst",
+  "dolma_code_prose/quality_p95/shard_00000069.jsonl.zst",
+  "dolma_code_prose/quality_p00/shard_00000000.jsonl.zst",
+  "dolma_code_prose/quality_p70/shard_00000080.jsonl.zst",
+  "dolma_code_prose/quality_p40/shard_00000117.jsonl.zst",
+  "dolma_code_prose/quality_p35/shard_00000100.jsonl.zst",
+  "dolma_code_prose/quality_p95/shard_00000051.jsonl.zst"
+ ],
+ "sponge211unified_code_prose": [
+  "sponge211unified_code_prose/quality_p15/shard_00000025.jsonl.zst",
+  "sponge211unified_code_prose/quality_p45/shard_00000115.jsonl.zst",
+  "sponge211unified_code_prose/quality_p05/shard_00000002.jsonl.zst",
+  "sponge211unified_code_prose/quality_p00/shard_00000078.jsonl.zst",
+  "sponge211unified_code_prose/quality_p00/shard_00000089.jsonl.zst",
+  "sponge211unified_code_prose/quality_p80/shard_00000095.jsonl.zst",
+  "sponge211unified_code_prose/quality_p00/shard_00000045.jsonl.zst",
+  "sponge211unified_code_prose/quality_p55/shard_00000054.jsonl.zst"
+ ],
+ "glaive_function_calling": [],
+ "toolace": [],
+ "cc_all_dressed": [
+  "cc_all_dressed/finance_and_business/vigintile_0014/part_22_shard_00000004.jsonl.gz",
+  "cc_all_dressed/literature/vigintile_0003/part_00_shard_00000011.jsonl.gz",
+  "cc_all_dressed/crime_and_law/vigintile_0006/part_07_shard_00000005.jsonl.gz",
+  "cc_all_dressed/science_math_and_technology/vigintile_0013/part_20_shard_00000001.jsonl.gz",
+  "cc_all_dressed/finance_and_business/vigintile_0016/part_09_shard_00000022.jsonl.gz",
+  "cc_all_dressed/literature/vigintile_0017/part_21_shard_00000001.jsonl.gz",
+  "cc_all_dressed/religion/vigintile_0010/part_18_shard_00000004.jsonl.gz",
+  "cc_all_dressed/social_life/vigintile_0011/part_10_shard_00000012.jsonl.gz"
+ ]
+}

@@ -1,0 +1,1 @@
+{"model": "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored", "bits": 4, "prune": 0.0, "rotate": true, "n_targets": 256, "n_calib": 48, "n": 40, "skip": 2500, "base": {"right": 27, "declared": 27, "decl_right": 27, "none": 3, "n": 40}, "quant": {"right": 27, "declared": 27, "decl_right": 27, "none": 3, "n": 40}}

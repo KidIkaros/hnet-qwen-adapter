@@ -1,0 +1,19 @@
+base {'right': 27, 'declared': 27, 'decl_right': 27, 'none': 3, 'n': 40}
+block 1/16 done cum=16
+block 2/16 done cum=32
+block 3/16 done cum=48
+block 4/16 done cum=64
+block 5/16 done cum=80
+block 6/16 done cum=96
+block 7/16 done cum=112
+block 8/16 done cum=128
+block 9/16 done cum=144
+block 10/16 done cum=160
+block 11/16 done cum=176
+block 12/16 done cum=192
+block 13/16 done cum=208
+block 14/16 done cum=224
+block 15/16 done cum=240
+block 16/16 done cum=256
+quantized 256
+quant_exam {'right': 27, 'declared': 27, 'decl_right': 27, 'none': 3, 'n': 40}

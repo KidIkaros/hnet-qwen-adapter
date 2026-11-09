@@ -260,3 +260,35 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   GPU-holder globals + gc + empty_cache, GPU budget 37→30GiB.
 - RUNNING: base exam ~25min, calib+quant ~1-2h (CPU-offloaded Cholesky
   bottleneck), quant exam ~25min. Verdict = declared name-acc pre/post.
+
+### compress_trunk RESULT (2026-11-09, hrun9) — 27B GPTQ-4bit: ZERO capability loss
+- Session history: hrun8 died mid-run (Colab kill) after base exam
+  confirmed 27/27 and blocks 1-8 quantized; partial state was
+  in-memory only -> full rerun on hrun9.
+- hrun9 turned out to be 80GB-class GPU -> whole bf16 trunk fits on-GPU
+  (max_memory 72GiB), zero meta-offloaded params, exam ~4min vs ~25min.
+- Bugs fixed en route: (a) kernel-global eviction incomplete -> OOM at
+  warmup; (b) CPU-offloaded Linear params are META tensors — real weights
+  live in AlignDevicesHook.weights_map = PrefixedDataset (keys() gives
+  full names, wm[short] fetches tensor); v1 crashed at block 9/16,
+  v2 resolves all 119 meta weights up front and writes dequantized
+  values back into the hook's tensor (validated live before rerun).
+- METHOD: 256 trunk linears (q/k/v/o/gate/up/down x64 layers), GPTQ 4-bit
+  + Hadamard rotation, Hessian calibrated on 48 ToolACE prompt blocks,
+  blockwise (16 blocks x 4 layers).
+- RESULT — pinned name-selection exam, same slice/protocol:
+    base:  right 27/40 | declared 27/27 | decl_right 27 | none-picks 3
+    quant: right 27/40 | declared 27/27 | decl_right 27 | none-picks 3
+  IDENTICAL. 4-bit GPTQ + rotation + on-domain Hessian calibration
+  preserved 100% of measured tool-name selection on the 27B trunk.
+- CAVEATS: single 40-item exam, name-selection only (args/values/gen
+  unmeasured on quantized trunk); this measures dequantized-weight
+  accuracy — packed artifact + scales still needed for actual size;
+  27/27 could partly reflect exam easiness (teacher ceiling was also
+  27/27 — the exam may saturate; larger pinned slice needed).
+- Receipts: results/compress_trunk_1794212023{,_base}.json +
+  .progress.log; ledger entry gptq-trunk-27b.
+- VERDICT: direct 27B->compact compression path VALIDATED at the
+  behavior level. Next: (1) arg/value-level exams on quantized trunk,
+  (2) packed artifact for real size measurement, (3) H-Net refit on the
+  compressed host, (4) larger pinned exam (500+) before capability claims.

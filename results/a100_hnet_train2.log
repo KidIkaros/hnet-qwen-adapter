@@ -1,0 +1,158 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Downloading bytes:           |  0.00B            
+Reconstructing (incomplete total...): |          |  0.00B /  0.00B            
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]
+[train] 24 layers | DeltaNet 18 | enc 6 dec 8 (start 13)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/84 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/32 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/15694 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/15741 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/128 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/7855 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/177568 [00:00<?, ?it/s]
+Resolving data files:   0%|          | 0/4669 [00:00<?, ?it/s]
+[data] 2000 train (dolma mix) | 6 held | 4 adapter-fit
+[data] enwik8 test slice 200000 bytes
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[fit] adapters fit | 16344 dechunk pairs
+[train] 832.1M trainable
+  ep0 step 25    loss 2.918 |gn| 3.72 | held 5.113 | enwik8 4.817
+/tmp/ipykernel_64050/4112116203.py:104: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  print(f"  ep{ep} step {step:<5} loss {float(loss):.3f} "
+  ep0 step 50    loss 2.465 |gn| 5.78 | held 4.198 | enwik8 4.418
+  ep0 step 75    loss 2.928 |gn| 3.77 | held 4.503 | enwik8 4.245
+  ep0 step 100   loss 2.327 |gn| 1.30 | held 3.815 | enwik8 4.143
+  ep0 step 125   loss 2.771 |gn| 13.00 | held 7.652 | enwik8 4.218
+  ep0 step 150   loss 1.963 |gn| 1.11 | held 3.574 | enwik8 4.075
+  ep0 step 175   loss 2.196 |gn| 1.27 | held 3.939 | enwik8 3.993
+  ep0 step 200   loss 1.741 |gn| 26.62 | held 3.668 | enwik8 3.905
+  ep0 step 225   loss 1.744 |gn| 1.22 | held 3.932 | enwik8 3.854
+  ep0 step 250   loss 1.713 |gn| 1.70 | held 3.319 | enwik8 3.793
+  ep0 step 275   loss 1.717 |gn| 1.37 | held 5.984 | enwik8 3.742
+  ep0 step 300   loss 2.356 |gn| 3.72 | held 3.282 | enwik8 3.703
+  ep0 step 325   loss 1.960 |gn| 1.45 | held 3.760 | enwik8 3.642
+  ep0 step 350   loss 2.043 |gn| 1.57 | held 3.237 | enwik8 3.592
+  ep0 step 375   loss 1.761 |gn| 1.55 | held 3.683 | enwik8 3.514
+  ep0 step 400   loss 1.824 |gn| 1.48 | held 3.001 | enwik8 3.449
+  ep0 step 425   loss 0.919 |gn| 3.31 | held 7.180 | enwik8 3.446
+  ep0 step 450   loss 1.410 |gn| 1.03 | held 2.965 | enwik8 3.431
+  ep0 step 475   loss 1.731 |gn| 1.20 | held 3.561 | enwik8 3.407
+  ep0 step 500   loss 1.753 |gn| 1.06 | held 3.159 | enwik8 3.348
+  ep0 step 525   loss 1.790 |gn| 1.35 | held 3.429 | enwik8 3.300
+  ep0 step 550   loss 2.036 |gn| 1.73 | held 2.937 | enwik8 3.324
+  ep0 step 575   loss 1.162 |gn| 8.00 | held 6.130 | enwik8 3.259
+  ep0 step 600   loss 1.670 |gn| 2.58 | held 2.857 | enwik8 3.321
+  ep0 step 625   loss 1.624 |gn| 1.02 | held 3.376 | enwik8 3.257
+  ep0 step 650   loss 1.246 |gn| 2.78 | held 2.873 | enwik8 3.225
+  ep0 step 675   loss 1.659 |gn| 1.17 | held 3.253 | enwik8 3.117
+  ep0 step 700   loss 1.368 |gn| 1.19 | held 2.635 | enwik8 3.096
+  ep0 step 725   loss 1.665 |gn| 1.94 | held 5.505 | enwik8 3.102
+  ep0 step 750   loss 1.413 |gn| 0.94 | held 2.724 | enwik8 3.085
+  ep0 step 775   loss 1.564 |gn| 1.23 | held 3.122 | enwik8 3.016
+  ep0 step 800   loss 0.472 |gn| 5.03 | held 2.840 | enwik8 3.070
+  ep0 step 825   loss 0.189 |gn| 0.56 | held 3.210 | enwik8 3.057
+  ep0 step 850   loss 1.326 |gn| 1.30 | held 2.620 | enwik8 3.021
+  ep0 step 875   loss 1.507 |gn| 1.48 | held 5.412 | enwik8 2.959
+  ep0 step 900   loss 1.079 |gn| 2.14 | held 2.624 | enwik8 2.973
+  ep0 step 925   loss 1.333 |gn| 1.27 | held 3.032 | enwik8 2.936
+  ep0 step 950   loss 0.169 |gn| 0.61 | held 2.788 | enwik8 2.960
+  ep0 step 975   loss 0.213 |gn| 0.80 | held 3.056 | enwik8 2.940
+  ep0 step 1000  loss 0.307 |gn| 1.96 | held 2.482 | enwik8 2.981
+  ep0 step 1025  loss 0.525 |gn| 3.50 | held 5.979 | enwik8 2.959
+  ep0 step 1050  loss 0.181 |gn| 0.72 | held 2.534 | enwik8 2.964
+  ep0 step 1075  loss 1.430 |gn| 1.09 | held 2.932 | enwik8 2.877
+  ep0 step 1100  loss 1.360 |gn| 1.18 | held 2.726 | enwik8 2.864
+  ep0 step 1125  loss 0.169 |gn| 0.65 | held 2.979 | enwik8 2.853
+  ep0 step 1150  loss 1.584 |gn| 1.61 | held 2.398 | enwik8 2.780
+  ep0 step 1175  loss 1.177 |gn| 0.90 | held 5.504 | enwik8 2.860
+  ep0 step 1200  loss 1.799 |gn| 1.97 | held 2.493 | enwik8 2.863
+  ep0 step 1225  loss 1.369 |gn| 0.90 | held 2.871 | enwik8 2.850
+  ep0 step 1250  loss 1.364 |gn| 0.96 | held 2.547 | enwik8 2.834
+  ep0 step 1275  loss 1.082 |gn| 1.47 | held 2.877 | enwik8 2.804
+  ep0 step 1300  loss 1.512 |gn| 1.19 | held 2.361 | enwik8 2.792
+  ep0 step 1325  loss 1.380 |gn| 1.03 | held 5.445 | enwik8 2.793
+  ep0 step 1350  loss 1.427 |gn| 2.97 | held 2.451 | enwik8 2.879
+  ep0 step 1375  loss 0.975 |gn| 2.48 | held 2.855 | enwik8 2.850
+  ep0 step 1400  loss 0.966 |gn| 1.65 | held 2.467 | enwik8 2.753
+  ep0 step 1425  loss 1.344 |gn| 0.91 | held 2.783 | enwik8 2.770
+  ep0 step 1450  loss 0.183 |gn| 3.27 | held 2.324 | enwik8 2.760
+  ep0 step 1475  loss 1.387 |gn| 1.17 | held 5.031 | enwik8 2.792
+  ep0 step 1500  loss 1.172 |gn| 1.20 | held 2.393 | enwik8 2.768
+  ep0 step 1525  loss 1.211 |gn| 1.02 | held 2.778 | enwik8 2.749
+  ep0 step 1550  loss 1.109 |gn| 1.07 | held 2.457 | enwik8 2.732
+  ep0 step 1575  loss 1.613 |gn| 1.30 | held 2.817 | enwik8 2.758
+  ep0 step 1600  loss 1.252 |gn| 1.85 | held 2.300 | enwik8 2.738
+  ep0 step 1625  loss 1.328 |gn| 1.48 | held 5.176 | enwik8 2.694
+  ep0 step 1650  loss 1.417 |gn| 1.45 | held 2.382 | enwik8 2.716
+  ep0 step 1675  loss 0.159 |gn| 1.16 | held 2.675 | enwik8 2.690
+  ep0 step 1700  loss 0.213 |gn| 0.93 | held 2.504 | enwik8 2.668
+  ep0 step 1725  loss 1.647 |gn| 1.41 | held 2.664 | enwik8 2.694
+  ep0 step 1750  loss 1.381 |gn| 1.31 | held 2.215 | enwik8 2.671
+  ep0 step 1775  loss 1.517 |gn| 1.12 | held 4.933 | enwik8 2.696
+  ep0 step 1800  loss 1.216 |gn| 1.02 | held 2.344 | enwik8 2.710
+  ep0 step 1825  loss 0.210 |gn| 2.52 | held 2.693 | enwik8 2.672
+  ep0 step 1850  loss 0.511 |gn| 5.19 | held 2.400 | enwik8 2.653
+  ep0 step 1875  loss 0.992 |gn| 0.99 | held 2.678 | enwik8 2.656
+  ep0 step 1900  loss 1.003 |gn| 0.86 | held 2.257 | enwik8 2.722
+  ep0 step 1925  loss 0.539 |gn| 3.39 | held 5.023 | enwik8 2.692
+  ep0 step 1950  loss 1.130 |gn| 0.98 | held 2.270 | enwik8 2.641
+  ep0 step 1975  loss 1.427 |gn| 1.48 | held 2.711 | enwik8 2.657
+  ep0 step 2000  loss 1.390 |gn| 1.48 | held 2.411 | enwik8 2.616
+[0;31m---------------------------------------------------------------------------[0m[0;31mOutOfMemoryError[0m                          Traceback (most recent call last)[0;32m/tmp/ipykernel_64050/4112116203.py[0m in [0;36m<cell line: 0>[0;34m()[0m
+[1;32m    109[0m [0;34m[0m[0m
+[1;32m    110[0m [0;31m# ---- final eval: enwik8 test + held decontam[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 111[0;31m [0mew_final[0m [0;34m=[0m [0meval_bpb[0m[0;34m([0m[0mew8_test[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    112[0m hb_final = [eval_bpb(torch.tensor(list(hd), device="cuda"))
+[1;32m    113[0m             for hd in held_docs]
+[0;32m/tmp/ipykernel_64050/4112116203.py[0m in [0;36meval_bpb[0;34m(byte_ids)[0m
+[1;32m     84[0m [0;32mdef[0m [0meval_bpb[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     85[0m     [0;32mwith[0m [0mtorch[0m[0;34m.[0m[0mno_grad[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 86[0;31m         [0;32mreturn[0m [0mfloat[0m[0;34m([0m[0mdoc_loss[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m)[0m [0;34m/[0m [0mnp[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0;36m2[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     87[0m [0;34m[0m[0m
+[1;32m     88[0m [0;34m[0m[0m
+[0;32m/tmp/ipykernel_64050/4112116203.py[0m in [0;36mdoc_loss[0;34m(byte_ids)[0m
+[1;32m     73[0m [0;32mdef[0m [0mdoc_loss[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     74[0m     [0mT[0m [0;34m=[0m [0mlen[0m[0;34m([0m[0mbyte_ids[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 75[0;31m     bp, _, _ = hn(byte_ids, boundaries=periodic(T, P), ctx="retrieve",
+[0m[1;32m     76[0m                   n_ctx=1, super_k=4, head_first=trunk["head"].first)
+[1;32m     77[0m     [0mnll[0m [0;34m=[0m [0;34m-[0m[0mbp[0m[0;34m[[0m[0;36m0[0m[0;34m,[0m [0;34m:[0m[0;34m-[0m[0;36m1[0m[0;34m][0m[0;34m.[0m[0mgather[0m[0;34m([0m[0;36m1[0m[0;34m,[0m [0mbyte_ids[0m[0;34m[[0m[0;36m1[0m[0;34m:[0m[0;34m][0m[0;34m.[0m[0mlong[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0munsqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m)[0m[0;34m.[0m[0msqueeze[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_wrapped_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1777[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_compiled_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m  [0;31m# type: ignore[misc][0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1778[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1779[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_call_impl[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1780[0m [0;34m[0m[0m
+[1;32m   1781[0m     [0;31m# torchrec tests the code consistency with the following code[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py[0m in [0;36m_call_impl[0;34m(self, *args, **kwargs)[0m
+[1;32m   1788[0m                 [0;32mor[0m [0m_global_backward_pre_hooks[0m [0;32mor[0m [0m_global_backward_hooks[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1789[0m                 or _global_forward_hooks or _global_forward_pre_hooks):
+[0;32m-> 1790[0;31m             [0;32mreturn[0m [0mforward_call[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1791[0m [0;34m[0m[0m
+[1;32m   1792[0m         [0mresult[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mforward[0;34m(self, byte_ids, boundaries, sparse, ctx, head_first, n_ctx, super_k)[0m
+[1;32m    196[0m         [0;32mif[0m [0mctx[0m [0;34m==[0m [0;34m"retrieve"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    197[0m             [0;31m# bytes attend past-chunk ctx with their OWN queries — no broadcast[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 198[0;31m             [0mx[0m [0;34m=[0m [0mx[0m [0;34m+[0m [0mself[0m[0;34m.[0m[0mdecoder_attn_pass[0m[0;34m([0m[0mx[0m[0;34m,[0m [0mctx_v[0m[0;34m,[0m [0mchunk_of[0m[0;34m,[0m [0mn_ctx[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    199[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    200[0m             [0msrc[0m [0;34m=[0m [0mchunk_of[0m [0;32mif[0m [0mctx[0m [0;34m==[0m [0;34m"own"[0m [0;32melse[0m [0;34m([0m[0mchunk_of[0m [0;34m-[0m [0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/content/qt/hnet-qwen-adapter/src/hnet.py[0m in [0;36mdecoder_attn_pass[0;34m(self, x_bytes, ctx, chunk_of, n_ctx_layers)[0m
+[1;32m    124[0m         [0mneg[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mfinfo[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mfloat32[0m[0;34m)[0m[0;34m.[0m[0mmin[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    125[0m         [0mN[0m [0;34m=[0m [0mC[0m [0;34m+[0m [0mT[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 126[0;31m         [0mallow[0m [0;34m=[0m [0mtorch[0m[0;34m.[0m[0mzeros[0m[0;34m([0m[0mN[0m[0;34m,[0m [0mN[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mtorch[0m[0;34m.[0m[0mbool[0m[0;34m,[0m [0mdevice[0m[0;34m=[0m[0mx_bytes[0m[0;34m.[0m[0mdevice[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    127[0m         allow[:C, :C] = torch.tril(torch.ones(C, C, dtype=torch.bool,
+[1;32m    128[0m                                               device=x_bytes.device))
+[0;31mOutOfMemoryError[0m: CUDA out of memory. Tried to allocate 50.71 GiB. GPU 0 has a total capacity of 39.49 GiB of which 26.34 GiB is free. Including non-PyTorch memory, this process has 13.14 GiB memory in use. Of the allocated memory 11.82 GiB is allocated by PyTorch, and 823.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

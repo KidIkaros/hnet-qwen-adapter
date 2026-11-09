@@ -75,12 +75,19 @@ TS = int(time.time())
 
 # ---- model: evict ALL resident GPU holders, load bf16 + offload ----
 # nf4/8bit weights are packed — quantize_linear needs real float weights.
-# The kernel accumulates globals across execs (2B trunk/hn, old teachers);
-# evict every known big holder or the bf16 load OOMs on warmup.
+# The kernel accumulates globals across execs (2B trunk/hn, old teachers,
+# flat/blocks/targets module refs from prior drivers); an evict blacklist
+# missed those twice and OOM'd the load. Whitelist instead: keep only
+# names defined so far, drop everything else.
 _g = globals()
-for _k in ("model", "tok", "trunk", "hn", "meta", "lux", "teacher_model",
-           "teacher_tok", "proj", "opt", "sc", "rows", "items", "H"):
-    _g.pop(_k, None)
+_KEEP = {"os", "sys", "subprocess", "json", "time", "re", "REPO", "sh",
+         "torch", "RESULTS", "stream_toolace", "calibrate_hessians",
+         "trunk_linears", "gptq_quantize", "hadamard", "BITS", "ROTATE",
+         "PRUNE", "N_CALIB", "BLOCK", "N_ITEMS", "VSKIP", "SKIP_BASE",
+         "MODEL", "TS", "_g"}
+for _k in list(_g.keys()):
+    if _k not in _KEEP:
+        _g.pop(_k, None)
 import gc                                                       # noqa: E402
 gc.collect()
 torch.cuda.empty_cache()

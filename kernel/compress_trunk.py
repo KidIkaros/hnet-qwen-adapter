@@ -102,23 +102,46 @@ items = stream_toolace(VSKIP, N_ITEMS)
 # lin.weight.data access hits meta -> crash (seen at block 9/16). Resolve
 # every target's effective tensor ONCE, up front, and abort early if any
 # cannot be found — before burning exam+calibration time.
-def _hook_dicts(hook, depth=0):
+def _iter_hook_tensors(hook, depth=0):
+    """Yield (key, real_tensor) from a module's offload hook.
+
+    AlignDevicesHook.weights_map is a PrefixedDataset (NOT a dict):
+    .keys() returns full param names, wm[short] fetches the tensor where
+    short = key minus wm.prefix. Plain dicts (short keys) also handled.
+    """
     if hook is None or depth > 5:
         return
-    for attr in ("weights_map", "offload_weights", "weights", "parameters"):
-        d = getattr(hook, attr, None)
-        if isinstance(d, dict):
-            yield d
+    wm = getattr(hook, "weights_map", None)
+    if wm is not None:
+        pref = getattr(wm, "prefix", "") or ""
+        try:
+            ks = list(wm.keys())
+        except Exception:
+            ks = []
+        for k in ks:
+            short = k[len(pref):] if pref and k.startswith(pref) else k
+            v = None
+            for kk in (short, k):
+                try:
+                    v = wm[kk]
+                    break
+                except Exception:
+                    pass
+            if torch.is_tensor(v) and not v.is_meta:
+                yield k, v
+        if isinstance(wm, dict):
+            for k, v in wm.items():
+                if torch.is_tensor(v) and not v.is_meta:
+                    yield k, v
     for sub in getattr(hook, "hooks", None) or []:
-        yield from _hook_dicts(sub, depth + 1)
+        yield from _iter_hook_tensors(sub, depth + 1)
 
 
 _RW = {}
 for _n, _m in model.named_modules():
-    for _d in _hook_dicts(getattr(_m, "_hf_hook", None)):
-        for _k, _v in _d.items():
-            if torch.is_tensor(_v) and not _v.is_meta:
-                _RW[f"{_n}.{_k}"] = _v
+    for _k, _v in _iter_hook_tensors(getattr(_m, "_hf_hook", None)):
+        _full = _k if (_k == _n or _k.startswith(_n + ".")) else f"{_n}.{_k}"
+        _RW[_full] = _v
 print(f"[trunk] hook weight-map: {len(_RW)} real tensors", flush=True)
 
 

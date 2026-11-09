@@ -26,3 +26,13 @@
   fast restart ~10min saved on next run)
 - restart path: modal deploy modal/hnet_int4.py + spawn, or new driver
   reusing volumes; HF repo KidIkaros/qwen27b-int4-toolace is canonical
+
+## 2026-11-09 — hnet-eval + hnet-refit Modal runs (parallel H200s)
+- eval: app ap-JoYMiTRcizOUVkJiVWYryM, call fc-01M70M4HFC177T00JND1J6T941
+  GENERAL-QUALITY gate: MMLU-5shot (57subj x20) + HumanEval-164 pass@1 +
+  wikitext-2 ppl + toolace40, run on BOTH int4-dequant and fresh bf16 ->
+  quant-vs-base delta on general capability (not just tools)
+- refit: app ap-lSE4RsVBosIEI7NQzRO1lV, call fc-01M70M8SS07DT8R9JCEWBC45E8
+  H-Net Phase A on int4 trunk: HNetQwen(enc=6,dec=8) + fit_adapters
+  (closed-form ridge) + byte-bpb held/enwik8 — validates path + first
+  27B-trunk bpb vs 2B baseline enwik8-test 1.4317. No grad training yet.

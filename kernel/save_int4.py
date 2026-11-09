@@ -290,5 +290,44 @@ record({"method": "gptq-int4-packed-27b",
 _rcpt = {"artifact": "qwen27b-int4-toolace", "exam": exam,
          "packed_gb": tot / 1e9, "n_targets": len(targets), "ts": TS}
 json.dump(_rcpt, open(f"{RESULTS}/save_int4_{TS}.json", "w"))
+json.dump(_rcpt, open(f"{OUT_DIR}/PACKED_RECEIPT.json", "w"), indent=1)
 print(f"[int4] receipt {RESULTS}/save_int4_{TS}.json", flush=True)
+
+# ---- optional immediate HF upload (session-death insurance) ----
+# hrun9 died seconds after this script finished — artifact was lost.
+# If HF_TOKEN is in env, push the packed dir NOW, before anything else.
+if os.environ.get("HF_TOKEN"):
+    from huggingface_hub import HfApi                       # noqa: E402
+    repo = os.environ.get("INT4_REPO", "KidIkaros/qwen27b-int4-toolace")
+    api = HfApi(token=os.environ["HF_TOKEN"])
+    api.create_repo(repo, private=True, exist_ok=True)
+    card = f"""---
+license: other
+base_model: 0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored
+library_name: transformers
+tags: [qwen, gptq, int4, packed, toolace, function-calling, compressed]
+---
+
+# qwen27b-int4-toolace (PACKED int4, extended scope)
+
+TRUE 4-bit GPTQ artifact: nibble-packed codes + fp16 per-(row,128-block)
+scales, ~{tot / 1e9:.1f}GB vs ~53.8GB bf16. Scope: {len(targets)} linears
+(~94% of params) incl. linear_attn projections; embed/lm_head/norms bf16.
+
+NOT loadable by vanilla transformers — use src/int4_load.py
+(dequantize-on-load to bf16). See INT4_MANIFEST.json for the recipe.
+Sibling of qwen27b-gptq4-toolace (bf16-dequant backup, 256-target scope).
+Pre-H-Net base artifact.
+
+Pinned exam: {exam['decl_right']}/{exam['declared']} declared
+(skip={VSKIP}, n={N_ITEMS}).
+"""
+    open(f"{OUT_DIR}/README.md", "w").write(card)
+    t0 = time.time()
+    api.upload_folder(repo_id=repo, folder_path=OUT_DIR,
+                      commit_message=f"qwen27b-int4-toolace packed artifact "
+                                     f"(exam {exam['decl_right']}/"
+                                     f"{exam['declared']}, ts={TS})")
+    print(f"[int4] HF upload done {time.time() - t0:.0f}s -> {repo}",
+          flush=True)
 print("[int4] complete", flush=True)

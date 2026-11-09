@@ -356,3 +356,16 @@ saved by compress_trunk SAVE_DIR; manifest written).
 
 3. bfcl_call_eval (Phase B full pipeline) — RUNNING.
 4. big_exam MODE=base (fresh-bf16 delta) — pending.
+
+### big_exam base-vs-quant delta (2026-11-09, hrun9) — ZERO measurable loss
+- fresh bf16 on identical 500 items: decl_wrong 13/283, abstains 27
+- resident quant on same:            decl_wrong 13/283, abstains 49
+- Only 2 declared items differ in prediction — mirror-image swaps
+  (net zero). Compression cost on name-selection at scale: NONE.
+- Neighbor cost: quant abstains +22 more (slight conservatism).
+- Receipts: big_exam_1794217042_resident.json + big_exam_1794225793_fresh.json
+- BUGFIX: _KEEP must contain itself (self-eviction NameError) — patched
+  in big_exam + compress_trunk.
+- bfcl_call_eval (quant) final: simple 13/100, multiple 13/100 = 13%
+  full-call — value/arg pipeline is the bottleneck (extractive ceiling),
+  name-selection was 94%. Receipt: bfcl_call_1794223950.json

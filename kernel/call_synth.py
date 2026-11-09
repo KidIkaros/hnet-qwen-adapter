@@ -32,7 +32,18 @@ def sh(*cmd):
 
 
 if os.path.exists(REPO):
-    sh("git", "-C", REPO, "pull", "-q")
+    sh("git", "-C", REPO, "fetch", "-q", "origin")
+    # drop untracked files that upstream now tracks (committed-back results)
+    up = set(sh("git", "-C", REPO, "ls-tree", "-r", "--name-only",
+                "origin/main").split())
+    for root, _, fs in os.walk(REPO):
+        for f in fs:
+            p = os.path.join(root, f)
+            rel = os.path.relpath(p, REPO)
+            if rel in up and "??" in sh(
+                    "git", "-C", REPO, "status", "--porcelain", "--", rel):
+                os.remove(p)
+    sh("git", "-C", REPO, "merge", "-q", "origin/main")
 else:
     sh("git", "clone", "-q",
        "https://github.com/KidIkaros/hnet-qwen-adapter.git", REPO)

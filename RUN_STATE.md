@@ -392,3 +392,15 @@ saved by compress_trunk SAVE_DIR; manifest written).
   (bf16 shows the same). Name-selection layer: quant==base everywhere.
 - vs 2B+H-Net call_synth (same slice): name_acc ~49% -> 100% answered;
   gold_match tied at 3 (value-composition bound on both).
+
+### UPLOAD COMPLETE (2026-11-09)
+- KidIkaros/qwen27b-gptq4-toolace — PRIVATE repo, verified:
+  11 files, 53.8GB (2 safetensors shards 49.8+4.0GB, QUANT_MANIFEST.json,
+  README.md with eval-gate table, tokenizer/config/template).
+- hf_upload.py upload_folder: 549s. Token passed via --env only.
+- TOKEN REMINDER: hf_... exposed in transcript — user must revoke at
+  huggingface.co/settings/tokens.
+- hrun9 still alive: fresh bf16 resident + artifact at
+  /content/qt/quant27b-gptq4-toolace.
+- NEXT: packed-int4 serialization driver (real size win); value-composition
+  (generative arg synthesis) is the capability bottleneck, not weights.

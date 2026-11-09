@@ -55,7 +55,8 @@ for _m in [k for k in sys.modules if k.startswith("src.")]:
 import torch                                                       # noqa: E402
 from src.probe_common import (RESULTS, build_model, cand_score,    # noqa: E402
                               load_ckpt, stream_toolace)
-from src.emit_eval import score_emission, tool_schemas             # noqa: E402
+from src.emit_eval import (score_emission, tool_schemas,   # noqa: E402
+                           parse_call)
 
 VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
@@ -113,7 +114,9 @@ for k, it in enumerate(items):
         v = score_emission(b"", tools=it["tools"], sys_text=it["sys"],
                            gold_name=it["gold"],
                            gold_call=it.get("gold_full"))
+        g = parse_call(it.get("gold_full") or "")
         v.update({"k": k, "gold": it["gold"], "pred": "none",
+                  "gold_args": g["args"] if g else None,
                   "name_scores": {n: round(s, 3)
                                   for n, s in nsc.items()}})
         rows.append(v)
@@ -143,10 +146,14 @@ for k, it in enumerate(items):
         call_ids = pid + list(emitted.encode())
 
         # value: extractive span selection — quoted form for all spans,
-        # plus bare form for digit-bearing spans (gold emits id=123 unquoted)
+        # bare form for digit-bearing spans, + ".0" float variants
+        # (gold emits id=12345.0 where the query has 12345)
         vcands = [f'"{s}"' for s in spans]
-        vcands += [s for s in spans
-                   if _BARE_OK.match(s) and any(c.isdigit() for c in s)]
+        for s in spans:
+            if _BARE_OK.match(s) and any(c.isdigit() for c in s):
+                vcands.append(s)
+                if s.isdigit():
+                    vcands.append(s + ".0")
         vsc = argmax_score(call_ids, vcands) if vcands else {}
         vpick = max(vsc, key=vsc.get) if vsc else '""'
         emitted += vpick
@@ -158,8 +165,10 @@ for k, it in enumerate(items):
     v = score_emission(emitted.encode(), tools=it["tools"],
                        sys_text=it["sys"], gold_name=it["gold"],
                        gold_call=it.get("gold_full"))
+    g = parse_call(it.get("gold_full") or "")
     v.update({"k": k, "gold": it["gold"], "pred": pred,
               "emit": emitted[:200],
+              "gold_args": g["args"] if g else None,
               "name_scores": {n: round(s, 3)
                               for n, s in nsc.items()}})
     rows.append(v)

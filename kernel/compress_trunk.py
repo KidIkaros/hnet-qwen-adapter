@@ -88,7 +88,7 @@ from transformers import (AutoTokenizer, AutoModelForCausalLM)      # noqa: E402
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForCausalLM.from_pretrained(
     MODEL, dtype=torch.bfloat16, device_map="auto",
-    max_memory={0: "30GiB", "cpu": "70GiB"})
+    max_memory={0: "72GiB", "cpu": "70GiB"})
 model.eval()
 print(f"[trunk] loaded {MODEL} bf16 device_map=auto", flush=True)
 

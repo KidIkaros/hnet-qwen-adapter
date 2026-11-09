@@ -66,17 +66,22 @@ VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
 MODEL = os.environ.get(
     "MODEL", "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored")
 
-# ---- model: evict any resident quantized model, load bf16 + offload ----
+# ---- model: evict ALL resident GPU holders, load bf16 + offload ----
 # nf4/8bit weights are packed — quantize_linear needs real float weights.
+# The kernel accumulates globals across execs (2B trunk/hn, old teachers);
+# evict every known big holder or the bf16 load OOMs on warmup.
 _g = globals()
-for _k in ("model", "tok"):
+for _k in ("model", "tok", "trunk", "hn", "meta", "lux", "teacher_model",
+           "teacher_tok", "proj", "opt", "sc", "rows", "items", "H"):
     _g.pop(_k, None)
+import gc                                                       # noqa: E402
+gc.collect()
 torch.cuda.empty_cache()
 from transformers import (AutoTokenizer, AutoModelForCausalLM)      # noqa: E402
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForCausalLM.from_pretrained(
     MODEL, dtype=torch.bfloat16, device_map="auto",
-    max_memory={0: "37GiB", "cpu": "70GiB"})
+    max_memory={0: "30GiB", "cpu": "70GiB"})
 model.eval()
 print(f"[trunk] loaded {MODEL} bf16 device_map=auto", flush=True)
 

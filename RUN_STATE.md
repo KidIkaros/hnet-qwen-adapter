@@ -231,3 +231,32 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   ~70% → distill), arg names (92% solved), values (~22%/arg exact,
   extractive ceiling 66%).
 - Receipt: results/teacher_scores_1794190811.json (full score matrices)
+
+### call_synth TEACHER=1 full-pipeline ceiling (2026-11-09, hrun8)
+- kernel/call_synth.py TEACHER=1: same closed-set pipeline, every score()
+  routed through 27B teacher-forced mean-token logprob. 27B loaded 4bit.
+- RESULT (declared n=27): name_acc 27/27 (100%), args_valid 25/27,
+  gold_match 6/27; overall n=40: parse 39, tool_valid 39, args_valid 36,
+  gold_match 6, abstained 1, loops 0.
+- Right-name misses (21) decompose: structured-JSON args ~10 (extraction
+  cannot produce them — generative composition needed), normalization
+  near-misses ~4 (12345 vs 12345.0, "2020" vs 2020 — candidate variants
+  fixable), extractive overshoot ~6 (picked plausible n-gram, not the
+  gold span — needs per-arg-conditioned value candidates).
+- VERDICT: even the 27B scorer caps gold_match at 6/27 under pure
+  extraction. Realistic ceiling with better value candidates ~12-15/27;
+  ~10 items need generative arg composition regardless. Value selection,
+  not name selection, is now the binding constraint for strict correctness.
+- Receipt: results/call_synth_teacher_1794193104.json
+
+### compress_trunk launched (2026-11-09, hrun8) — 27B bf16-offload GPTQ probe
+- kernel/compress_trunk.py: evicts kernel-global GPU holders, loads
+  0bserverx/Qwen3.8-27B bf16 device_map=auto (30GiB GPU / 70GiB CPU),
+  measures BASE name-selection on pinned slice, then chunked Hessian
+  calibration + GPTQ-4bit (ROTATE on, PRUNE=0, N_CALIB=48,
+  BLOCK_LAYERS=4) over q/k/v/o/gate/up/down linears, re-measures same exam.
+- First attempt OOM'd in caching_allocator_warmup (kernel-global 2B
+  trunk/hn + nf4 teacher still resident); fixed by evicting all known
+  GPU-holder globals + gc + empty_cache, GPU budget 37→30GiB.
+- RUNNING: base exam ~25min, calib+quant ~1-2h (CPU-offloaded Cholesky
+  bottleneck), quant exam ~25min. Verdict = declared name-acc pre/post.

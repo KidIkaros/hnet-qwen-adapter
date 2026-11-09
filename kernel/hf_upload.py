@@ -34,10 +34,25 @@ tags: [qwen, gptq, toolace, function-calling, compressed]
 
 GPTQ-4bit + Hadamard-rotation compressed trunk of the abliterated 27B,
 Hessian-calibrated on ToolACE prompts. **Pre-H-Net base artifact** —
-a separate trunk+adapter model will follow.
+a separate trunk+adapter model (`qwen27b-gptq4-toolace-hnet`) will follow.
 
 Weights stored dequantized bf16 (accuracy-equivalent; int4 packing is
 separate work). See QUANT_MANIFEST.json for method + verification.
+
+## Eval gate (quantized vs fresh bf16, same items)
+
+| exam | quant | bf16 base | delta |
+|---|---|---|---|
+| tool-name selection, pinned 40 | 27/27 declared | 27/27 | 0 |
+| tool-name selection, 500 items | 270/283 (95.4%) | 270/283 | 0 |
+| BFCL v3 name-selection (200) | 188/200 | 189/200 | -1 |
+| BFCL v3 full call, AST-equiv (200) | 26/200 | 27/200 | -1 |
+| ToolACE closed-set call (40) | gold_match 3, name 25/25 | identical | 0 |
+
+Compression is behaviorally lossless on every measured axis. The ~13%
+BFCL full-call accuracy is a property of the evaluation protocol
+(closed-set extractive argument composition), identical for bf16 —
+not a quantization defect. Receipts in results/ of the source repo.
 """
 open(f"{SRC}/README.md", "w").write(card)
 

@@ -177,3 +177,22 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   arg names from per-tool schema set, values extractive (query spans) or
   scored candidates. Model role = query understanding; structure = schema.
 - Receipt: results/emit_score_goldname_1794183844.json
+
+### call_synth constrained pipeline (2026-11-08, hrun8, skip=2500 n=40)
+- kernel/call_synth.py: closed-set synthesis — name argmax over tools+none,
+  arg names argmax over schema set, values argmax over query n-gram spans.
+  Verified by score_emission. Receipt: results/call_synth_*.json
+- RESULT vs free-gen baselines:
+    tool_valid  6→39/39 answered (guaranteed by construction)
+    args_valid  4→36/39 (92% — arg-name selection SOLVED)
+    gold_match  1→3/40   loops 19→0   abstained 1
+- Decomposition: name_acc 19/39 (49%); of name-correct, gold_match 3/19.
+- VERDICT: constrained architecture validated — validity guaranteed,
+  arg names solved. Remaining bottlenecks, in order:
+    1. value correctness (extractive spans miss gold values — 3/19 given
+       right name); candidates need richer sources (desc examples,
+       numbers unquoted, noun phrases) or scored generation
+    2. name selection accuracy 49% — improve via S1/StartLux ensemble,
+       margin-gated escalation, or teacher distillation
+- This is the System-1 shape realized: every level a scored closed-set
+  decision, verifier-gated, abstention preserved.

@@ -404,3 +404,19 @@ saved by compress_trunk SAVE_DIR; manifest written).
   /content/qt/quant27b-gptq4-toolace.
 - NEXT: packed-int4 serialization driver (real size win); value-composition
   (generative arg synthesis) is the capability bottleneck, not weights.
+
+### PACKED INT4 ARTIFACT COMPLETE (2026-11-09, Modal H200)
+- KidIkaros/qwen27b-int4-toolace — PRIVATE, verified live
+- 17.68GB packed int4 (5 safetensors shards), 400 linears @4bit incl
+  linear_attn in_proj_qkv/in_proj_z/out_proj (~94% params covered)
+- pinned name exam on dequantized resident: 27/27 declared, none=3 —
+  matches bf16-dequant base artifact exactly
+- loader: src/int4_load.py reconstructs packed tensors -> dequant -> model
+- manifest caveats carried: rotation INERT (no pow2 in-features),
+  plain GPTQ-4bit; embed+lm_head+norms remain bf16 (~5.4GB of the 17.7)
+- lineage: qwen27b-gptq4-toolace (53.8GB bf16-dequant backup) vs
+  qwen27b-int4-toolace (17.7GB true packed) vs future ...-hnet artifact
+- SUB-10GB analysis: needs int3 linears or int2+int4-embed; int4 floor
+  with bf16 embeddings ~17.7GB; <10GB enters unverified quality regime
+- NEXT: 500-item big_exam on packed-dequant resident (optional deeper
+  gate); H-Net refit -> separate artifact; generative arg composition

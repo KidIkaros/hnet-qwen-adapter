@@ -1,0 +1,1 @@
+{"artifact": "qwen27b-int4-toolace", "exam": {"right": 27, "declared": 27, "decl_right": 27, "none": 3, "n": 40}, "packed_gb": 17.681802776, "n_targets": 400, "ts": 1794241315, "app": "ap-Sy4RViK0CaRBV9ch7uHKkc", "call": "fc-01M70HV9Z9FDDG6XCDN6D27162", "repo": "KidIkaros/qwen27b-int4-toolace"}

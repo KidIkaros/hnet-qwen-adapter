@@ -170,15 +170,23 @@ def dequant_int(packed, scales, in_f, bits=4, blocksize=128):
 
 
 @torch.no_grad()
-def calibrate_hessians(model, layer_names, calib_ids, forward_fn):
-    """Accumulate H = X^T X for each named linear from calibration inputs."""
+def calibrate_hessians(model, layer_names, calib_ids, forward_fn,
+                       accumulate_on=None):
+    """Accumulate H = X^T X for each named linear from calibration inputs.
+
+    accumulate_on: "cpu" keeps the legacy host-side accumulation (slow but
+    bounded RAM); "cuda"/None accumulates on the input's device — orders of
+    magnitude faster and fine when the model+H fit in VRAM (H200 runs).
+    """
     H = {n: None for n in layer_names}
     hooks = []
 
     def mk(name):
         def f(m, inp):
             x = inp[0].detach().float()
-            x = x.reshape(-1, x.shape[-1]).cpu()
+            x = x.reshape(-1, x.shape[-1])
+            if accumulate_on == "cpu":
+                x = x.cpu()
             hh = x.T @ x
             H[name] = hh if H[name] is None else H[name] + hh
         return f

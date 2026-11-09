@@ -117,8 +117,9 @@ def parse_call(text) -> dict | None:
 
 
 def tool_schemas(sys_text: str) -> dict:
-    """{tool_name: frozenset(arg_names) | None} parsed from the prompt's
-    tool JSON. None = tool seen but no verifiable arg schema."""
+    """{tool_name: tuple(arg_names_in_schema_order) | None} parsed from
+    the prompt's tool JSON. None = tool seen but no verifiable schema.
+    Order preserved (schema order) for deterministic arg synthesis."""
     marks = [(m.start(), m.group(1)) for m in _TOOL_NAME.finditer(sys_text)]
     out = {}
     for idx, (pos, name) in enumerate(marks):
@@ -132,7 +133,7 @@ def tool_schemas(sys_text: str) -> dict:
         keys = _top_keys(block[pm.end():obj_end - 1])
         if pm.re is _PARAMS:
             keys = [k for k in keys if k not in _SCHEMA_WORDS]
-        out[name] = frozenset(keys) if keys else None
+        out[name] = tuple(keys) if keys else None
     return out
 
 
@@ -190,7 +191,7 @@ def score_emission(emitted: bytes, *, tools, sys_text="", gold_name=None,
     schemas = tool_schemas(sys_text) if sys_text else {}
     if call["name"] in schemas:
         spec = schemas[call["name"]]
-        v["args_valid"] = (frozenset(k for k, _ in call["args"]) <= spec
+        v["args_valid"] = (set(k for k, _ in call["args"]) <= set(spec)
                            if spec else None)
     gold = parse_call(gold_call) if gold_call else None
     if gold is not None:

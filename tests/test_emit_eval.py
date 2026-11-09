@@ -45,8 +45,9 @@ def test_dup_class_unchanged():
 
 def test_tool_schemas():
     s = tool_schemas(SYS)
-    assert s["get_weather"] == frozenset({"city", "units"})
-    assert s["send_msg"] == frozenset({"to", "body"})
+    assert set(s["get_weather"]) == {"city", "units"}
+    assert s["get_weather"] == ("city", "units")          # order preserved
+    assert set(s["send_msg"]) == {"to", "body"}
     assert tool_schemas('{"name": "bare", "description": "d"}')["bare"] is None
 
 

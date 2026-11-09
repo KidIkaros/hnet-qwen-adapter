@@ -61,12 +61,12 @@ _EDGE = " \t\n\"'`,.;:!?()[]{}"
 
 
 def value_spans(user: str):
-    """Extractive candidates: word n-grams (n<=3) from the user query,
+    """Extractive candidates: word n-grams (n<=4) from the user query,
     edge-punctuation stripped, quotes/newlines excluded."""
     toks = [t.strip(_EDGE) for t in _WS.split(user)]
     toks = [t for t in toks if t]
     spans = []
-    for n in (1, 2, 3):
+    for n in (1, 2, 3, 4):
         for i in range(len(toks) - n + 1):
             s = " ".join(toks[i:i + n])
             if '"' not in s and "\n" not in s:
@@ -78,6 +78,9 @@ def value_spans(user: str):
             seen.add(s)
             out.append(s)
     return out[:TOP_SPANS]
+
+
+_BARE_OK = re.compile(r"^[\w./:-]+$")
 
 
 def argmax_score(pid, cands):
@@ -128,11 +131,14 @@ for k, it in enumerate(items):
         emitted += f"{comma}{aname}="
         call_ids = pid + list(emitted.encode())
 
-        # value: extractive span selection
-        vsc = argmax_score(call_ids, [f'"{s}"' for s in spans])
-        vpick = max(vsc, key=vsc.get)
-        value = vpick[1:-1]
-        emitted += f'"{value}"'
+        # value: extractive span selection — quoted form for all spans,
+        # plus bare form for digit-bearing spans (gold emits id=123 unquoted)
+        vcands = [f'"{s}"' for s in spans]
+        vcands += [s for s in spans
+                   if _BARE_OK.match(s) and any(c.isdigit() for c in s)]
+        vsc = argmax_score(call_ids, vcands) if vcands else {}
+        vpick = max(vsc, key=vsc.get) if vsc else '""'
+        emitted += vpick
         call_ids = pid + list(emitted.encode())
     else:
         emitted += ")"                          # MAX_ARGS hit, force close

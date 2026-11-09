@@ -215,3 +215,19 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   selection accuracy — teacher-ceiling run (27B prefix scoring, same slice)
   to measure achievable bound before choosing distill vs escalate.
 - Receipt: results/call_synth_1794189751.json
+
+### teacher ceiling on name selection (2026-11-08, hrun8, same slice)
+- kernel/teacher_score.py SKIP=2500 N=40: 27B Heretic-abliterated 4bit,
+  prefix-scoring protocol identical to call_synth phase A.
+- RESULT: prefix 27/27 DECLARED (100% name-selection accuracy),
+  none-picks 1 (correct abstention on undeclared), gen 11/27 (free-gen
+  format noise — not comparable).
+- vs call_synth 2B byte-scorer: ~19/27 declared (~70%).
+- VERDICT: name selection is SOLVABLE — gap is pure scorer capability,
+  not task ambiguity or pipeline design. Distillation path confirmed:
+  teacher score matrices (results/teacher_scores_*.json) are soft labels
+  for training the 2B scorer. synth-vs-teacher agreement 26/40.
+- Full pipeline now decomposed: name selection (teacher 100%, student
+  ~70% → distill), arg names (92% solved), values (~22%/arg exact,
+  extractive ceiling 66%).
+- Receipt: results/teacher_scores_1794190811.json (full score matrices)

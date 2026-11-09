@@ -84,7 +84,7 @@ _KEEP = {"os", "sys", "subprocess", "json", "time", "re", "REPO", "sh",
          "torch", "RESULTS", "stream_toolace", "calibrate_hessians",
          "trunk_linears", "gptq_quantize", "hadamard", "BITS", "ROTATE",
          "PRUNE", "N_CALIB", "BLOCK", "N_ITEMS", "VSKIP", "SKIP_BASE",
-         "MODEL", "TS", "_g"}
+         "MODEL", "TS", "_g", "_KEEP"}
 for _k in list(_g.keys()):
     if _k not in _KEEP:
         _g.pop(_k, None)

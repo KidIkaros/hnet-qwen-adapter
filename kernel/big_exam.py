@@ -65,9 +65,10 @@ _g = globals()
 # Whitelist eviction: anything not needed for phase-2 dies. compress_trunk
 # leaves `flat`/`blocks`/`targets` holding all 256 Linear modules — an
 # allowlist-pop missed them once and pinned ~35GB, OOMing the reload.
-_KEEP = {"items", "_exam", "_evict", "_load", "sh", "stream_toolace",
-         "RESULTS", "torch", "json", "os", "sys", "subprocess", "time",
-         "gc", "SKIP", "N", "RELOAD_BASE", "MODE", "MODEL", "TS", "_g"}
+_KEEP = {"items", "_exam", "_evict", "_load", "_KEEP", "sh",
+         "stream_toolace", "RESULTS", "torch", "json", "os", "sys",
+         "subprocess", "time", "gc", "SKIP", "N", "RELOAD_BASE", "MODE",
+         "MODEL", "TS", "_g"}
 
 
 def _evict():

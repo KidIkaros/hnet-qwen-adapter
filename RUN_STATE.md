@@ -335,3 +335,24 @@ EVAL ORDER on hrun9 after compress_trunk saves artifact:
   5. bfcl_name_eval + trunk_call_eval SKIP=0 N=100 on fresh = base refs
 PASS = quant≈fresh delta small AND absolute numbers respectable;
 replacement-vs-2B decision is a separate later comparison.
+
+### EVAL GATE results on resident quant (2026-11-09, hrun9)
+Artifact: /content/qt/quant27b-gptq4-toolace (51G bf16-dequantized,
+saved by compress_trunk SAVE_DIR; manifest written).
+
+1. trunk_call_eval (ToolACE pinned 40, trunk scorer):
+     tool_valid 34/40 answered | args_valid 34 | gold_match 3/40
+     abstained 6 | declared n=27: name_acc 25/25 = 100%
+   vs 2B call_synth: name ~49-70%, gold_match 3/40.
+   VERDICT: trunk dominates name selection; gold_match tied at the
+   extractive-value ceiling (same bottleneck as teacher's 6/27).
+   Receipt: results/trunk_call_1794222836.json
+
+2. bfcl_name_eval (official BFCL v3, quant):
+     simple 100/100 = 100% | multiple 88/100 = 88% | TOTAL 188/200
+   Misses are near-miss confusions (store.find_nearby vs
+   library.find_nearby), zero hallucinated names.
+   Receipt: results/bfcl_name_1794223782.json
+
+3. bfcl_call_eval (Phase B full pipeline) — RUNNING.
+4. big_exam MODE=base (fresh-bf16 delta) — pending.

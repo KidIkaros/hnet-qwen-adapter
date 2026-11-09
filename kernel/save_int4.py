@@ -79,7 +79,9 @@ _g = globals()
 _KEEP = {"sh", "stream_toolace", "RESULTS", "torch", "json", "os", "sys",
          "subprocess", "time", "gc", "BITS", "N_CALIB", "BLOCK", "OUT_DIR",
          "SHARD_GB", "N_ITEMS", "VSKIP", "MODEL", "TS", "BASE_SUFFIXES",
-         "EXTRA_SUFFIXES", "_g", "_KEEP"}
+         "EXTRA_SUFFIXES", "_g", "_KEEP",
+         "calibrate_hessians", "gptq_quantize_int", "pack_nibbles",
+         "dequant_int"}
 
 
 def _evict():

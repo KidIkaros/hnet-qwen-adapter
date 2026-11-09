@@ -163,3 +163,17 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   Glial/onset gate's real target = predict ungrounded emission
   (tool_valid failure), a semantic label no regex names.
 - Receipts: results/emit_score_{base,constrain}_*.json (this slice).
+
+### emit_score goldname decomposition (2026-11-08, hrun8, same slice)
+- MODE=goldname forces `gold(` prefix — isolates arg generation from selection.
+- RESULT: free-gen vs name-forced on n=40:
+    tool_valid  6→27 (by construction)   args_valid 4→6   gold_match 1→1   loops 19→16
+- Forcing the correct name changed NOTHING about correctness. Model invents
+  arg names not in schema (angle=15×N, check_vowel="e" self-dup), argdup
+  loops persist inside args; values wrong even when names valid.
+- VERDICT: free-generation of tool calls is non-viable at EVERY level
+  (name, args, values) — loops were a symptom of schema-space flailing.
+  Architecture must make every level a closed-set problem: name from list,
+  arg names from per-tool schema set, values extractive (query spans) or
+  scored candidates. Model role = query understanding; structure = schema.
+- Receipt: results/emit_score_goldname_1794183844.json

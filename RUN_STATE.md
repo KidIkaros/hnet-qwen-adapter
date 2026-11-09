@@ -292,3 +292,19 @@ glaive .10 | toolace .10 | replay .05 | cc .05 | enwik8 .05
   behavior level. Next: (1) arg/value-level exams on quantized trunk,
   (2) packed artifact for real size measurement, (3) H-Net refit on the
   compressed host, (4) larger pinned exam (500+) before capability claims.
+
+### big_exam 500-item saturation check (2026-11-09, hrun9) — resident=quant
+- kernel/big_exam.py: same prefix-scoring protocol, fresh slice
+  SKIP=0 N=500 (283 declared-gold items — much harder than pinned 40).
+- RESIDENT phase (GPTQ-4bit quantized trunk):
+    right 270/500 | declared 283 | decl_right 270/283 = 95.4%
+    none-abstains 49 | wrong-name picks 13 (all near-miss confusions:
+    getExhibitionDetails vs getExhibition etc.) | 0 abstains on declared
+- Saturation concern RESOLVED: pinned-40 27/27 was partly slice easiness;
+  on 283 fresh declared items quant holds 95.4%. Phase-2 fresh-bf16
+  base OOM'd (evict blacklist missed flat/blocks module refs -> 35GB
+  pinned); fixed via whitelist _evict + MODE env; base rerun pending.
+- INCIDENT: quantized model later evicted by crashed phase-2 before
+  save_quant could persist it -> compress_trunk rerun in flight with
+  SAVE_DIR to persist artifact in the same run.
+- Receipt: results/big_exam_1794217042_resident.json

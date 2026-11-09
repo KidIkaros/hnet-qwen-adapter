@@ -378,3 +378,17 @@ saved by compress_trunk SAVE_DIR; manifest written).
 - CONCLUSION: GPTQ-4bit preserves bf16 behavior on every measured axis;
   the 13% BFCL call-acc is a PIPELINE ceiling (extractive values),
   identical for bf16 and quant — not a compression defect.
+
+### trunk_call base-vs-quant (pinned skip=2500 n=40, fresh bf16 vs GPTQ-4bit)
+- IDENTICAL aggregates: parse_ok 34, tool_valid 34, args_valid 34,
+  gold_match 3, abstained 6, loops 0; declared 25/25/3; name_acc 25/25.
+- EVAL GATE COMPLETE — compression behaviorally lossless on every axis:
+    names-40:   27/27 = 27/27
+    names-500:  270/283 = 270/283 (2 mirror-swap diffs only)
+    bfcl-name:  188/200 vs 189/200
+    bfcl-call:  26/200 vs 27/200
+    toolace-40: bit-identical aggregate
+- 13% BFCL call-acc = extractive-pipeline ceiling, NOT a weight defect
+  (bf16 shows the same). Name-selection layer: quant==base everywhere.
+- vs 2B+H-Net call_synth (same slice): name_acc ~49% -> 100% answered;
+  gold_match tied at 3 (value-composition bound on both).

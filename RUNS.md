@@ -48,3 +48,10 @@
   enwik8 8.81 / held 9.35 = expected pre-train regime (0.8B adapters-only
   was ~7.7; trained 2B = 1.4317). Training is the required next step.
 - EVAL partial: int4 MMLU-5shot 932/1140 = 81.75% (strong; bf16+HE pending)
+
+## 2026-11-09 — hnet-train27b crash+fix (zstd)
+- first spawn fc-01M70N5T985EMJ2KYE88WYF1BC died at corpus_stream:
+  datasets can't read dolma3.5_pool zstd shards w/o zstandard pkg
+  (colab had it implicitly). Fit+load succeeded before crash (~6min lost).
+- fix: +zstandard to image; respawned fc-01M70P6HE2KTWF7QBS007AXY7G
+  app ap-ItfmIakRCc1M7PIHi0j3Rg, same params (enc4 dec4 N=1000)

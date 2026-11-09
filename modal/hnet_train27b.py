@@ -21,7 +21,7 @@ image = (
     .apt_install("git")
     .pip_install("torch", "transformers", "safetensors", "accelerate",
                  "huggingface_hub", "datasets", "numpy", "pyarrow", "pandas",
-                 "flash-linear-attention")
+                 "zstandard", "flash-linear-attention")
     .add_local_dir("src", "/root/repo/src")
     .add_local_dir("data", "/root/repo/data")
 )

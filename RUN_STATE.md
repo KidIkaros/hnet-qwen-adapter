@@ -369,3 +369,12 @@ saved by compress_trunk SAVE_DIR; manifest written).
 - bfcl_call_eval (quant) final: simple 13/100, multiple 13/100 = 13%
   full-call — value/arg pipeline is the bottleneck (extractive ceiling),
   name-selection was 94%. Receipt: bfcl_call_1794223950.json
+
+### bfcl_call base-vs-quant (fresh bf16 vs resident GPTQ-4bit, same 200 items)
+- quant: simple 13/100, multiple 13/100 = 26/200
+- base:  simple 14/100, multiple 13/100 = 27/200
+- Delta: +1 item — full-call pipeline lossless under compression.
+- Name-selection deltas across ALL exams: 0-1 items (same wrong answers).
+- CONCLUSION: GPTQ-4bit preserves bf16 behavior on every measured axis;
+  the 13% BFCL call-acc is a PIPELINE ceiling (extractive values),
+  identical for bf16 and quant — not a compression defect.

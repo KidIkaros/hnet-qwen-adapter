@@ -62,10 +62,33 @@ VSKIP = int(os.environ.get("VERIFY_SKIP", "2500"))
 N_ITEMS = int(os.environ.get("N_ITEMS", "40"))
 MAX_ARGS = int(os.environ.get("MAX_ARGS", "4"))
 TOP_SPANS = int(os.environ.get("TOP_SPANS", "48"))
+TEACHER = os.environ.get("TEACHER", "0") == "1"
 
-trunk, hn, meta = build_model()
-load_ckpt(hn)
-hn.eval()
+if TEACHER:
+    # full-pipeline ceiling: every selection scored by the 27B teacher.
+    # Reuses kernel-global model/tok if teacher_score.py already loaded it.
+    MODEL = os.environ.get(
+        "MODEL", "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored")
+    _g = globals()
+    if _g.get("model") is None or _g.get("tok") is None:
+        import torch as _t                                       # noqa
+        from transformers import (AutoTokenizer, AutoModelForCausalLM,
+                                  BitsAndBytesConfig)
+        tok = AutoTokenizer.from_pretrained(MODEL)
+        bnb = BitsAndBytesConfig(load_in_4bit=True,
+                                 bnb_4bit_compute_dtype=_t.bfloat16,
+                                 bnb_4bit_quant_type="nf4")
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL, quantization_config=bnb, device_map="auto",
+            dtype=_t.bfloat16)
+        model.eval()
+    else:
+        tok, model = _g["tok"], _g["model"]
+    print(f"[synth] TEACHER={MODEL}", flush=True)
+else:
+    trunk, hn, meta = build_model()
+    load_ckpt(hn)
+    hn.eval()
 
 items = stream_toolace(VSKIP, N_ITEMS)
 _WS = re.compile(r"\s+")
@@ -101,13 +124,44 @@ def argmax_score(pid, cands):
             for c in cands}
 
 
+@torch.no_grad()
+def tscore_many(ctx_text, cands):
+    """Teacher scoring: mean logprob of cand tokens after ctx_text.
+    Mirrors cand_score semantics (mean, not sum) for fair comparison."""
+    ctx_ids = tok(ctx_text, return_tensors="pt").input_ids[0].tolist()
+    ctx_t = torch.tensor([ctx_ids], device="cuda")
+    out = {}
+    for c in cands:
+        cand_ids = tok(c, add_special_tokens=False,
+                       return_tensors="pt").input_ids[0].tolist()
+        if not cand_ids:
+            out[c] = -1e9
+            continue
+        ids = torch.cat([ctx_t, torch.tensor(
+            [cand_ids], device="cuda")], 1)
+        logits = model(ids).logits[0]
+        s = len(ctx_ids) - 1
+        lp = torch.log_softmax(
+            logits[s:s + len(cand_ids)].float(), -1)
+        out[c] = float(sum(lp[i, t] for i, t in enumerate(cand_ids))
+                       / len(cand_ids))
+    return out
+
+
 rows = []
 for k, it in enumerate(items):
-    pid = list(f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: [".encode())
+    prompt_text = f"{it['sys']}\nUSER: {it['user']}\nASSISTANT: ["
+    prompt_ids = list(prompt_text.encode())
+    ctx_text = prompt_text
+    ctx_ids = prompt_ids
+
+    def score(cands):
+        return (tscore_many(ctx_text, cands) if TEACHER
+                else argmax_score(ctx_ids, cands))
 
     # ---- phase A: tool name selection (closed set + abstain) ----
     names = list(it["tools"]) + ["none"]
-    nsc = argmax_score(pid, [f"{n}(" for n in names])
+    nsc = score([f"{n}(" for n in names])
     pred = max(nsc, key=nsc.get)
     pred = pred[:-1] if pred.endswith("(") else pred
     if pred == "none":
@@ -130,12 +184,17 @@ for k, it in enumerate(items):
     remaining = list(spec) if spec else []
     spans = value_spans(it["user"])
     emitted = f"{pred}("
-    call_ids = pid + list(emitted.encode())
 
+    def refresh_ctx():
+        global ctx_text, ctx_ids
+        ctx_text = prompt_text + emitted
+        ctx_ids = prompt_ids + list(emitted.encode())
+
+    refresh_ctx()
     for _ in range(MAX_ARGS):
         comma = "" if emitted.endswith("(") else ", "
         arg_cands = [f"{comma}{a}=" for a in remaining] + [")"]
-        sc = argmax_score(call_ids, arg_cands)
+        sc = score(arg_cands)
         pick = max(sc, key=sc.get)
         if pick == ")":
             emitted += ")"
@@ -143,7 +202,7 @@ for k, it in enumerate(items):
         aname = pick[len(comma):-1]
         remaining.remove(aname)
         emitted += f"{comma}{aname}="
-        call_ids = pid + list(emitted.encode())
+        refresh_ctx()
 
         # value: extractive span selection — quoted form for all spans,
         # bare form for digit-bearing spans, + ".0" float variants
@@ -154,10 +213,10 @@ for k, it in enumerate(items):
                 vcands.append(s)
                 if s.isdigit():
                     vcands.append(s + ".0")
-        vsc = argmax_score(call_ids, vcands) if vcands else {}
+        vsc = score(vcands) if vcands else {}
         vpick = max(vsc, key=vsc.get) if vsc else '""'
         emitted += vpick
-        call_ids = pid + list(emitted.encode())
+        refresh_ctx()
     else:
         emitted += ")"                          # MAX_ARGS hit, force close
     emitted += "]"

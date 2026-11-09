@@ -18,3 +18,11 @@
   (14 files: 5 int4 shards + INT4_MANIFEST + PACKED_RECEIPT + README)
 - receipt: results/int4_modal_1794241315.json
 - runtime ~15min total vs ~90min Colab estimate (GPU-side X^T X was the win)
+
+## 2026-11-09 — Modal preservation checkpoint
+- ALL apps confirmed stopped (0 tasks, 0 running) — zero GPU spend
+- volumes KEPT per user decision: hnet-artifacts (~18GB, verified
+  duplicate of HF repo), hnet-hf-cache (~54GB base-model cache for
+  fast restart ~10min saved on next run)
+- restart path: modal deploy modal/hnet_int4.py + spawn, or new driver
+  reusing volumes; HF repo KidIkaros/qwen27b-int4-toolace is canonical

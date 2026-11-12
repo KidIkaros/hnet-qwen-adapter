@@ -589,3 +589,33 @@
      `s2_generate_embeds`, `s2_generate_ids`, bundle writer, and metrics
      cell against a synthetic `GraniteForCausalLM` (60/60 pytest pass,
      preflight 0 issues).
+
+## twil-depth-probe v2 — 2025-11-12 — verdict: injection destructive, hypothesis untested in intended form
+
+- **Run:** `mauricew/twil-depth-probe` v2, ~75 min on 2xT4. Artifacts in
+  `reports/runs/twil-depth-probe-v2/` (incl. `fast_states.pt`, 100 vectors).
+- **Mechanics:** Leg-0 smoke gate passed both generate paths; item-0 parity
+  gate passed (`pred=Get Hot Products conf=0.6560`); all 100 `FAST_STATE`
+  vectors rebuilt in ~2.5m; **Arm C ran 51/100 items with 0 errors** — the
+  v1 `inputs_embeds=` fix held end-to-end. C stopped at the 65-min wall
+  (77.8s/item); B had no new C-matched items to run (C covered 0..50, all
+  already in B's archived 0..60), so paired n=51.
+- **Arm C output:** degenerate repetition on every item — `"1. 1. 1. ..."`,
+  `"for for for ..."`, or 768 newlines. 0/51 emitted a parseable call,
+  `c_think_rate=0`. The 4 identity-projected soft prefix tokens (raw
+  hidden-state vector in embedding space) corrupted the entire deliberate
+  pass.
+- **Paired metrics (B vs C on the 51 C-completed items):**
+  - S1-wrong (n=27): `b_recovery_paired=0.111`, `c_recovery_paired=0.0`.
+  - S1-right (n=24): `b_breakage_paired=0.458`, `c_breakage_paired=1.0`.
+  - `depth_pass=False`, `think_is_depth=False`,
+    `conditioning_neutral=False` — where "not neutral" means actively
+    destructive, not informative.
+- **Established:** (1) unconditioned think is net-negative for the 4th
+  independent time (11% recovery / 46% breakage paired); (2) raw
+  hidden-state vectors cannot be dropped into the input stream — the
+  conditioning interface must be learned (or text-level), not identity.
+- **NOT established:** whether fast-state *information* helps same-trunk
+  deliberation — the v0 probe tested a broken interface. Next probes:
+  text-level conditioning (fast decision injected as prompt words, no
+  training) vs a learned soft-token projection.

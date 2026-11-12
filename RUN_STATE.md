@@ -675,3 +675,21 @@ saved by compress_trunk SAVE_DIR; manifest written).
 - Path A's adapter result stands as the proven byte-input mechanism.
 - Open problem on both: outcome channel (tool success/failure, user correction) —
   no run has seen one yet.
+
+## 2025-11-12 — twil-depth-probe v2 result (paired B/C, n=51)
+- **Mechanics fixed and held**: `inputs_embeds=` keyword path ran 51/100
+  items with 0 errors; Leg-0 smoke gate + item-0 parity gate both passed;
+  `fast_states.pt` (100 vectors) archived to reports/runs/twil-depth-probe-v2/.
+- **Arm C output: degenerate repetition on every item** ("1. 1. 1. ...",
+  blank lines) — 0/51 parseable calls, 77.8s/item. Identity-projected
+  hidden-state vectors as soft prefix tokens are in activation space, not
+  embedding space; the injection corrupts the whole deliberate pass.
+- **Paired verdicts**: depth_pass=False (c_recovery 0/27), think_is_depth=False
+  (b_recovery_paired 0.111 vs b_breakage_paired 0.458 — 4th confirmation
+  unconditioned think is net-negative), conditioning_neutral=False in the
+  destructive direction (c_breakage_paired 1.0).
+- **Implication**: the conditioning interface must be learned or symbolic —
+  raw state injection is not a viable v0. Open next probes:
+  (a) text-level conditioning (fast decision as prompt words; no training,
+      separates "info useless" from "interface broken");
+  (b) learned soft-token projection h_fast -> e_soft (the real mechanism).

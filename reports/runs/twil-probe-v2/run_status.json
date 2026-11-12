@@ -1,0 +1,56 @@
+{
+ "kernel": "twil-probe-v1",
+ "lane": "gpu-2xt4",
+ "legs": {
+  "A": "interface",
+  "B": "byte-bpb",
+  "C": "toolcall",
+  "D": "lsa-stubbed"
+ },
+ "errors": [],
+ "legB": {
+  "markdown": {
+   "bytes": 11190,
+   "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+  },
+  "prose": {
+   "bytes": 15330,
+   "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+  },
+  "code": {
+   "bytes": 13500,
+   "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+  },
+  "effective_markdown": {
+   "doc": "markdown",
+   "bytes": 8192,
+   "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 8.00 GiB. GPU 0 has a total capacity of 14.56 GiB of which 4.33 GiB is free. Including non-PyTorch memory, this process has 10.22 GiB memory in use. Of the allocated memory 9.58 GiB is allocated by PyTorch, and 533.54 MiB is reserved by PyTorch but unallocated. "
+  }
+ },
+ "legC": {
+  "S1_format_valid": 1.0,
+  "S1_name_acc": 1.0,
+  "S1_mean_gen_s": 5.6000000000000005,
+  "S2_format_valid": 0.9166666666666666,
+  "S2_name_acc": 0.9166666666666666,
+  "S2_mean_gen_s": 18.466666666666665,
+  "S2_think_rate": 0.0
+ },
+ "legA_interface": {
+  "inputs_embeds": "ok",
+  "logits_to_keep": "ok",
+  "probe_logits_shape": [
+   1,
+   4,
+   100352
+  ]
+ },
+ "legA_coverage": {
+  "byte_coverage": 207,
+  "missing_printable": []
+ },
+ "gpus": [
+  "Tesla T4",
+  "Tesla T4"
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "results": [
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 3.3555640757995353,
+   "n_preds": 4095
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 3.1894750463862467,
+   "n_preds": 4095
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 3.3275817742213536,
+   "n_preds": 4095
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 3.5768871996099856,
+   "n_preds": 4095
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 2.9141305922729006,
+   "n_preds": 4059
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 2.6324346158992142,
+   "n_preds": 4008
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 2.546884342356831,
+   "n_preds": 4082
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 2.995743176316527,
+   "n_preds": 4095
+  },
+  {
+   "domain": "toolace",
+   "bpb": 4.014714599330337,
+   "n_preds": 719
+  },
+  {
+   "domain": "toolace",
+   "bpb": 4.010936536356323,
+   "n_preds": 678
+  },
+  {
+   "domain": "toolace",
+   "bpb": 4.595730378849329,
+   "n_preds": 1204
+  },
+  {
+   "domain": "toolace",
+   "bpb": 4.46302433383769,
+   "n_preds": 974
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 7.44233626377149,
+   "n_preds": 3127
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 3.977749058495447,
+   "n_preds": 3981
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 3.089274628365284,
+   "n_preds": 4093
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 3.3320748905167004,
+   "n_preds": 4093
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 4.327393750398437,
+   "n_preds": 4093
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 4.2626360890290576,
+   "n_preds": 4092
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 4.090372083511994,
+   "n_preds": 4091
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 4.155458876441648,
+   "n_preds": 4085
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 4.367577842129043,
+   "n_preds": 4084
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 4.284061506517374,
+   "n_preds": 4093
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 4.345826309878529,
+   "n_preds": 4091
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 3.7758212236191064,
+   "n_preds": 4095
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 3.758087394317619,
+   "n_preds": 4089
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 3.653322505184875,
+   "n_preds": 4094
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 3.920535527191592,
+   "n_preds": 4088
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 4.243464756947319,
+   "n_preds": 4089
+  }
+ ],
+ "overall": 3.8803
+}

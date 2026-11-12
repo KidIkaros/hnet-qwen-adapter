@@ -1,0 +1,39 @@
+{
+ "L1": {
+  "tool_acc": 0.6666666666666666,
+  "n": 60,
+  "risk_coverage": {
+   "acc@50pct_cov": 0.6333333333333333,
+   "acc@70pct_cov": 0.7142857142857143,
+   "acc@90pct_cov": 0.7222222222222222,
+   "acc@100pct_cov": 0.6666666666666666
+  },
+  "ready_brier": 0.19474854225,
+  "ready_ece": 0.08040749999999999,
+  "probes": {
+   "corrupt_unbound": 0,
+   "corrupt_n": 20,
+   "shuffled_unbound": 0,
+   "shuffled_n": 20
+  }
+ },
+ "L2": {
+  "tool_acc": 0.65,
+  "n": 60,
+  "risk_coverage": {
+   "acc@50pct_cov": 0.6333333333333333,
+   "acc@70pct_cov": 0.7142857142857143,
+   "acc@90pct_cov": 0.6666666666666666,
+   "acc@100pct_cov": 0.65
+  },
+  "route_counts": {
+   "review": 5,
+   "auto": 55
+  },
+  "auto_acc": 0.6545454545454545,
+  "review_n": 5,
+  "conformal_gold_coverage": 0.65,
+  "conformal_mean_setsize": 1.0833333333333333
+ },
+ "L3": {}
+}

@@ -80,8 +80,9 @@ def run_train(n_train=1000, epochs=1, lr=1e-4, enc_layers=4, dec_layers=4,
     from src.corpus import byte_token_map
     from src.adapter import ByteHead
     from src.hnet import HNetQwen
-    from src.factory import (build_hnet, fit_adapters, doc_bpb, enwik8,
-                             periodic, corpus_stream, DOLMA_MIX)
+    from src.factory import (build_hnet, doc_bpb, enwik8, fit_adapters,
+                             periodic)
+    from src.corpus_stream import DOLMA_MIX, corpus_stream
 
     text = model.model if hasattr(model, "model") else model.language_model
     if not hasattr(text, "layers"):

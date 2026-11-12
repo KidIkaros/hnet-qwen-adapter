@@ -1,0 +1,1090 @@
+[
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Songkick Concert API",
+  "conf": 0.9907,
+  "margin": 0.9875,
+  "entropy": 0.0648,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Songkick Concert API"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.988>=0.5 -> confident",
+  "i": 0,
+  "gold": "Songkick Concert API",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Prostring",
+  "conf": 0.9919,
+  "margin": 0.9866,
+  "entropy": 0.0521,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Prostring"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.987>=0.5 -> confident",
+  "i": 1,
+  "gold": "Prostring",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Airport Direct Routes",
+  "conf": 0.9192,
+  "margin": 0.8661,
+  "entropy": 0.3514,
+  "n_candidates": 4,
+  "prediction_set": [
+   "Airport Direct Routes"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.866>=0.5 -> confident",
+  "i": 2,
+  "gold": "Airport Direct Routes",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "CaseOutcomeAnalysis.predictOutcome",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "CaseOutcomeAnalysis.predictOutcome"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 3,
+  "gold": "predictOutcome",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Upgrade Downgrade History",
+  "conf": 0.9915,
+  "margin": 0.9864,
+  "entropy": 0.0545,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Upgrade Downgrade History"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.986>=0.5 -> confident",
+  "i": 4,
+  "gold": "Upgrade Downgrade History",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "dining.table_setting_guide",
+  "conf": 0.5751,
+  "margin": 0.1502,
+  "entropy": 0.6818,
+  "n_candidates": 2,
+  "prediction_set": [
+   "dining.table_setting_guide"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.150<0.2 -> unreliable",
+  "i": 5,
+  "gold": "table_setting_guide",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "checkSafetyCompliance",
+  "conf": 0.8482,
+  "margin": 0.7775,
+  "entropy": 0.5916,
+  "n_candidates": 6,
+  "prediction_set": [
+   "checkSafetyCompliance"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.778>=0.5 -> confident",
+  "i": 6,
+  "gold": "checkSafetyCompliance",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "carRental",
+  "conf": 0.3384,
+  "margin": 0.0016,
+  "entropy": 1.0984,
+  "n_candidates": 3,
+  "prediction_set": [
+   "carRental",
+   "flightBooking",
+   "bookFlight"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.002<0.2 -> unreliable",
+  "i": 7,
+  "gold": "bookFlight",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get SoundCloud Station Details",
+  "conf": 0.98,
+  "margin": 0.975,
+  "entropy": 0.1301,
+  "n_candidates": 6,
+  "prediction_set": [
+   "Get SoundCloud Station Details"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.975>=0.5 -> confident",
+  "i": 8,
+  "gold": "Get SoundCloud Station Details",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "RenewableEnergyForecast.getForecast",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "RenewableEnergyForecast.getForecast"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 9,
+  "gold": "getForecast",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Football Team Roster",
+  "conf": 0.9917,
+  "margin": 0.9873,
+  "entropy": 0.0562,
+  "n_candidates": 4,
+  "prediction_set": [
+   "Get Football Team Roster"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.987>=0.5 -> confident",
+  "i": 10,
+  "gold": "Get Football Team Roster",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "fetchStockClosingPrices",
+  "conf": 0.5567,
+  "margin": 0.1134,
+  "entropy": 0.6867,
+  "n_candidates": 2,
+  "prediction_set": [
+   "fetchStockClosingPrices"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.113<0.2 -> unreliable",
+  "i": 11,
+  "gold": "fetchStockClosingPrices",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Baseball Categories",
+  "conf": 0.7687,
+  "margin": 0.6633,
+  "entropy": 0.7884,
+  "n_candidates": 6,
+  "prediction_set": [
+   "Get Baseball Categories"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.663>=0.5 -> confident",
+  "i": 12,
+  "gold": "Get Baseball Categories",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "1 Hour / Minutely Forecast (Nowcast)",
+  "conf": 0.9815,
+  "margin": 0.9704,
+  "entropy": 0.1045,
+  "n_candidates": 3,
+  "prediction_set": [
+   "1 Hour / Minutely Forecast (Nowcast)"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.970>=0.5 -> confident",
+  "i": 13,
+  "gold": "Minutely Forecast",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "Earthquake Availability Check",
+  "conf": 0.575,
+  "margin": 0.2721,
+  "entropy": 1.0433,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Earthquake Availability Check"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.272 in [0.2,0.5) -> uncertain",
+  "i": 14,
+  "gold": "Earthquakes",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Current Air Quality API",
+  "conf": 0.7674,
+  "margin": 0.5857,
+  "entropy": 0.6647,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Current Air Quality API"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.586>=0.5 -> confident",
+  "i": 15,
+  "gold": "Current Air Quality API",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get states by census region",
+  "conf": 0.994,
+  "margin": 0.9898,
+  "entropy": 0.0402,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Get states by census region"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.990>=0.5 -> confident",
+  "i": 16,
+  "gold": "Get states by census region",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Validation API",
+  "conf": 0.4915,
+  "margin": 0.0979,
+  "entropy": 0.9647,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Validation API",
+   "Get Quran Chapter Information"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.098<0.2 -> unreliable",
+  "i": 17,
+  "gold": "Get Quran Chapter Information",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "get_complementary_color",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "get_complementary_color"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 18,
+  "gold": "get_complementary_color",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Get API Documentation",
+  "conf": 0.3899,
+  "margin": 0.0892,
+  "entropy": 1.3383,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Get API Documentation",
+   "Get Geo Location Of IP Address"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.089<0.2 -> unreliable",
+  "i": 19,
+  "gold": "Get Geo Location Of IP Address",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Create a Live Stream",
+  "conf": 0.955,
+  "margin": 0.9344,
+  "entropy": 0.2361,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Create a Live Stream"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.934>=0.5 -> confident",
+  "i": 20,
+  "gold": "Create a Live Stream",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "GetDocumentRedactionAnnotations",
+  "conf": 0.972,
+  "margin": 0.9622,
+  "entropy": 0.165,
+  "n_candidates": 5,
+  "prediction_set": [
+   "GetDocumentRedactionAnnotations"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.962>=0.5 -> confident",
+  "i": 21,
+  "gold": "GetDocumentRedactionAnnotations",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "getHadoopLogs",
+  "conf": 0.9636,
+  "margin": 0.9477,
+  "entropy": 0.1951,
+  "n_candidates": 4,
+  "prediction_set": [
+   "getHadoopLogs"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.948>=0.5 -> confident",
+  "i": 22,
+  "gold": "getHadoopLogs",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "Basketballv3Rankings",
+  "conf": 0.71,
+  "margin": 0.4629,
+  "entropy": 0.7622,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Basketballv3Rankings"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.463 in [0.2,0.5) -> uncertain",
+  "i": 23,
+  "gold": "Basketballv3Rankings",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "GetPageFreeTextAnnotations",
+  "conf": 0.9898,
+  "margin": 0.9839,
+  "entropy": 0.0637,
+  "n_candidates": 3,
+  "prediction_set": [
+   "GetPageFreeTextAnnotations"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.984>=0.5 -> confident",
+  "i": 24,
+  "gold": "GetPageFreeTextAnnotations",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Crime Rates by ZIP",
+  "conf": 0.9882,
+  "margin": 0.9818,
+  "entropy": 0.0759,
+  "n_candidates": 4,
+  "prediction_set": [
+   "Get Crime Rates by ZIP"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.982>=0.5 -> confident",
+  "i": 25,
+  "gold": "Get Crime Rates by ZIP",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "find-non-secure-pages",
+  "conf": 0.9891,
+  "margin": 0.9828,
+  "entropy": 0.0678,
+  "n_candidates": 3,
+  "prediction_set": [
+   "find-non-secure-pages"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.983>=0.5 -> confident",
+  "i": 26,
+  "gold": "pages",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Address",
+  "conf": 0.9189,
+  "margin": 0.8774,
+  "entropy": 0.3648,
+  "n_candidates": 4,
+  "prediction_set": [
+   "Get Address"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.877>=0.5 -> confident",
+  "i": 27,
+  "gold": "Get Address",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "parenting.single_parent_support_groups",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "parenting.single_parent_support_groups"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 28,
+  "gold": "single_parent_support_groups",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "create_reminder",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "create_reminder"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 29,
+  "gold": "create_reminder",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "LanguageDetection",
+  "conf": 0.6712,
+  "margin": 0.4712,
+  "entropy": 0.969,
+  "n_candidates": 5,
+  "prediction_set": [
+   "LanguageDetection"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.471 in [0.2,0.5) -> uncertain",
+  "i": 30,
+  "gold": "LanguageDetection",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Get Vehicle Trim",
+  "conf": 0.5416,
+  "margin": 0.1141,
+  "entropy": 0.8556,
+  "n_candidates": 8,
+  "prediction_set": [
+   "Get Vehicle Trim"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.114<0.2 -> unreliable",
+  "i": 31,
+  "gold": "Get Vehicle Trim",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Detection Objects as Json by Image URL",
+  "conf": 0.9359,
+  "margin": 0.9064,
+  "entropy": 0.3298,
+  "n_candidates": 6,
+  "prediction_set": [
+   "Detection Objects as Json by Image URL"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.906>=0.5 -> confident",
+  "i": 32,
+  "gold": "Detection Objects as Json by Image URL",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "GetEarthquakeTypes",
+  "conf": 0.9908,
+  "margin": 0.9876,
+  "entropy": 0.0624,
+  "n_candidates": 4,
+  "prediction_set": [
+   "GetEarthquakeTypes"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.988>=0.5 -> confident",
+  "i": 33,
+  "gold": "GetEarthquakeTypes",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "PokerChipDistribution.calculateDistribution",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "PokerChipDistribution.calculateDistribution"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 34,
+  "gold": "calculateDistribution",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "checkEMCRadiation",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "checkEMCRadiation"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 35,
+  "gold": "checkEMCRadiation",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Tennis Player or Team Near Events",
+  "conf": 0.9882,
+  "margin": 0.9801,
+  "entropy": 0.0714,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Tennis Player or Team Near Events"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.980>=0.5 -> confident",
+  "i": 36,
+  "gold": "Tennis Player or Team Near Events",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get NFT Collections",
+  "conf": 0.9825,
+  "margin": 0.9746,
+  "entropy": 0.1099,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Get NFT Collections"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.975>=0.5 -> confident",
+  "i": 37,
+  "gold": "Get NFT Collections",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "Australia Songs",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "Australia Songs"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 38,
+  "gold": "Australia Songs",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "TreatmentEffectivenessAnalyzer.analyzePatientResponse",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "TreatmentEffectivenessAnalyzer.analyzePatientResponse"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 39,
+  "gold": "analyzePatientResponse",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "check_visa_requirements",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "check_visa_requirements"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 40,
+  "gold": "check_visa_requirements",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "reputation_monitor",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "reputation_monitor"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 41,
+  "gold": "reputation_monitor",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Target Store Location Search",
+  "conf": 0.358,
+  "margin": 0.0255,
+  "entropy": 1.2632,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Target Store Location Search",
+   "Get Amazon Search Results",
+   "Search Products"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.026<0.2 -> unreliable",
+  "i": 42,
+  "gold": "Get Amazon Search Results",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "detectEmotion",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "detectEmotion"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 43,
+  "gold": "detectEmotion",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Media Information by Shortcode",
+  "conf": 0.9963,
+  "margin": 0.9925,
+  "entropy": 0.0247,
+  "n_candidates": 2,
+  "prediction_set": [
+   "Get Media Information by Shortcode"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.993>=0.5 -> confident",
+  "i": 44,
+  "gold": "Get Media Information by Shortcode",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "Get 3D Model Information",
+  "conf": 0.5062,
+  "margin": 0.3538,
+  "entropy": 1.368,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Get 3D Model Information"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.354 in [0.2,0.5) -> uncertain",
+  "i": 45,
+  "gold": "Get 3D Model Information",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "parseMathematicalExpression",
+  "conf": 0.7399,
+  "margin": 0.4798,
+  "entropy": 0.5732,
+  "n_candidates": 2,
+  "prediction_set": [
+   "parseMathematicalExpression"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.480 in [0.2,0.5) -> uncertain",
+  "i": 46,
+  "gold": "parseMathematicalExpression",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "QR Code Image Generator",
+  "conf": 0.9935,
+  "margin": 0.99,
+  "entropy": 0.0435,
+  "n_candidates": 3,
+  "prediction_set": [
+   "QR Code Image Generator"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.990>=0.5 -> confident",
+  "i": 47,
+  "gold": "QR Code Image Generator",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Country Sizes",
+  "conf": 0.9876,
+  "margin": 0.9813,
+  "entropy": 0.0756,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Get Country Sizes"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.981>=0.5 -> confident",
+  "i": 48,
+  "gold": "Get Country Sizes",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "insect_behavior_study",
+  "conf": 0.579,
+  "margin": 0.1579,
+  "entropy": 0.6806,
+  "n_candidates": 2,
+  "prediction_set": [
+   "insect_behavior_study"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.158<0.2 -> unreliable",
+  "i": 49,
+  "gold": "insect_identification",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Get Champions",
+  "conf": 0.3113,
+  "margin": 0.028,
+  "entropy": 1.61,
+  "n_candidates": 7,
+  "prediction_set": [
+   "Get Champions",
+   "Get All Champions"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.028<0.2 -> unreliable",
+  "i": 50,
+  "gold": "Get All Champions",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "BasketballLeagueTotalTeamEvents",
+  "conf": 0.9624,
+  "margin": 0.9326,
+  "entropy": 0.1843,
+  "n_candidates": 4,
+  "prediction_set": [
+   "BasketballLeagueTotalTeamEvents"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.933>=0.5 -> confident",
+  "i": 51,
+  "gold": "BasketballLeagueTotalTeamEvents",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Club Information",
+  "conf": 0.7942,
+  "margin": 0.6886,
+  "entropy": 0.7535,
+  "n_candidates": 8,
+  "prediction_set": [
+   "Get Club Information"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.689>=0.5 -> confident",
+  "i": 52,
+  "gold": "Get Club Information",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "GetPages",
+  "conf": 0.9878,
+  "margin": 0.9806,
+  "entropy": 0.0742,
+  "n_candidates": 3,
+  "prediction_set": [
+   "GetPages"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.981>=0.5 -> confident",
+  "i": 53,
+  "gold": "GetPages",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Generate Wifi QR Code",
+  "conf": 0.9362,
+  "margin": 0.8886,
+  "entropy": 0.2908,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Generate Wifi QR Code"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.889>=0.5 -> confident",
+  "i": 54,
+  "gold": "Generate Wifi QR Code",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "escalate",
+  "abstain": false,
+  "top": "Get User Affiliates",
+  "conf": 0.4352,
+  "margin": 0.0769,
+  "entropy": 1.2951,
+  "n_candidates": 8,
+  "prediction_set": [
+   "Get User Affiliates",
+   "Get User Stories By Public Key"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.077<0.2 -> unreliable",
+  "i": 55,
+  "gold": "Music Metadata API",
+  "correct": false,
+  "answerable": true
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "history.get_ancient_battles",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "history.get_ancient_battles"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 56,
+  "gold": "get_ancient_battles",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get User Followers",
+  "conf": 0.794,
+  "margin": 0.5973,
+  "entropy": 0.5462,
+  "n_candidates": 3,
+  "prediction_set": [
+   "Get User Followers"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.597>=0.5 -> confident",
+  "i": 57,
+  "gold": "Get User Followers",
+  "correct": true,
+  "answerable": true
+ },
+ {
+  "route": "auto",
+  "abstain": false,
+  "top": "Get Country-wise Stock Market Data",
+  "conf": 0.9422,
+  "margin": 0.9193,
+  "entropy": 0.2923,
+  "n_candidates": 5,
+  "prediction_set": [
+   "Get Country-wise Stock Market Data"
+  ],
+  "forced": false,
+  "route_reason": "margin=0.919>=0.5 -> confident",
+  "i": 58,
+  "gold": "wise Stock Market Data",
+  "correct": false,
+  "answerable": false
+ },
+ {
+  "route": "review",
+  "abstain": false,
+  "top": "communication_flow_analysis.evaluate_communication_efficiency",
+  "conf": 1.0,
+  "margin": 1.0,
+  "entropy": -0.0,
+  "n_candidates": 1,
+  "prediction_set": [
+   "communication_flow_analysis.evaluate_communication_efficiency"
+  ],
+  "forced": true,
+  "route_reason": "forced choice: 1 candidate(s) \u2014 S1 did not discriminate (conf=1.000)",
+  "i": 59,
+  "gold": "evaluate_communication_efficiency",
+  "correct": false,
+  "answerable": false
+ }
+]

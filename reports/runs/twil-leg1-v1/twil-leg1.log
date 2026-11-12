@@ -1,0 +1,148 @@
+[{"stream_name":"stderr","time":5.542891474,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":5.542934402,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":6.325659993,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.325688262,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.325693826,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.32569774,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":6.877602369,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.877629591,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.877635772,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.87764332,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":7.895058713,"data":"installing transformers==5.20.2 datasets...\n"}
+,{"stream_name":"stdout","time":10.278835141,"data":" \n"}
+,{"stream_name":"stdout","time":15.23736441,"data":"GPUs: 2 ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":15.26459406,"data":"src bundle OK\n"}
+,{"stream_name":"stdout","time":32.150334777,"data":"downloading TwIL-8B...\n"}
+,{"stream_name":"stderr","time":33.259967664,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":33.259992727,"data":"\n"}
+,{"stream_name":"stderr","time":33.259997528,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":132.568161752,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":132.568814763,"data":"  File \"\u003cstring\u003e\", line 1, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":132.568831669,"data":"    import sys;import papermill as pm;pm.execute_notebook(\"__notebook__.ipynb\",\"__notebook__.ipynb\",progress_bar=False,log_output=True,stdout_file=sys.stdout,stderr_file=sys.stderr,allow_errors=False,timeout=43200)\n"}
+,{"stream_name":"stderr","time":132.568838795,"data":"                                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":132.56884361,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/execute.py\", line 131, in execute_notebook\n"}
+,{"stream_name":"stderr","time":132.568848239,"data":"    raise_for_execution_errors(nb, output_path)\n"}
+,{"stream_name":"stderr","time":132.568852881,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":132.568857051,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/execute.py\", line 251, in raise_for_execution_errors\n"}
+,{"stream_name":"stderr","time":132.568870495,"data":"    raise error\n"}
+,{"stream_name":"stderr","time":132.568895373,"data":"papermill.exceptions.PapermillExecutionError: \n"}
+,{"stream_name":"stderr","time":132.568898741,"data":"---------------------------------------------------------------------------\n"}
+,{"stream_name":"stderr","time":132.568902328,"data":"Exception encountered at \"In [3]\":\n"}
+,{"stream_name":"stderr","time":132.568905623,"data":"---------------------------------------------------------------------------\n"}
+,{"stream_name":"stderr","time":132.568909077,"data":"RuntimeError                              Traceback (most recent call last)\n"}
+,{"stream_name":"stderr","time":132.568912863,"data":"/tmp/ipykernel_22/4233584836.py in \u003ccell line: 0\u003e()\n"}
+,{"stream_name":"stderr","time":132.568916286,"data":"     10     from huggingface_hub import snapshot_download\n"}
+,{"stream_name":"stderr","time":132.568919744,"data":"     11     print('downloading TwIL-8B...', flush=True)\n"}
+,{"stream_name":"stderr","time":132.568922804,"data":"---\u003e 12     snapshot_download('webAI-Official/TwIL-8B', local_dir=MDIR)\n"}
+,{"stream_name":"stderr","time":132.568926156,"data":"     13 tok = AutoTokenizer.from_pretrained(MDIR)\n"}
+,{"stream_name":"stderr","time":132.568929371,"data":"     14 model = AutoModelForCausalLM.from_pretrained(\n"}
+,{"stream_name":"stderr","time":132.568932717,"data":"\n"}
+,{"stream_name":"stderr","time":132.568935856,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py in _inner_fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.568939116,"data":"     87         kwargs = smoothly_deprecate_legacy_arguments(fn_name=fn.__name__, kwargs=kwargs)\n"}
+,{"stream_name":"stderr","time":132.568942476,"data":"     88 \n"}
+,{"stream_name":"stderr","time":132.568945704,"data":"---\u003e 89         return fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.568948992,"data":"     90 \n"}
+,{"stream_name":"stderr","time":132.568952443,"data":"     91     return _inner_fn  # type: ignore\n"}
+,{"stream_name":"stderr","time":132.56895605,"data":"\n"}
+,{"stream_name":"stderr","time":132.56895912,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_http.py in _inner(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.568962407,"data":"    264         token = _IS_DOWNLOAD_CALL.set(True)\n"}
+,{"stream_name":"stderr","time":132.568965586,"data":"    265         try:\n"}
+,{"stream_name":"stderr","time":132.568969067,"data":"--\u003e 266             return fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.56897244,"data":"    267         finally:\n"}
+,{"stream_name":"stderr","time":132.568975428,"data":"    268             _IS_DOWNLOAD_CALL.reset(token)\n"}
+,{"stream_name":"stderr","time":132.568978528,"data":"\n"}
+,{"stream_name":"stderr","time":132.568982269,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/_snapshot_download.py in snapshot_download(repo_id, repo_type, revision, cache_dir, local_dir, library_name, library_version, user_agent, etag_timeout, force_download, token, local_files_only, allow_patterns, ignore_patterns, max_workers, tqdm_class, headers, endpoint, dry_run)\n"}
+,{"stream_name":"stderr","time":132.568986228,"data":"    530         )\n"}
+,{"stream_name":"stderr","time":132.568989742,"data":"    531 \n"}
+,{"stream_name":"stderr","time":132.568993059,"data":"--\u003e 532     hf_thread_map(\n"}
+,{"stream_name":"stderr","time":132.568996871,"data":"    533         _inner_hf_hub_download,\n"}
+,{"stream_name":"stderr","time":132.569002466,"data":"    534         filtered_repo_files,\n"}
+,{"stream_name":"stderr","time":132.569011151,"data":"\n"}
+,{"stream_name":"stderr","time":132.569014605,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/tqdm.py in hf_thread_map(fn, iterable, max_workers, tqdm_class, **tqdm_kwargs)\n"}
+,{"stream_name":"stderr","time":132.569018074,"data":"    439         try:\n"}
+,{"stream_name":"stderr","time":132.569021317,"data":"    440             for future in as_completed(future_to_index):\n"}
+,{"stream_name":"stderr","time":132.569024717,"data":"--\u003e 441                 results[future_to_index[future]] = future.result()\n"}
+,{"stream_name":"stderr","time":132.56902916,"data":"    442                 pbar.update(1)\n"}
+,{"stream_name":"stderr","time":132.569032514,"data":"    443         except BaseException:\n"}
+,{"stream_name":"stderr","time":132.569035448,"data":"\n"}
+,{"stream_name":"stderr","time":132.569039246,"data":"/usr/lib/python3.13/concurrent/futures/_base.py in result(self, timeout)\n"}
+,{"stream_name":"stderr","time":132.569042318,"data":"    451                     raise CancelledError()\n"}
+,{"stream_name":"stderr","time":132.569045591,"data":"    452                 elif self._state == FINISHED:\n"}
+,{"stream_name":"stderr","time":132.569048669,"data":"--\u003e 453                     return self.__get_result()\n"}
+,{"stream_name":"stderr","time":132.569051936,"data":"    454 \n"}
+,{"stream_name":"stderr","time":132.569055064,"data":"    455                 self._condition.wait(timeout)\n"}
+,{"stream_name":"stderr","time":132.569058291,"data":"\n"}
+,{"stream_name":"stderr","time":132.569061313,"data":"/usr/lib/python3.13/concurrent/futures/_base.py in __get_result(self)\n"}
+,{"stream_name":"stderr","time":132.569067563,"data":"    400         if self._exception is not None:\n"}
+,{"stream_name":"stderr","time":132.56907087,"data":"    401             try:\n"}
+,{"stream_name":"stderr","time":132.569075261,"data":"--\u003e 402                 raise self._exception\n"}
+,{"stream_name":"stderr","time":132.569078556,"data":"    403             finally:\n"}
+,{"stream_name":"stderr","time":132.569082221,"data":"    404                 # Break a reference cycle with the exception in self._exception\n"}
+,{"stream_name":"stderr","time":132.569085965,"data":"\n"}
+,{"stream_name":"stderr","time":132.569088963,"data":"/usr/lib/python3.13/concurrent/futures/thread.py in run(self)\n"}
+,{"stream_name":"stderr","time":132.569092884,"data":"     57 \n"}
+,{"stream_name":"stderr","time":132.569096763,"data":"     58         try:\n"}
+,{"stream_name":"stderr","time":132.569100267,"data":"---\u003e 59             result = self.fn(*self.args, **self.kwargs)\n"}
+,{"stream_name":"stderr","time":132.569103635,"data":"     60         except BaseException as exc:\n"}
+,{"stream_name":"stderr","time":132.569106906,"data":"     61             self.future.set_exception(exc)\n"}
+,{"stream_name":"stderr","time":132.569110462,"data":"\n"}
+,{"stream_name":"stderr","time":132.569113958,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/_snapshot_download.py in _inner_hf_hub_download(repo_file)\n"}
+,{"stream_name":"stderr","time":132.569117249,"data":"    510     def _inner_hf_hub_download(repo_file: str) -\u003e None:\n"}
+,{"stream_name":"stderr","time":132.569120578,"data":"    511         results.append(\n"}
+,{"stream_name":"stderr","time":132.569124122,"data":"--\u003e 512             hf_hub_download(  # type: ignore\n"}
+,{"stream_name":"stderr","time":132.569127718,"data":"    513                 repo_id,\n"}
+,{"stream_name":"stderr","time":132.569131124,"data":"    514                 filename=repo_file,\n"}
+,{"stream_name":"stderr","time":132.569134501,"data":"\n"}
+,{"stream_name":"stderr","time":132.569141555,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py in _inner_fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.569145232,"data":"     87         kwargs = smoothly_deprecate_legacy_arguments(fn_name=fn.__name__, kwargs=kwargs)\n"}
+,{"stream_name":"stderr","time":132.569149104,"data":"     88 \n"}
+,{"stream_name":"stderr","time":132.569152789,"data":"---\u003e 89         return fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.569156436,"data":"     90 \n"}
+,{"stream_name":"stderr","time":132.569160003,"data":"     91     return _inner_fn  # type: ignore\n"}
+,{"stream_name":"stderr","time":132.569163663,"data":"\n"}
+,{"stream_name":"stderr","time":132.569167008,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_http.py in _inner(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.569170405,"data":"    264         token = _IS_DOWNLOAD_CALL.set(True)\n"}
+,{"stream_name":"stderr","time":132.569173833,"data":"    265         try:\n"}
+,{"stream_name":"stderr","time":132.569177062,"data":"--\u003e 266             return fn(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":132.569180448,"data":"    267         finally:\n"}
+,{"stream_name":"stderr","time":132.569183859,"data":"    268             _IS_DOWNLOAD_CALL.reset(token)\n"}
+,{"stream_name":"stderr","time":132.569187444,"data":"\n"}
+,{"stream_name":"stderr","time":132.569191656,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/file_download.py in hf_hub_download(repo_id, filename, subfolder, repo_type, revision, library_name, library_version, cache_dir, local_dir, user_agent, force_download, etag_timeout, token, local_files_only, headers, endpoint, tqdm_class, dry_run)\n"}
+,{"stream_name":"stderr","time":132.569196007,"data":"   1024 \n"}
+,{"stream_name":"stderr","time":132.569199358,"data":"   1025     if local_dir is not None:\n"}
+,{"stream_name":"stderr","time":132.569202825,"data":"-\u003e 1026         return _hf_hub_download_to_local_dir(\n"}
+,{"stream_name":"stderr","time":132.569206317,"data":"   1027             # Destination\n"}
+,{"stream_name":"stderr","time":132.569209696,"data":"   1028             local_dir=local_dir,\n"}
+,{"stream_name":"stderr","time":132.569213591,"data":"\n"}
+,{"stream_name":"stderr","time":132.569216764,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/file_download.py in _hf_hub_download_to_local_dir(local_dir, repo_id, repo_type, filename, revision, endpoint, etag_timeout, headers, token, cache_dir, force_download, local_files_only, tqdm_class, dry_run)\n"}
+,{"stream_name":"stderr","time":132.569220907,"data":"   1503     with WeakFileLock(paths.lock_path):\n"}
+,{"stream_name":"stderr","time":132.569224581,"data":"   1504         paths.file_path.unlink(missing_ok=True)  # delete outdated file first\n"}
+,{"stream_name":"stderr","time":132.569228234,"data":"-\u003e 1505         _download_to_tmp_and_move(\n"}
+,{"stream_name":"stderr","time":132.569231913,"data":"   1506             incomplete_path=paths.incomplete_path(etag),\n"}
+,{"stream_name":"stderr","time":132.56923569,"data":"   1507             destination_path=paths.file_path,\n"}
+,{"stream_name":"stderr","time":132.569239246,"data":"\n"}
+,{"stream_name":"stderr","time":132.569242756,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/file_download.py in _download_to_tmp_and_move(incomplete_path, destination_path, url_to_download, headers, expected_size, filename, force_download, etag, xet_file_data, tqdm_class)\n"}
+,{"stream_name":"stderr","time":132.569247115,"data":"   2014             if xet_file_data is not None and is_xet_available():\n"}
+,{"stream_name":"stderr","time":132.569253455,"data":"   2015                 logger.debug(\"Xet Storage is enabled for this repo. Downloading file from Xet Storage..\")\n"}
+,{"stream_name":"stderr","time":132.569257627,"data":"-\u003e 2016                 xet_get(\n"}
+,{"stream_name":"stderr","time":132.569261211,"data":"   2017                     incomplete_path=tmp_path,\n"}
+,{"stream_name":"stderr","time":132.569264895,"data":"   2018                     xet_file_data=xet_file_data,\n"}
+,{"stream_name":"stderr","time":132.569268489,"data":"\n"}
+,{"stream_name":"stderr","time":132.569271869,"data":"/usr/local/lib/python3.13/dist-packages/huggingface_hub/file_download.py in xet_get(incomplete_path, xet_file_data, headers, expected_size, displayed_filename, tqdm_class, _tqdm_bar)\n"}
+,{"stream_name":"stderr","time":132.569275813,"data":"    587     ) as progress:\n"}
+,{"stream_name":"stderr","time":132.569279312,"data":"    588         try:\n"}
+,{"stream_name":"stderr","time":132.56928271,"data":"--\u003e 589             with session.new_file_download_group(\n"}
+,{"stream_name":"stderr","time":132.569286264,"data":"    590                 endpoint=connection_info.endpoint,\n"}
+,{"stream_name":"stderr","time":132.569290228,"data":"    591                 token=connection_info.access_token,\n"}
+,{"stream_name":"stderr","time":132.569293361,"data":"\n"}
+,{"stream_name":"stderr","time":132.569296736,"data":"RuntimeError: Task error: File reconstruction error: IO Error: No space left on device (os error 28)\n"}
+,{"stream_name":"stderr","time":132.569300274,"data":"\n"}
+,{"stream_name":"stderr","time":134.783286142,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":134.783312477,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":134.93214588,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":134.932166914,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":135.660337125,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":135.740482298,"data":"[NbConvertApp] Writing 110102 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":138.154769715,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":138.749442875,"data":"[NbConvertApp] Writing 464407 bytes to __results__.html\n"}
+]

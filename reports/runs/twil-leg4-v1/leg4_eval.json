@@ -1,0 +1,30 @@
+{
+ "results": [],
+ "verdict": {
+  "armA_p2": {
+   "learned": null,
+   "base": 6.9644,
+   "delta": null,
+   "curve": []
+  },
+  "armB_p1": {
+   "learned": NaN,
+   "base": 3.8803,
+   "delta": NaN,
+   "curve": [
+    {
+     "step": 0,
+     "bpb": 3.9741456370088515,
+     "n_docs": 8
+    },
+    {
+     "step": "final",
+     "bpb": NaN,
+     "n_docs": 8
+    }
+   ]
+  },
+  "effective_sanity": {},
+  "beats_leg2_delta_0_579": false
+ }
+}

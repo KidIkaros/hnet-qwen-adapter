@@ -1,0 +1,46 @@
+{
+ "engines": {
+  "startlux": {
+   "n": 0,
+   "gold_at_1": 0,
+   "acc": null,
+   "status": "unavailable"
+  },
+  "laya_encoder_zeroshot": {
+   "n": 60,
+   "gold_at_1": 24,
+   "acc": 0.4,
+   "brier": 0.4597186321666667,
+   "ece": 0.49237833333333325,
+   "risk_coverage": {
+    "acc@50pct_cov": 0.36666666666666664,
+    "acc@70pct_cov": 0.4523809523809524,
+    "acc@90pct_cov": 0.4444444444444444,
+    "acc@100pct_cov": 0.4
+   },
+   "errors": 0
+  },
+  "laya_vega_fitted": {
+   "n": 0,
+   "gold_at_1": 0,
+   "acc": 0.0,
+   "brier": null,
+   "ece": null,
+   "risk_coverage": {},
+   "errors": 0
+  }
+ },
+ "paired": {
+  "encoder_vs_vega": {
+   "shared_n": 0,
+   "both_right": 0,
+   "encoder_only_right": 0,
+   "vega_only_right": 0,
+   "both_wrong": 0,
+   "sign_test_z": null
+  }
+ },
+ "vega_extras": {
+  "route_counts": {}
+ }
+}

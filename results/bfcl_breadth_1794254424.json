@@ -1,0 +1,1012 @@
+{
+ "n_per_cat": 100,
+ "cats": [
+  "live_simple",
+  "live_multiple",
+  "live_parallel",
+  "live_parallel_multiple",
+  "irrelevance",
+  "multi_turn_base"
+ ],
+ "per_cat": {
+  "live_simple": {
+   "args": 278,
+   "parsed": 278,
+   "recovered": 167,
+   "verbatim": 109,
+   "items": 100,
+   "schema_ok": 100,
+   "abstain_ok": 55
+  },
+  "live_multiple": {
+   "args": 310,
+   "parsed": 310,
+   "recovered": 222,
+   "verbatim": 149,
+   "items": 100,
+   "schema_ok": 100,
+   "abstain_ok": 67
+  },
+  "live_parallel": {
+   "args": 111,
+   "parsed": 109,
+   "recovered": 70,
+   "verbatim": 34,
+   "items": 16,
+   "schema_ok": 16,
+   "abstain_ok": 9
+  },
+  "live_parallel_multiple": {
+   "args": 145,
+   "parsed": 145,
+   "recovered": 99,
+   "verbatim": 55,
+   "items": 24,
+   "schema_ok": 24,
+   "abstain_ok": 22
+  },
+  "irrelevance": {
+   "args": 0,
+   "parsed": 0,
+   "recovered": 0,
+   "verbatim": 0,
+   "items": 100,
+   "schema_ok": 100,
+   "abstain_ok": 0,
+   "mean_cands_per_arg": 45.6,
+   "n_arg_slots": 289
+  },
+  "multi_turn_base": {
+   "args": 786,
+   "parsed": 0,
+   "recovered": 0,
+   "verbatim": 336,
+   "items": 100,
+   "schema_ok": 0,
+   "abstain_ok": 786
+  }
+ },
+ "pooled": {
+  "args": 1630,
+  "parsed": 842,
+  "recovered": 558,
+  "verbatim": 683,
+  "abstain_ok": 939,
+  "required_subset": -97,
+  "recall_required": -381.0,
+  "recall_parsed": 0.6627
+ },
+ "misses": [
+  {
+   "cat": "live_simple",
+   "tool": "github_star",
+   "arg": "repos",
+   "gold": "['ShishirPatil/gorilla,gorilla-llm/gorilla-cli']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.ride",
+   "arg": "loc",
+   "gold": "['2020 Addison Street, Berkeley, CA, USA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.ride",
+   "arg": "loc",
+   "gold": "['221B Baker Street, Berkeley, CA, USA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Tel Aviv, Israel']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Divin\u00f3polis, MG']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Riga, Latvia']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Hyderabad, India']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Mariposa, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Naples, FL', 'Naples, Florida']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Shanghai, China', '\\\\u4e0a\\\\u6d77,\\\\u4e2d\\\\u56fd']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Bangkok, Thailand']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Lang Son, Vietnam']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Moscow, Russia']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Quintana Roo, Mexico']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.ride",
+   "arg": "loc",
+   "gold": "['123 \u0110\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc, Berkeley, CA', '123 University Street, ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "items",
+   "gold": "[['burgers', 'chicken wings']]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "quantities",
+   "gold": "[[5, 6]]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "restaurant",
+   "gold": "['\u80af\u5fb7\u57fa', 'KFC']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "items",
+   "gold": "[['\u9ea6\u8fa3\u9e21\u817f\u5821', '\u53ef\u53e3\u53ef\u4e50', '\u6cb9\u70b8\u9e21\u7fc5', '\u85af\u6761']]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "items",
+   "gold": "[['pizza']]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "uber.eat.order",
+   "arg": "quantities",
+   "gold": "[[1]]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "answer.string",
+   "arg": "answer",
+   "gold": "['Logistic regression is not present in the text, therefore ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "answer.string",
+   "arg": "answer",
+   "gold": "['Logistic regression is not present in the text, therefore ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "answer.string",
+   "arg": "answer",
+   "gold": "['Logistic regression is not present in the text, therefore ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "answer.string",
+   "arg": "answer",
+   "gold": "['Logistic regression is not present in the text, therefore ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "parseAnswer",
+   "arg": "answer",
+   "gold": "['The text does not define logistic regression, therefore I ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "parseAnswer",
+   "arg": "answer",
+   "gold": "['The text does not define logistic regression, therefore I ",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Mariposa, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "fetch_weather_data",
+   "arg": "longitude",
+   "gold": "[-119.5383]",
+   "type": "number"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['AIR_CLEAN'], 'windStrength': ['HIGH'], ",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['AIR_DRY'], 'windStrength': ['MID', ''],",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['', 'COOL'], 'windStrength': ['', 'MID']",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['', 'COOL'], 'windStrength': ['HIGH'], '",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'currentJobMode': ['', 'COOL'], 'windStrength': ['', 'MID'",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'currentJobMode': ['', 'COOL'], 'windStrength': ['', 'MID'",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "find_beer",
+   "arg": "style",
+   "gold": "['porter']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['COOL'], 'windStrength': ['HIGH'], 'airC",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "ThinQ_Connect",
+   "arg": "body",
+   "gold": "[{'airConJobMode': ['COOL'], 'windStrength': ['MID'], 'airCo",
+   "type": "object"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "todo_add",
+   "arg": "content",
+   "gold": "['go for shopping at 9 pm']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "todo_manager.handle_action",
+   "arg": "content",
+   "gold": "['go to sleep at 9 pm']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "todo",
+   "arg": "content",
+   "gold": "['go to sleep at 9 pm']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "inventory.restock_check",
+   "arg": "item_ids",
+   "gold": "[[102, 103]]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "obtener_cotizacion_de_creditos",
+   "arg": "monto_del_credito",
+   "gold": "[1000000.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "extract_parameters_v1",
+   "arg": "targets",
+   "gold": "[['brand:Apple']]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "extract_parameters_v1",
+   "arg": "metrics",
+   "gold": "[['view']]",
+   "type": "array"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "weather.get",
+   "arg": "country",
+   "gold": "['GB']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "search_hotels",
+   "arg": "location",
+   "gold": "['San Diego, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "sitefinity_create_contentitem",
+   "arg": "Content",
+   "gold": "['The recent breakthroughs in machine learning algorithms.']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "sitefinity_create_contentitem",
+   "arg": "MetaDescription",
+   "gold": "['Exploring how sleep affects work efficiency']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "interior_design_analysis.generate_report",
+   "arg": "user_preferences",
+   "gold": "['{\"style\": \"modern\", \"color_scheme\": \"warm\", \"budget\": \"mid",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "interior_design_analysis.generate_report",
+   "arg": "data_source",
+   "gold": "['internal_database']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "temperature",
+   "arg": "location",
+   "gold": "['Paris, France']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_simple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['El Gastor, Andalusia']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "ChaDri.change_drink",
+   "arg": "new_preferences",
+   "gold": "[{'size': ['large'], 'milk_type': ['coconut'], 'sweetness_le",
+   "type": "object"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "ChaDri.change_drink",
+   "arg": "new_preferences",
+   "gold": "[{'sweetness_level': ['none'], 'temperature': ['hot']}]",
+   "type": "object"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "api.weather",
+   "arg": "loc",
+   "gold": "['Ha Noi, Vietnam']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Shanghai, China']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "OpenWeatherMap.get_current_weather",
+   "arg": "location",
+   "gold": "['Santa Cruz, USA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "HNA_NEWS.search",
+   "arg": "keyword",
+   "gold": "['\ubc15\uc9c0\uc131']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "HNA_NEWS.search",
+   "arg": "keyword",
+   "gold": "['artificial intelligence', 'ai']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "search_products",
+   "arg": "category",
+   "gold": "['clothing']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "recall_memory_search",
+   "arg": "query",
+   "gold": "[\"Shishir Patil's birthday\", 'Shishir Patil birthday']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "add",
+   "arg": "b",
+   "gold": "[-40]",
+   "type": "integer"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "multiply",
+   "arg": "a",
+   "gold": "[3]",
+   "type": "integer"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "get_news_report",
+   "arg": "location",
+   "gold": "['Letterkenny, Ireland']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "get_tesco_locations",
+   "arg": "location",
+   "gold": "['Letterkenny, Ireland']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "BankStatementOverView",
+   "arg": "full_name",
+   "gold": "['SILVER BUSINESS CHECKING']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "BankStatementOverView",
+   "arg": "transaction_overview",
+   "gold": "[{'total_deposits': [7132.76], 'total_withdrawals': [5927.4]",
+   "type": "object"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "todoIdx",
+   "arg": "index",
+   "gold": "[1]",
+   "type": "integer"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "uber.eat.order",
+   "arg": "items",
+   "gold": "[[{'item': ['burgers'], 'quantity': [5]}, {'item': ['chicken",
+   "type": "array"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "uber.eat.order",
+   "arg": "items",
+   "gold": "[[{'item_id': ['burger123'], 'quantity': [5]}, {'item_id': [",
+   "type": "array"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "add_mtnards_server",
+   "arg": "host",
+   "gold": "['http://plga.ca']",
+   "type": "string"
+  },
+  {
+   "cat": "live_multiple",
+   "tool": "render_ui_date_picker_widget",
+   "arg": "default_date",
+   "gold": "['20-09-2023']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Beijing, China']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Shanghai, China']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Canc\u00fan, QR', 'Canc\\\\u00fan, QR']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Tulum, QR']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, USA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_snow_report",
+   "arg": "location",
+   "gold": "['Paris, France']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_snow_report",
+   "arg": "location",
+   "gold": "['Bordeaux, France']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "location",
+   "gold": "['New York, NY']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "check_in",
+   "gold": "['2022-05-01']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "check_out",
+   "gold": "['2022-05-05']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "location",
+   "gold": "['Los Angeles, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "check_in",
+   "gold": "['2022-06-01']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "hotel_booking_book",
+   "arg": "check_out",
+   "gold": "['2022-06-10']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[1.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[2.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[1.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[1.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[1.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[4.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[2.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "log_food",
+   "arg": "portion_amount",
+   "gold": "[1.0]",
+   "type": "number"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Boston, MA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "cmd_controller.execute",
+   "arg": "command",
+   "gold": "['dir c:\\\\', 'dir c:\\\\\\\\']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel",
+   "tool": "cmd_controller.execute",
+   "arg": "command",
+   "gold": "['echo.>C:\\\\testing.txt', 'echo.>C:\\\\\\\\testing.txt']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "ChaDri.change_drink",
+   "arg": "new_preferences",
+   "gold": "[{'size': ['large'], 'temperature': ['hot'], 'sweetness_leve",
+   "type": "object"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Guangzhou, China']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Beijing, China']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "ControlAppliance.execute",
+   "arg": "command",
+   "gold": "['\uce68\uc2e4, \uacf5\uae30\uccad\uc815\uae30, \uc911\uc9c0']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_news_report",
+   "arg": "location",
+   "gold": "['Paris, France']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_news_report",
+   "arg": "location",
+   "gold": "['Letterkenny, Ireland']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_news_report",
+   "arg": "location",
+   "gold": "['Paris, France']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Letterkenny, Ireland']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "analyse_repo_contents",
+   "arg": "directory_name",
+   "gold": "['nodejs-welcome']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "create_a_docker_file",
+   "arg": "directory_name",
+   "gold": "['nodejs-welcome']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "create_kubernetes_yaml_file",
+   "arg": "directory_name",
+   "gold": "['nodejs-welcome']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "push_git_changes_to_github",
+   "arg": "directory_name",
+   "gold": "['nodejs-welcome']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "search_engine.query",
+   "arg": "prompt",
+   "gold": "['significant events, news articles, and developments that s",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "generate_image",
+   "arg": "prompt",
+   "gold": "[\"a digital painting of a masked woman with bright peacock f",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "send_message",
+   "arg": "message",
+   "gold": "['Happy Birthday!']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "estimate_derivative",
+   "arg": "function",
+   "gold": "['lambda x: x**2']",
+   "type": "any"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "estimate_derivative",
+   "arg": "function",
+   "gold": "['lambda x: x**2']",
+   "type": "any"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['Queenstown, Singapore']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "Events_3_FindEvents",
+   "arg": "city",
+   "gold": "['Los Angeles, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "Events_3_FindEvents",
+   "arg": "city",
+   "gold": "['Los Angeles, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "Buses_3_FindBus",
+   "arg": "to_city",
+   "gold": "['New York, NY']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "Events_3_FindEvents",
+   "arg": "city",
+   "gold": "['New York, NY']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "Services_1_FindProvider",
+   "arg": "city",
+   "gold": "['Sunnyvale, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "live_parallel_multiple",
+   "tool": "get_current_weather",
+   "arg": "location",
+   "gold": "['San Francisco, CA']",
+   "type": "string"
+  }
+ ]
+}

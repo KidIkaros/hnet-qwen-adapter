@@ -1,0 +1,105 @@
+[{"stream_name":"stderr","time":7.245435426,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":7.245478487,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":8.230156262,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.23018606,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.230196561,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.230199745,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.839662442,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.839687522,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.83969279,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.839696365,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":33.049258855,"data":"torch 2.11.0+cu130 | transformers 5.20.2\n"}
+,{"stream_name":"stdout","time":33.051618752,"data":"0 Tesla T4\n"}
+,{"stream_name":"stdout","time":33.051651054,"data":"1 Tesla T4\n"}
+,{"stream_name":"stdout","time":33.078452757,"data":"src bundle OK\n"}
+,{"stream_name":"stderr","time":42.932040377999996,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":42.932088038,"data":"\n"}
+,{"stream_name":"stderr","time":42.932095025,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":44.64592848,"data":"[transformers] `torch_dtype` is deprecated! Use `dtype` instead!\n"}
+,{"stream_name":"stderr","time":44.645957047,"data":"\n"}
+,{"stream_name":"stderr","time":44.645962854,"data":"[transformers] `torch_dtype` is deprecated! Use `dtype` instead!\n"}
+,{"stream_name":"stdout","time":196.71885316,"data":"load 163s | arch GraniteForCausalLM\n"}
+,{"stream_name":"stdout","time":196.718905258,"data":"cuda:0 reserved=8.8GB\n"}
+,{"stream_name":"stdout","time":196.718910845,"data":"cuda:1 reserved=8.8GB\n"}
+,{"stream_name":"stdout","time":199.021405323,"data":"inputs_embeds+logits_to_keep OK (1, 4, 100352)\n"}
+,{"stream_name":"stdout","time":199.170855532,"data":"byte coverage: 207/256 (all printable expected)\n"}
+,{"stream_name":"stdout","time":199.170887593,"data":"missing printable bytes: []\n"}
+,{"stream_name":"stdout","time":199.170901286,"data":"TwILChunkLM ready\n"}
+,{"stream_name":"stdout","time":212.955082777,"data":"[markdown] ERROR RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.\n"}
+,{"stream_name":"stdout","time":213.155602131,"data":"  cuda:0 reserved=10.4GB\n"}
+,{"stream_name":"stdout","time":213.155635243,"data":"  cuda:1 reserved=11.8GB\n"}
+,{"stream_name":"stdout","time":232.157431169,"data":"[prose] ERROR RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.\n"}
+,{"stream_name":"stdout","time":232.354905724,"data":"  cuda:0 reserved=12.1GB\n"}
+,{"stream_name":"stdout","time":232.354946455,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":249.649617732,"data":"[code] ERROR RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.\n"}
+,{"stream_name":"stdout","time":249.850235386,"data":"  cuda:0 reserved=12.1GB\n"}
+,{"stream_name":"stdout","time":249.850265325,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":250.688482203,"data":"[effective/markdown] ERROR OutOfMemoryError: CUDA out of memory. Tried to allocate 8.00 GiB. GPU 0 has a total capacity of 14.56 GiB of which 4.33 GiB is free. Including non-PyTorch memory, this process has 10.22 GiB memory in use. Of the alloca\n"}
+,{"stream_name":"stdout","time":250.690561154,"data":"leg B done\n"}
+,{"stream_name":"stdout","time":256.369604836,"data":"  item0 S1: valid=True name_ok=True (6s)\n"}
+,{"stream_name":"stdout","time":271.396229243,"data":"  item0 S2: valid=True name_ok=True (15s)\n"}
+,{"stream_name":"stdout","time":271.596140699,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":271.596169945,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":275.895848215,"data":"  item1 S1: valid=True name_ok=True (4s)\n"}
+,{"stream_name":"stdout","time":284.317909358,"data":"  item1 S2: valid=True name_ok=True (8s)\n"}
+,{"stream_name":"stdout","time":284.512913145,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":284.512956097,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":290.984748423,"data":"  item2 S1: valid=True name_ok=True (7s)\n"}
+,{"stream_name":"stdout","time":317.677150384,"data":"  item2 S2: valid=False name_ok=False (27s)\n"}
+,{"stream_name":"stdout","time":317.874685113,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":317.874721202,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":324.871900978,"data":"  item3 S1: valid=True name_ok=True (7s)\n"}
+,{"stream_name":"stdout","time":346.135190939,"data":"  item3 S2: valid=True name_ok=True (21s)\n"}
+,{"stream_name":"stdout","time":346.335043521,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":346.335078557,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":350.63508252,"data":"  item4 S1: valid=True name_ok=True (4s)\n"}
+,{"stream_name":"stdout","time":360.653605003,"data":"  item4 S2: valid=True name_ok=True (10s)\n"}
+,{"stream_name":"stdout","time":360.853423034,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":360.853452239,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":366.180343334,"data":"  item5 S1: valid=True name_ok=True (6s)\n"}
+,{"stream_name":"stdout","time":381.391138693,"data":"  item5 S2: valid=True name_ok=True (15s)\n"}
+,{"stream_name":"stdout","time":381.58621242,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":381.586242537,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":388.195881336,"data":"  item6 S1: valid=True name_ok=True (7s)\n"}
+,{"stream_name":"stdout","time":411.316743396,"data":"  item6 S2: valid=True name_ok=True (23s)\n"}
+,{"stream_name":"stdout","time":411.520213605,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":411.520246491,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":415.751710472,"data":"  item7 S1: valid=True name_ok=True (4s)\n"}
+,{"stream_name":"stdout","time":427.442170372,"data":"  item7 S2: valid=True name_ok=True (12s)\n"}
+,{"stream_name":"stdout","time":427.642087016,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":427.642125776,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":432.669523022,"data":"  item8 S1: valid=True name_ok=True (5s)\n"}
+,{"stream_name":"stdout","time":444.03736454,"data":"  item8 S2: valid=True name_ok=True (11s)\n"}
+,{"stream_name":"stdout","time":444.231964128,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":444.231997775,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":448.72393513,"data":"  item9 S1: valid=True name_ok=True (5s)\n"}
+,{"stream_name":"stdout","time":468.113875117,"data":"  item9 S2: valid=True name_ok=True (19s)\n"}
+,{"stream_name":"stdout","time":468.314378189,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":468.314414278,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":474.565111587,"data":"  item10 S1: valid=True name_ok=True (6s)\n"}
+,{"stream_name":"stdout","time":523.251151811,"data":"  item10 S2: valid=True name_ok=True (49s)\n"}
+,{"stream_name":"stdout","time":523.445627136,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":523.445658512,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":528.928315206,"data":"  item11 S1: valid=True name_ok=True (6s)\n"}
+,{"stream_name":"stdout","time":539.672219708,"data":"  item11 S2: valid=True name_ok=True (11s)\n"}
+,{"stream_name":"stdout","time":539.674835109,"data":"  cuda:0 reserved=10.9GB\n"}
+,{"stream_name":"stdout","time":539.674859704,"data":"  cuda:1 reserved=13.5GB\n"}
+,{"stream_name":"stdout","time":539.67486611,"data":"{\n"}
+,{"stream_name":"stdout","time":539.67487099,"data":" \"S1_format_valid\": 1.0,\n"}
+,{"stream_name":"stdout","time":539.674876399,"data":" \"S1_name_acc\": 1.0,\n"}
+,{"stream_name":"stdout","time":539.674881581,"data":" \"S1_mean_gen_s\": 5.6000000000000005,\n"}
+,{"stream_name":"stdout","time":539.674887585,"data":" \"S2_format_valid\": 0.9166666666666666,\n"}
+,{"stream_name":"stdout","time":539.674892486,"data":" \"S2_name_acc\": 0.9166666666666666,\n"}
+,{"stream_name":"stdout","time":539.674897673,"data":" \"S2_mean_gen_s\": 18.466666666666665,\n"}
+,{"stream_name":"stdout","time":539.674902961,"data":" \"S2_think_rate\": 0.0\n"}
+,{"stream_name":"stdout","time":539.674908959,"data":"}\n"}
+,{"stream_name":"stdout","time":539.695389981,"data":"artifacts.zip: ['legA_coverage.json', 'twil_bpb.json', 'run_status.json', 'legA_interface.json', 'src', 'artifacts.zip', '__notebook__.ipynb', 'toolcall_parser.py', 'toolcall_results.json']\n"}
+,{"stream_name":"stderr","time":546.050109133,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":546.050139279,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":546.237867092,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":546.237896179,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":547.04041182,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":547.13434229,"data":"[NbConvertApp] Writing 167519 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":549.610072078,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":550.242972388,"data":"[NbConvertApp] Writing 497217 bytes to __results__.html\n"}
+]

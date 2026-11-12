@@ -1,0 +1,39 @@
+{
+ "kernel": "twil-leg1",
+ "lane": "gpu-2xt4",
+ "legs": {
+  "load": "ok",
+  "baseline": "done",
+  "train": "done",
+  "eval": "done"
+ },
+ "errors": [],
+ "verdict": {
+  "learned_overall": 6.8751,
+  "base_overall": 6.9802,
+  "delta": 0.1051,
+  "learned_summary": {
+   "nemotron_terminal": 6.5715,
+   "open_swe_traces": 5.9621,
+   "toolace": 7.0484,
+   "stack_edu": 7.9449,
+   "proofpile_arxiv": 7.0128,
+   "common_crawl": 6.5285,
+   "dolma_wiki": 7.0572
+  },
+  "base_summary": {
+   "nemotron_terminal": 6.6254,
+   "open_swe_traces": 5.9168,
+   "toolace": 7.1334,
+   "stack_edu": 7.9967,
+   "proofpile_arxiv": 7.0004,
+   "common_crawl": 6.8172,
+   "dolma_wiki": 7.3716
+  },
+  "effective_sanity": {
+   "nemotron_terminal/v0": 5.427157350573566,
+   "nemotron_terminal/learned": 5.422911351427398
+  },
+  "pass": false
+ }
+}

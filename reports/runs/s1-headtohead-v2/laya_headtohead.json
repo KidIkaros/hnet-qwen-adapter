@@ -1,0 +1,21 @@
+{
+ "encoder_zero_shot": {
+  "status": "ok",
+  "n": 60,
+  "gold_at_1": 29,
+  "acc": 0.48333333333333334
+ },
+ "vega": {
+  "status": "skipped",
+  "fit_report": {
+   "serving": []
+  },
+  "persist_check": {
+   "match": "10/10"
+  },
+  "n": 60,
+  "gold_at_1": 31,
+  "acc": 0.5166666666666667,
+  "elapsed_s": 636.0
+ }
+}

@@ -1,0 +1,873 @@
+{
+ "n_gold_args": 65,
+ "declared_args": 46,
+ "undeclared_args": 19,
+ "parsed_args": 46,
+ "recovered_declared_parsed": 33,
+ "recall_parsed": 0.7174,
+ "baseline_verbatim_parsed": 0.6087,
+ "delta_vs_extractive": 0.1087,
+ "undeclared_tools": [
+  "API",
+  "Authority",
+  "Information",
+  "Investments",
+  "Rankings",
+  "Rates",
+  "Standings",
+  "Statistics",
+  "Stats",
+  "Username"
+ ],
+ "parse_miss_tools": [],
+ "value_misses": [
+  {
+   "k": 6,
+   "tool": "determine_projectile_trajectory",
+   "arg": "launch_parameters",
+   "gold": "[{\"angle\": 45.0, \"speed\": 30.0, \"height\": 1.0}, {\"angle\": 60.0, \"speed\": 25.0, \"",
+   "verbatim": false,
+   "type": "array"
+  },
+  {
+   "k": 9,
+   "tool": "legalClauseLibrary",
+   "arg": "clauseCategories",
+   "gold": "[\"Confidentiality\", \"Termination\"]",
+   "verbatim": false,
+   "type": "array"
+  },
+  {
+   "k": 12,
+   "tool": "corporate_loans_peer_comparison",
+   "arg": "period",
+   "gold": "\"2023-12\"",
+   "verbatim": false,
+   "type": "string"
+  },
+  {
+   "k": 13,
+   "tool": "professionalDevelopmentTimeline",
+   "arg": "careerGoal",
+   "gold": "\"senior software engineer\"",
+   "verbatim": true,
+   "type": "string"
+  },
+  {
+   "k": 13,
+   "tool": "professionalDevelopmentTimeline",
+   "arg": "startDate",
+   "gold": "\"15/04/2023\"",
+   "verbatim": false,
+   "type": "string"
+  },
+  {
+   "k": 13,
+   "tool": "professionalDevelopmentTimeline",
+   "arg": "activities",
+   "gold": "[{\"activityName\": \"Java certification\", \"durationMonths\": 2}, {\"activityName\": \"",
+   "verbatim": false,
+   "type": "array"
+  },
+  {
+   "k": 15,
+   "tool": "journal_submission_tracker",
+   "arg": "submission_details",
+   "gold": "[{\"journal_name\": \"Journal of Medical Informatics\", \"article_title\": \"AI in Heal",
+   "verbatim": false,
+   "type": "array"
+  },
+  {
+   "k": 21,
+   "tool": "getTeamStats",
+   "arg": "season",
+   "gold": "\"2020-2021\"",
+   "verbatim": false,
+   "type": "string"
+  },
+  {
+   "k": 23,
+   "tool": "pet_rescue_search",
+   "arg": "location",
+   "gold": "\"San Francisco\"",
+   "verbatim": true,
+   "type": "string"
+  },
+  {
+   "k": 23,
+   "tool": "pet_rescue_search",
+   "arg": "age_range",
+   "gold": "[1, 3]",
+   "verbatim": false,
+   "type": "array"
+  },
+  {
+   "k": 35,
+   "tool": "getDateTimeByTimezone",
+   "arg": "timezone",
+   "gold": "\"Asia/Tokyo\"",
+   "verbatim": false,
+   "type": "string"
+  },
+  {
+   "k": 37,
+   "tool": "getEvaluationReports",
+   "arg": "year",
+   "gold": "2020",
+   "verbatim": false,
+   "type": "integer"
+  },
+  {
+   "k": 38,
+   "tool": "multiClickSequence",
+   "arg": "clickSequence",
+   "gold": "[{\"elementSelector\": \"#loginButton\", \"action\": {\"actionName\": \"clickLogin\", \"del",
+   "verbatim": false,
+   "type": "array"
+  }
+ ],
+ "detail": [
+  {
+   "k": 0,
+   "tool": "LibraryEventsId",
+   "args": [
+    {
+     "arg": "id",
+     "gold": "12345",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 1,
+   "tool": "check_vowel",
+   "args": [
+    {
+     "arg": "letter",
+     "gold": "\"e\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 3,
+   "tool": "Rankings",
+   "args": [
+    {
+     "arg": "page",
+     "gold": "1",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 4,
+   "tool": "Authority",
+   "args": [
+    {
+     "arg": "localauthority",
+     "gold": "\"London Borough of Camden\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 5,
+   "tool": "getIntellectualHistory",
+   "args": [
+    {
+     "arg": "time_period",
+     "gold": "\"Renaissance\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "location",
+     "gold": "\"Europe\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 6,
+   "tool": "determine_projectile_trajectory",
+   "args": [
+    {
+     "arg": "launch_parameters",
+     "gold": "[{\"angle\": 45.0, \"speed\": 30.0, \"height\": 1.0}, {\"angle\": 60.0, \"speed\": 25.0, \"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 9,
+   "tool": "legalClauseLibrary",
+   "args": [
+    {
+     "arg": "jurisdiction",
+     "gold": "\"New York\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "clauseCategories",
+     "gold": "[\"Confidentiality\", \"Termination\"]",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 10,
+   "tool": "analyze_sentiment_tone",
+   "args": [
+    {
+     "arg": "text",
+     "gold": "\"We have reviewed your proposal and we have some thoughts we would like to discu",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 11,
+   "tool": "check_horoscope",
+   "args": [
+    {
+     "arg": "zodiac_sign",
+     "gold": "\"Taurus\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 12,
+   "tool": "corporate_loans_peer_comparison",
+   "args": [
+    {
+     "arg": "bankName",
+     "gold": "\"\\u519c\\u884c\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    },
+    {
+     "arg": "period",
+     "gold": "\"2023-12\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 13,
+   "tool": "professionalDevelopmentTimeline",
+   "args": [
+    {
+     "arg": "careerGoal",
+     "gold": "\"senior software engineer\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": true
+    },
+    {
+     "arg": "startDate",
+     "gold": "\"15/04/2023\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "activities",
+     "gold": "[{\"activityName\": \"Java certification\", \"durationMonths\": 2}, {\"activityName\": \"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 14,
+   "tool": "API",
+   "args": [
+    {
+     "arg": "url",
+     "gold": "\"https://www.manga-anime-here.com\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 15,
+   "tool": "journal_submission_tracker",
+   "args": [
+    {
+     "arg": "submission_details",
+     "gold": "[{\"journal_name\": \"Journal of Medical Informatics\", \"article_title\": \"AI in Heal",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 16,
+   "tool": "get_pose_details",
+   "args": [
+    {
+     "arg": "pose_name",
+     "gold": "\"warrior pose\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 17,
+   "tool": "GetFAQsByTopic",
+   "args": [
+    {
+     "arg": "topic",
+     "gold": "\"voter registration\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "page",
+     "gold": "1",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 18,
+   "tool": "API",
+   "args": [
+    {
+     "arg": "location",
+     "gold": "\"Seoul\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 19,
+   "tool": "getCustomer",
+   "args": [
+    {
+     "arg": "id",
+     "gold": "12345.0",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 20,
+   "tool": "API",
+   "args": [
+    {
+     "arg": "hash",
+     "gold": "\"12345\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 21,
+   "tool": "getTeamStats",
+   "args": [
+    {
+     "arg": "team",
+     "gold": "\"Liverpool\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "season",
+     "gold": "\"2020-2021\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 22,
+   "tool": "Statistics",
+   "args": [
+    {
+     "arg": "tournamentId",
+     "gold": "1.0",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "id",
+     "gold": "23.0",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "seasonId",
+     "gold": "2020.0",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 23,
+   "tool": "pet_rescue_search",
+   "args": [
+    {
+     "arg": "animal_type",
+     "gold": "\"Dog\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    },
+    {
+     "arg": "location",
+     "gold": "\"San Francisco\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": true
+    },
+    {
+     "arg": "age_range",
+     "gold": "[1, 3]",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "time_of_adoption",
+     "gold": "\"Evening\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 24,
+   "tool": "Standings",
+   "args": [
+    {
+     "arg": "seasonId",
+     "gold": "2022.0",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "tournamentId",
+     "gold": "102.0",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 25,
+   "tool": "Rates",
+   "args": [
+    {
+     "arg": "currencies",
+     "gold": "\"EUR,GBP\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "base",
+     "gold": "\"USD\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 26,
+   "tool": "estimateTimeSinceDeath",
+   "args": [
+    {
+     "arg": "corpse",
+     "gold": "\"Corpse-A1\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "ambient_temperature",
+     "gold": "15.0",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 27,
+   "tool": "Investments",
+   "args": [
+    {
+     "arg": "type",
+     "gold": "\"etf\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "securityId",
+     "gold": "\"ETF3245\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 28,
+   "tool": "transferInventory",
+   "args": [
+    {
+     "arg": "item_code",
+     "gold": "\"ABC123\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "source_location",
+     "gold": "\"Warehouse A\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "destination_location",
+     "gold": "\"Store B\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "quantity",
+     "gold": "50",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 29,
+   "tool": "RouteHistory",
+   "args": [
+    {
+     "arg": "phone_number",
+     "gold": "\"1234567890\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "from_string",
+     "gold": "\"2020/06/01\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "to_string",
+     "gold": "\"2020/07/30\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 30,
+   "tool": "business_travel_planner",
+   "args": [
+    {
+     "arg": "destination",
+     "gold": "\"New York\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "departure_date",
+     "gold": "\"10/12/2023\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "return_date",
+     "gold": "\"10/15/2023\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 31,
+   "tool": "Listoffinishingstatusforaspecificseason",
+   "args": [
+    {
+     "arg": "year",
+     "gold": "2016",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 32,
+   "tool": "Username",
+   "args": [
+    {
+     "arg": "id",
+     "gold": "\"PBX123\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 33,
+   "tool": "Information",
+   "args": [
+    {
+     "arg": "url",
+     "gold": "\"https://www.tiktok.com/@example/video/123456789123456789\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 34,
+   "tool": "auction_item_search",
+   "args": [
+    {
+     "arg": "item_category",
+     "gold": "\"vintage wristwatches\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "price_range",
+     "gold": "{\"min_price\": 500, \"max_price\": 1500}",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    },
+    {
+     "arg": "auction_time",
+     "gold": "\"Afternoon\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 35,
+   "tool": "getDateTimeByTimezone",
+   "args": [
+    {
+     "arg": "timezone",
+     "gold": "\"Asia/Tokyo\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 36,
+   "tool": "Stats",
+   "args": [
+    {
+     "arg": "player_id",
+     "gold": "\"Mike Trout\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    },
+    {
+     "arg": "league_list_id",
+     "gold": "\"mlb\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": false
+    },
+    {
+     "arg": "season",
+     "gold": "\"2026\"",
+     "declared": false,
+     "parsed": false,
+     "recovered": false,
+     "verbatim": true
+    }
+   ]
+  },
+  {
+   "k": 37,
+   "tool": "getEvaluationReports",
+   "args": [
+    {
+     "arg": "initiative",
+     "gold": "\"Child Education Initiative\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    },
+    {
+     "arg": "year",
+     "gold": "2020",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 38,
+   "tool": "multiClickSequence",
+   "args": [
+    {
+     "arg": "clickSequence",
+     "gold": "[{\"elementSelector\": \"#loginButton\", \"action\": {\"actionName\": \"clickLogin\", \"del",
+     "declared": true,
+     "parsed": true,
+     "recovered": false,
+     "verbatim": false
+    }
+   ]
+  },
+  {
+   "k": 39,
+   "tool": "getMicroprocessorDetails",
+   "args": [
+    {
+     "arg": "microprocessor_name",
+     "gold": "\"Intel Core i9\"",
+     "declared": true,
+     "parsed": true,
+     "recovered": true,
+     "verbatim": true
+    }
+   ]
+  }
+ ]
+}

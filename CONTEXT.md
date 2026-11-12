@@ -46,3 +46,40 @@ Weights written by reasoning/construction, never by gradient descent (the weight
 post's sense; the qwentensor lineage's sense). The patch embedder's sum is the trivial case: weights
 all 1.
 _Avoid_: hand-crafted (vague), zero-training (the property, not the artifact)
+
+## One-mind vocabulary
+
+**Trunk**:
+The frozen generative model that *is* the mind. Today: TwIL-8B. Not a component, and not the
+endgame substrate.
+_Avoid_: substrate, backbone, base model
+
+**Substrate**:
+The model that hosts the Companion (endgame: the byte H-Net line). A different thing from the
+trunk.
+_Avoid_: trunk
+
+**S1**:
+The trunk's fast depth — the fast local layers in the H-Net anatomy (SSM/DeltaNet), or one
+pass without deliberation on a dense trunk (`enable_thinking=False`).
+_Avoid_: fast model, decision model, StartLux
+
+**S2**:
+The trunk's deliberate depth — the full-attention middle over compressed chunks in the H-Net
+anatomy, or `enable_thinking=True` on a dense trunk. Never a second model.
+_Avoid_: verifier, second opinion, escalation model
+
+**Glial**:
+The regulator inside the forward pass: a slow-state reader that recruits depth. Two functions:
+brake = whether an answer leaves (the calibrated gate); steering = what engages (the learned
+regulator).
+_Avoid_: gate (alone), router between models
+
+**StartLux**:
+A peripheral closed-set decision head — a reflex for one task class, like a spinal circuit. Not
+the mind and not the fast path of the mind.
+_Avoid_: S1, the fast path
+
+**One mind**:
+The trunk and its internal depth regulation. Not a committee of models voting, not a pipeline.
+_Avoid_: ensemble, router, pipeline

@@ -1,0 +1,51 @@
+{
+ "n_train_pM": 3119.3,
+ "n_train_docs": 1000,
+ "lr": 0.0001,
+ "enc": 4,
+ "dec": 4,
+ "n_fit_pairs": 16344,
+ "step100": {
+  "held": 3.4072,
+  "enwik8": 3.6406
+ },
+ "step200": {
+  "held": 3.2909,
+  "enwik8": 3.5236
+ },
+ "step300": {
+  "held": 3.0384,
+  "enwik8": 3.3703
+ },
+ "step400": {
+  "held": 3.0444,
+  "enwik8": 3.3297
+ },
+ "step500": {
+  "held": 3.0153,
+  "enwik8": 3.1969
+ },
+ "step600": {
+  "held": 2.9716,
+  "enwik8": 3.1389
+ },
+ "step700": {
+  "held": 2.8981,
+  "enwik8": 3.17
+ },
+ "step800": {
+  "held": 2.8857,
+  "enwik8": 3.1367
+ },
+ "step900": {
+  "held": 2.8521,
+  "enwik8": 3.1151
+ },
+ "step1000": {
+  "held": 2.7939,
+  "enwik8": 3.1415
+ },
+ "final_held": 2.7939,
+ "steps": 1000,
+ "train_seconds": 2629.0
+}

@@ -1,0 +1,19 @@
+{
+ "markdown": {
+  "bytes": 11190,
+  "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+ },
+ "prose": {
+  "bytes": 15330,
+  "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+ },
+ "code": {
+  "bytes": 13500,
+  "error": "RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead."
+ },
+ "effective_markdown": {
+  "doc": "markdown",
+  "bytes": 8192,
+  "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 8.00 GiB. GPU 0 has a total capacity of 14.56 GiB of which 4.33 GiB is free. Including non-PyTorch memory, this process has 10.22 GiB memory in use. Of the allocated memory 9.58 GiB is allocated by PyTorch, and 533.54 MiB is reserved by PyTorch but unallocated. "
+ }
+}

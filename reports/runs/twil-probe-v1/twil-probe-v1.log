@@ -1,0 +1,101 @@
+[{"stream_name":"stderr","time":7.026546153,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":7.026584131,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":8.024814024,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.024843151,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.024848377,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.024852099,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.626798469,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.626834561,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.626843253,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.626845838,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":32.241606028,"data":"torch 2.11.0+cu130 | transformers 5.20.2\n"}
+,{"stream_name":"stdout","time":32.244064003,"data":"0 Tesla T4\n"}
+,{"stream_name":"stdout","time":32.24408791,"data":"1 Tesla T4\n"}
+,{"stream_name":"stdout","time":32.271590813,"data":"src bundle OK\n"}
+,{"stream_name":"stderr","time":42.20454101,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":42.20458433,"data":"\n"}
+,{"stream_name":"stderr","time":42.204590308,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":43.921300069,"data":"[transformers] `torch_dtype` is deprecated! Use `dtype` instead!\n"}
+,{"stream_name":"stderr","time":43.921342224,"data":"\n"}
+,{"stream_name":"stderr","time":43.921347613,"data":"[transformers] `torch_dtype` is deprecated! Use `dtype` instead!\n"}
+,{"stream_name":"stdout","time":200.071675023,"data":"load 168s | arch GraniteForCausalLM\n"}
+,{"stream_name":"stdout","time":200.071718926,"data":"cuda:0 reserved=8.8GB\n"}
+,{"stream_name":"stdout","time":200.071725907,"data":"cuda:1 reserved=8.8GB\n"}
+,{"stream_name":"stdout","time":202.406078411,"data":"inputs_embeds+logits_to_keep OK (1, 4, 100352)\n"}
+,{"stream_name":"stdout","time":202.549251915,"data":"byte coverage: 207/256 (all printable expected)\n"}
+,{"stream_name":"stdout","time":202.549283816,"data":"missing printable bytes: []\n"}
+,{"stream_name":"stdout","time":202.549289895,"data":"TwILChunkLM ready\n"}
+,{"stream_name":"stderr","time":219.349577134,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":219.350264846,"data":"  File \"\u003cstring\u003e\", line 1, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":219.350282165,"data":"    import sys;import papermill as pm;pm.execute_notebook(\"__notebook__.ipynb\",\"__notebook__.ipynb\",progress_bar=False,log_output=True,stdout_file=sys.stdout,stderr_file=sys.stderr,allow_errors=False,timeout=43200)\n"}
+,{"stream_name":"stderr","time":219.350331441,"data":"                                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":219.350339894,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/execute.py\", line 131, in execute_notebook\n"}
+,{"stream_name":"stderr","time":219.350343887,"data":"    raise_for_execution_errors(nb, output_path)\n"}
+,{"stream_name":"stderr","time":219.35034767,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":219.350352103,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/execute.py\", line 251, in raise_for_execution_errors\n"}
+,{"stream_name":"stderr","time":219.35035664,"data":"    raise error\n"}
+,{"stream_name":"stderr","time":219.350365162,"data":"papermill.exceptions.PapermillExecutionError: \n"}
+,{"stream_name":"stderr","time":219.350369381,"data":"---------------------------------------------------------------------------\n"}
+,{"stream_name":"stderr","time":219.35037319,"data":"Exception encountered at \"In [5]\":\n"}
+,{"stream_name":"stderr","time":219.350376838,"data":"---------------------------------------------------------------------------\n"}
+,{"stream_name":"stderr","time":219.350380522,"data":"RuntimeError                              Traceback (most recent call last)\n"}
+,{"stream_name":"stderr","time":219.350384114,"data":"/tmp/ipykernel_22/2687283452.py in \u003ccell line: 0\u003e()\n"}
+,{"stream_name":"stderr","time":219.350387869,"data":"     39     t0 = __import__('time').time()\n"}
+,{"stream_name":"stderr","time":219.35039156,"data":"     40     # chunk-level first-byte bpb (cheap: T/6 positions)\n"}
+,{"stream_name":"stderr","time":219.35040094,"data":"---\u003e 41     fb_bpb, n_pred, cov = chunklm.first_byte_bpb(data)\n"}
+,{"stream_name":"stderr","time":219.350404156,"data":"     42     # native token-level byte bpb (the same-weights reference)\n"}
+,{"stream_name":"stderr","time":219.350406578,"data":"     43     native_bpb, n_ids, n_bytes = qwen_byte_bpb(model, tok, data, device='cuda:0')\n"}
+,{"stream_name":"stderr","time":219.350409202,"data":"\n"}
+,{"stream_name":"stderr","time":219.350411474,"data":"/tmp/ipykernel_22/1463147905.py in first_byte_bpb(self, data)\n"}
+,{"stream_name":"stderr","time":219.350413917,"data":"     53             raise ValueError('no mapped targets')\n"}
+,{"stream_name":"stderr","time":219.350416268,"data":"     54         hs, cov = self._hs_last(spans)\n"}
+,{"stream_name":"stderr","time":219.350418727,"data":"---\u003e 55         logits = self._lm_rows(hs, ms)                 # (len(ms), V) fp32\n"}
+,{"stream_name":"stderr","time":219.350421227,"data":"     56         pb = self.byte_head.byte_probs(logits)\n"}
+,{"stream_name":"stderr","time":219.350423668,"data":"     57         tb = torch.tensor(bs, device=pb.device)\n"}
+,{"stream_name":"stderr","time":219.350426062,"data":"\n"}
+,{"stream_name":"stderr","time":219.35042838,"data":"/tmp/ipykernel_22/1463147905.py in _lm_rows(self, hs, rows)\n"}
+,{"stream_name":"stderr","time":219.350431336,"data":"     39         idx = (torch.as_tensor(rows, device=hs.device) if rows is not None\n"}
+,{"stream_name":"stderr","time":219.350448985,"data":"     40                else torch.arange(hs.shape[0], device=hs.device))\n"}
+,{"stream_name":"stderr","time":219.350453682,"data":"---\u003e 41         return lm(hs[idx].to(dev)).float()\n"}
+,{"stream_name":"stderr","time":219.350457802,"data":"     42 \n"}
+,{"stream_name":"stderr","time":219.350461626,"data":"     43     def first_byte_bpb(self, data):\n"}
+,{"stream_name":"stderr","time":219.350471763,"data":"\n"}
+,{"stream_name":"stderr","time":219.350475442,"data":"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py in _wrapped_call_impl(self, *args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350479189,"data":"   1777             return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n"}
+,{"stream_name":"stderr","time":219.350482791,"data":"   1778         else:\n"}
+,{"stream_name":"stderr","time":219.350486222,"data":"-\u003e 1779             return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350489847,"data":"   1780 \n"}
+,{"stream_name":"stderr","time":219.350493155,"data":"   1781     # torchrec tests the code consistency with the following code\n"}
+,{"stream_name":"stderr","time":219.350496805,"data":"\n"}
+,{"stream_name":"stderr","time":219.35050016,"data":"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py in _call_impl(self, *args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350503829,"data":"   1788                 or _global_backward_pre_hooks or _global_backward_hooks\n"}
+,{"stream_name":"stderr","time":219.35050732,"data":"   1789                 or _global_forward_hooks or _global_forward_pre_hooks):\n"}
+,{"stream_name":"stderr","time":219.350511571,"data":"-\u003e 1790             return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350520799,"data":"   1791 \n"}
+,{"stream_name":"stderr","time":219.350523612,"data":"   1792         result = None\n"}
+,{"stream_name":"stderr","time":219.350525936,"data":"\n"}
+,{"stream_name":"stderr","time":219.35052817,"data":"/usr/local/lib/python3.13/dist-packages/accelerate/hooks.py in new_forward(module, *args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350531166,"data":"    190                 output = module._old_forward(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350546768,"data":"    191         else:\n"}
+,{"stream_name":"stderr","time":219.350550675,"data":"--\u003e 192             output = module._old_forward(*args, **kwargs)\n"}
+,{"stream_name":"stderr","time":219.350555102,"data":"    193         return module._hf_hook.post_forward(module, output)\n"}
+,{"stream_name":"stderr","time":219.350559494,"data":"    194 \n"}
+,{"stream_name":"stderr","time":219.350563343,"data":"\n"}
+,{"stream_name":"stderr","time":219.350567044,"data":"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/linear.py in forward(self, input)\n"}
+,{"stream_name":"stderr","time":219.350570756,"data":"    132         Runs the forward pass.\n"}
+,{"stream_name":"stderr","time":219.350578186,"data":"    133         \"\"\"\n"}
+,{"stream_name":"stderr","time":219.350581832,"data":"--\u003e 134         return F.linear(input, self.weight, self.bias)\n"}
+,{"stream_name":"stderr","time":219.350585513,"data":"    135 \n"}
+,{"stream_name":"stderr","time":219.35058891,"data":"    136     def extra_repr(self) -\u003e str:\n"}
+,{"stream_name":"stderr","time":219.35059256,"data":"\n"}
+,{"stream_name":"stderr","time":219.350595956,"data":"RuntimeError: expected mat1 and mat2 to have the same dtype, but got: float != c10::BFloat16\n"}
+,{"stream_name":"stderr","time":219.35059971,"data":"\n"}
+,{"stream_name":"stderr","time":221.834889944,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":221.834932262,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":222.019054764,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":222.019099409,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":222.795368797,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":222.886564162,"data":"[NbConvertApp] Writing 170720 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":225.466533002,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":226.090081487,"data":"[NbConvertApp] Writing 497233 bytes to __results__.html\n"}
+]

@@ -1,0 +1,161 @@
+[{"stream_name":"stderr","time":10.351203785,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":10.351300993,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":11.899876647,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.899940415,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.899947895,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.899953269,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":12.810568971,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":12.810611866,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":12.810618729,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":12.810623717,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":14.376494165,"data":"installing laya + huggingface_hub...\n"}
+,{"stream_name":"stdout","time":19.959992254,"data":" \n"}
+,{"stream_name":"stdout","time":25.43388236,"data":"image torch: 2.11.0+cpu\n"}
+,{"stream_name":"stdout","time":27.172786818,"data":"laya 0.4.31 | torch 2.11.0+cpu | cuda False\n"}
+,{"stream_name":"stderr","time":32.63647314,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":32.636520383,"data":"\n"}
+,{"stream_name":"stderr","time":32.636526835,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":36.374064379000004,"data":"[data] 115 FIT + 60 EVAL items (SKIP=2500); eval answerable 49/60\n"}
+,{"stream_name":"stdout","time":36.375115758,"data":"  tool-count range: 1-9\n"}
+,{"stream_name":"stdout","time":36.414672748,"data":"downloading StartLux-Decision-v1-0.8B...\n"}
+,{"stream_name":"stdout","time":43.412868691,"data":"[startlux] filtered reqs: ['transformers\u003e=5.8\\n', 'huggingface_hub\u003e=0.34\\n', 'safetensors\u003e=0.4\\n', 'pillow\u003e=10\\n', 'peft\u003e=0.20\\n', 'pyarrow\u003e=15\\n']\n"}
+,{"stream_name":"stdout","time":81.324991071,"data":"[startlux] fast_kernels_active=?\n"}
+,{"stream_name":"stderr","time":82.20268738,"data":"[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":82.202745128,"data":"\n"}
+,{"stream_name":"stderr","time":82.20275092,"data":"[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":82.38951018,"data":"[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":82.389577928,"data":"\n"}
+,{"stream_name":"stderr","time":82.389583817,"data":"[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n"}
+,{"stream_name":"stdout","time":139.467400629,"data":"  startlux 0/60 (58s)\n"}
+,{"stream_name":"stdout","time":943.945812717,"data":"  startlux 15/60 (863s)\n"}
+,{"stream_name":"stdout","time":1641.417079787,"data":"  startlux 30/60 (1560s)\n"}
+,{"stream_name":"stdout","time":2145.769751836,"data":"  startlux 45/60 (2064s)\n"}
+,{"stream_name":"stdout","time":2899.007013985,"data":"[startlux] gold@1 41/60 (2817.7s)\n"}
+,{"stream_name":"stderr","time":2906.887613432,"data":"/tmp/ipykernel_16/3420518710.py:37: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -\u003e 0.5. Treat confidence from the affected entries as uncalibrated.\n"}
+,{"stream_name":"stderr","time":2906.887705482,"data":"  enc = laya.Agent(\"convaiinnovations/laya\")\n"}
+,{"stream_name":"stderr","time":2906.887713002,"data":"\n"}
+,{"stream_name":"stderr","time":2906.887718818,"data":"/tmp/ipykernel_16/3420518710.py:37: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -\u003e 0.5. Treat confidence from the affected entries as uncalibrated.\n"}
+,{"stream_name":"stderr","time":2906.887725772,"data":"  enc = laya.Agent(\"convaiinnovations/laya\")\n"}
+,{"stream_name":"stdout","time":2914.695354707,"data":"  encoder 0/60 (16s)\n"}
+,{"stream_name":"stdout","time":3055.62145473,"data":"  encoder 20/60 (157s)\n"}
+,{"stream_name":"stdout","time":3184.022006372,"data":"  encoder 40/60 (285s)\n"}
+,{"stream_name":"stdout","time":3313.682470138,"data":"[encoder] gold@1 29/60 (415s)\n"}
+,{"stream_name":"stdout","time":3315.660127893,"data":"vega: 2 torch threads on CPU, torch's default. The best value here belongs to the reader: on the shipped Qwen3.5 readers one thread measured 4.9x faster than four, with identical answers, while a plain-transformer reader preferred four. Pass threads=N to vegaml.load(); bench/cpu_path.py sweeps it on this box.\n"}
+,{"stream_name":"stdout","time":3334.554906946,"data":"[vega] fitting on 115 answerable rows...\n"}
+,{"stream_name":"stdout","time":3958.662027043,"data":"[vega] fit done (624s) serving=[]\n"}
+,{"stream_name":"stdout","time":3959.092810514,"data":"vega: 2 torch threads on CPU, torch's default. The best value here belongs to the reader: on the shipped Qwen3.5 readers one thread measured 4.9x faster than four, with identical answers, while a plain-transformer reader preferred four. Pass threads=N to vegaml.load(); bench/cpu_path.py sweeps it on this box.\n"}
+,{"stream_name":"stdout","time":4091.920468517,"data":"  vega 0/60 (11s)\n"}
+,{"stream_name":"stdout","time":4266.952019227,"data":"  vega 15/60 (186s)\n"}
+,{"stream_name":"stdout","time":4415.336081258,"data":"  vega 30/60 (335s)\n"}
+,{"stream_name":"stdout","time":4574.673880986,"data":"  vega 45/60 (494s)\n"}
+,{"stream_name":"stdout","time":4716.520858888,"data":"[vega] gold@1 31/60 (636.0s)\n"}
+,{"stream_name":"stdout","time":4716.605170134,"data":"{\n"}
+,{"stream_name":"stdout","time":4716.605232379,"data":" \"startlux\": {\n"}
+,{"stream_name":"stdout","time":4716.605239624,"data":"  \"n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.605244887,"data":"  \"gold_at_1\": 41,\n"}
+,{"stream_name":"stdout","time":4716.605332932,"data":"  \"acc\": 0.6833333333333333,\n"}
+,{"stream_name":"stdout","time":4716.605340438,"data":"  \"status\": \"loaded\"\n"}
+,{"stream_name":"stdout","time":4716.605344852,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605349638,"data":" \"laya_encoder_zeroshot\": {\n"}
+,{"stream_name":"stdout","time":4716.605354706,"data":"  \"n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.605358821,"data":"  \"gold_at_1\": 29,\n"}
+,{"stream_name":"stdout","time":4716.605363118,"data":"  \"acc\": 0.48333333333333334,\n"}
+,{"stream_name":"stdout","time":4716.605367133,"data":"  \"brier\": 0.2765602363333333,\n"}
+,{"stream_name":"stdout","time":4716.605371131,"data":"  \"ece\": 0.20590333333333338,\n"}
+,{"stream_name":"stdout","time":4716.60537553,"data":"  \"risk_coverage\": {\n"}
+,{"stream_name":"stdout","time":4716.605380315,"data":"   \"acc@50pct_cov\": 0.6333333333333333,\n"}
+,{"stream_name":"stdout","time":4716.605385219,"data":"   \"acc@70pct_cov\": 0.5952380952380952,\n"}
+,{"stream_name":"stdout","time":4716.605389766,"data":"   \"acc@90pct_cov\": 0.5185185185185185,\n"}
+,{"stream_name":"stdout","time":4716.605394653,"data":"   \"acc@100pct_cov\": 0.48333333333333334\n"}
+,{"stream_name":"stdout","time":4716.605399249,"data":"  },\n"}
+,{"stream_name":"stdout","time":4716.605403778,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":4716.605408807,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605412555,"data":" \"laya_encoder_answerable\": {\n"}
+,{"stream_name":"stdout","time":4716.605416738,"data":"  \"n\": 49,\n"}
+,{"stream_name":"stdout","time":4716.605420612,"data":"  \"gold_at_1\": 29,\n"}
+,{"stream_name":"stdout","time":4716.605424873,"data":"  \"acc\": 0.5918367346938775,\n"}
+,{"stream_name":"stdout","time":4716.60542931,"data":"  \"brier\": 0.16808946530612245,\n"}
+,{"stream_name":"stdout","time":4716.605433315,"data":"  \"ece\": 0.12171020408163268,\n"}
+,{"stream_name":"stdout","time":4716.60543817,"data":"  \"risk_coverage\": {\n"}
+,{"stream_name":"stdout","time":4716.605442802,"data":"   \"acc@50pct_cov\": 0.875,\n"}
+,{"stream_name":"stdout","time":4716.605447747,"data":"   \"acc@70pct_cov\": 0.7352941176470589,\n"}
+,{"stream_name":"stdout","time":4716.605452578,"data":"   \"acc@90pct_cov\": 0.6363636363636364,\n"}
+,{"stream_name":"stdout","time":4716.605456777,"data":"   \"acc@100pct_cov\": 0.5918367346938775\n"}
+,{"stream_name":"stdout","time":4716.605461662,"data":"  },\n"}
+,{"stream_name":"stdout","time":4716.605466303,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":4716.605470321,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605474167,"data":" \"laya_vega_fitted\": {\n"}
+,{"stream_name":"stdout","time":4716.605478833,"data":"  \"n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.60548278,"data":"  \"gold_at_1\": 31,\n"}
+,{"stream_name":"stdout","time":4716.605486755,"data":"  \"acc\": 0.5166666666666667,\n"}
+,{"stream_name":"stdout","time":4716.605490854,"data":"  \"brier\": 0.26830772861981667,\n"}
+,{"stream_name":"stdout","time":4716.605494863,"data":"  \"ece\": 0.23548635000000004,\n"}
+,{"stream_name":"stdout","time":4716.605498858,"data":"  \"risk_coverage\": {\n"}
+,{"stream_name":"stdout","time":4716.605502813,"data":"   \"acc@50pct_cov\": 0.6666666666666666,\n"}
+,{"stream_name":"stdout","time":4716.605506818,"data":"   \"acc@70pct_cov\": 0.6428571428571429,\n"}
+,{"stream_name":"stdout","time":4716.605510992,"data":"   \"acc@90pct_cov\": 0.5555555555555556,\n"}
+,{"stream_name":"stdout","time":4716.605514881,"data":"   \"acc@100pct_cov\": 0.5166666666666667\n"}
+,{"stream_name":"stdout","time":4716.605526521,"data":"  },\n"}
+,{"stream_name":"stdout","time":4716.605532781,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":4716.605536613,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605540555,"data":" \"laya_vega_answerable\": {\n"}
+,{"stream_name":"stdout","time":4716.605546476,"data":"  \"n\": 49,\n"}
+,{"stream_name":"stdout","time":4716.605550333,"data":"  \"gold_at_1\": 31,\n"}
+,{"stream_name":"stdout","time":4716.605554923,"data":"  \"acc\": 0.6326530612244898,\n"}
+,{"stream_name":"stdout","time":4716.605559335,"data":"  \"brier\": 0.15236186240785715,\n"}
+,{"stream_name":"stdout","time":4716.605564128,"data":"  \"ece\": 0.10674406122448982,\n"}
+,{"stream_name":"stdout","time":4716.605569175,"data":"  \"risk_coverage\": {\n"}
+,{"stream_name":"stdout","time":4716.605574374,"data":"   \"acc@50pct_cov\": 0.9166666666666666,\n"}
+,{"stream_name":"stdout","time":4716.605578628,"data":"   \"acc@70pct_cov\": 0.7941176470588235,\n"}
+,{"stream_name":"stdout","time":4716.605582765,"data":"   \"acc@90pct_cov\": 0.7045454545454546,\n"}
+,{"stream_name":"stdout","time":4716.605586938,"data":"   \"acc@100pct_cov\": 0.6326530612244898\n"}
+,{"stream_name":"stdout","time":4716.605590931,"data":"  },\n"}
+,{"stream_name":"stdout","time":4716.605594739,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":4716.60559867,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605602595,"data":" \"startlux_detail\": {\n"}
+,{"stream_name":"stdout","time":4716.605606586,"data":"  \"n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.605610441,"data":"  \"gold_at_1\": 41,\n"}
+,{"stream_name":"stdout","time":4716.605614375,"data":"  \"acc\": 0.6833333333333333\n"}
+,{"stream_name":"stdout","time":4716.60561868,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605622639,"data":" \"startlux_answerable\": {\n"}
+,{"stream_name":"stdout","time":4716.605627555,"data":"  \"n\": 49,\n"}
+,{"stream_name":"stdout","time":4716.605631992,"data":"  \"gold_at_1\": 41,\n"}
+,{"stream_name":"stdout","time":4716.605635862,"data":"  \"acc\": 0.8367346938775511\n"}
+,{"stream_name":"stdout","time":4716.605640525,"data":" }\n"}
+,{"stream_name":"stdout","time":4716.605644863,"data":"}\n"}
+,{"stream_name":"stdout","time":4716.605649616,"data":"{\n"}
+,{"stream_name":"stdout","time":4716.605653973,"data":" \"startlux_vs_encoder\": {\n"}
+,{"stream_name":"stdout","time":4716.605658524,"data":"  \"shared_n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.605662548,"data":"  \"both_right\": 26,\n"}
+,{"stream_name":"stdout","time":4716.60566656,"data":"  \"startlux_only_right\": 15,\n"}
+,{"stream_name":"stdout","time":4716.605670842,"data":"  \"encoder_only_right\": 3,\n"}
+,{"stream_name":"stdout","time":4716.605674899,"data":"  \"both_wrong\": 16,\n"}
+,{"stream_name":"stdout","time":4716.605678801,"data":"  \"sign_test_z\": 2.593\n"}
+,{"stream_name":"stdout","time":4716.605682789,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605686558,"data":" \"startlux_vs_vega\": {\n"}
+,{"stream_name":"stdout","time":4716.605796994,"data":"  \"shared_n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.60580577,"data":"  \"both_right\": 28,\n"}
+,{"stream_name":"stdout","time":4716.605810083,"data":"  \"startlux_only_right\": 13,\n"}
+,{"stream_name":"stdout","time":4716.605814228,"data":"  \"vega_only_right\": 3,\n"}
+,{"stream_name":"stdout","time":4716.6058182,"data":"  \"both_wrong\": 16,\n"}
+,{"stream_name":"stdout","time":4716.605822214,"data":"  \"sign_test_z\": 2.25\n"}
+,{"stream_name":"stdout","time":4716.605826329,"data":" },\n"}
+,{"stream_name":"stdout","time":4716.605830337,"data":" \"encoder_vs_vega\": {\n"}
+,{"stream_name":"stdout","time":4716.605852605,"data":"  \"shared_n\": 60,\n"}
+,{"stream_name":"stdout","time":4716.605862714,"data":"  \"both_right\": 24,\n"}
+,{"stream_name":"stdout","time":4716.605866979,"data":"  \"encoder_only_right\": 5,\n"}
+,{"stream_name":"stdout","time":4716.605871074,"data":"  \"vega_only_right\": 7,\n"}
+,{"stream_name":"stdout","time":4716.605875439,"data":"  \"both_wrong\": 24,\n"}
+,{"stream_name":"stdout","time":4716.605879401,"data":"  \"sign_test_z\": 0.289\n"}
+,{"stream_name":"stdout","time":4716.605883498,"data":" }\n"}
+,{"stream_name":"stdout","time":4716.605887455,"data":"}\n"}
+,{"stream_name":"stdout","time":4716.665032243,"data":"artifacts.zip: ['StartLux-0.8B', '__notebook__.ipynb', 'artifacts.zip', 'calibration', 'headtohead_metrics.json', 'items.json', 'laya_encoder_eval.json', 'laya_headtohead.json', 'laya_vega_eval.json', 'req_filtered.txt', 'run_status.json', 'startlux_results.json']\n"}
+,{"stream_name":"stderr","time":4724.924889263,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":4724.924960577,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":4725.245300108,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":4725.245354792,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":4726.417395456,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":4726.577685293,"data":"[NbConvertApp] Writing 317686 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":4730.218964185,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":4731.302052727,"data":"[NbConvertApp] Writing 627434 bytes to __results__.html\n"}
+]

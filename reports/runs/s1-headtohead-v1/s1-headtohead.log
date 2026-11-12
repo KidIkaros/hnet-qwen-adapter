@@ -1,0 +1,108 @@
+[{"stream_name":"stderr","time":7.5279966179999995,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":7.528056591,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":8.680477244,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.68051154,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.680516458,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.680520619,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":9.446900582,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.446938959,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.446945245,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.44694936,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":10.7391849,"data":"installing laya + huggingface_hub...\n"}
+,{"stream_name":"stdout","time":15.266169083,"data":" \n"}
+,{"stream_name":"stdout","time":18.737386448,"data":"laya 0.4.31 | torch 2.11.0+cpu | cuda False\n"}
+,{"stream_name":"stderr","time":23.280107058,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":23.280146783,"data":"\n"}
+,{"stream_name":"stderr","time":23.280152128,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":26.949846889,"data":"[data] 140 FIT + 60 EVAL items (SKIP=2500)\n"}
+,{"stream_name":"stdout","time":26.951050845,"data":"  gold tool-count range: 1-5\n"}
+,{"stream_name":"stdout","time":26.989708676,"data":"downloading StartLux-Decision-v1-0.8B...\n"}
+,{"stream_name":"stderr","time":175.383415625,"data":"  error: subprocess-exited-with-error\n"}
+,{"stream_name":"stderr","time":175.383454353,"data":"  \n"}
+,{"stream_name":"stderr","time":175.383460222,"data":"  × Getting requirements to build wheel did not run successfully.\n"}
+,{"stream_name":"stderr","time":175.383466359,"data":"  │ exit code: 1\n"}
+,{"stream_name":"stderr","time":175.383471865,"data":"  ╰─\u003e No available output.\n"}
+,{"stream_name":"stderr","time":175.383477209,"data":"  \n"}
+,{"stream_name":"stderr","time":175.383482139,"data":"  note: This error originates from a subprocess, and is likely not a problem with pip.\n"}
+,{"stream_name":"stderr","time":175.383856417,"data":"ERROR: Failed to build 'causal-conv1d' when getting requirements to build wheel\n"}
+,{"stream_name":"stderr","time":175.590773412,"data":"  error: subprocess-exited-with-error\n"}
+,{"stream_name":"stderr","time":175.590801105,"data":"  \n"}
+,{"stream_name":"stderr","time":175.590805774,"data":"  × Getting requirements to build wheel did not run successfully.\n"}
+,{"stream_name":"stderr","time":175.590810076,"data":"  │ exit code: 1\n"}
+,{"stream_name":"stderr","time":175.590831003,"data":"  ╰─\u003e No available output.\n"}
+,{"stream_name":"stderr","time":175.590836278,"data":"  \n"}
+,{"stream_name":"stderr","time":175.590839861,"data":"  note: This error originates from a subprocess, and is likely not a problem with pip.\n"}
+,{"stream_name":"stderr","time":175.590843844,"data":"ERROR: Failed to build 'causal-conv1d' when getting requirements to build wheel\n"}
+,{"stream_name":"stderr","time":175.590847744,"data":"\n"}
+,{"stream_name":"stderr","time":175.590851451,"data":"  error: subprocess-exited-with-error\n"}
+,{"stream_name":"stderr","time":175.590855693,"data":"  \n"}
+,{"stream_name":"stderr","time":175.590859364,"data":"  × Getting requirements to build wheel did not run successfully.\n"}
+,{"stream_name":"stderr","time":175.590863452,"data":"  │ exit code: 1\n"}
+,{"stream_name":"stderr","time":175.59086721,"data":"  ╰─\u003e No available output.\n"}
+,{"stream_name":"stderr","time":175.590871086,"data":"  \n"}
+,{"stream_name":"stderr","time":175.590874725,"data":"  note: This error originates from a subprocess, and is likely not a problem with pip.\n"}
+,{"stream_name":"stderr","time":175.590878758,"data":"ERROR: Failed to build 'causal-conv1d' when getting requirements to build wheel\n"}
+,{"stream_name":"stdout","time":176.344496465,"data":"[startlux] UNAVAILABLE: CalledProcessError: Command '['/usr/bin/python3', '-m', 'pip', 'install', '-q', '-r', '/kaggle/working/StartLux-0.8B/requirements.txt']' returned non-zero exit status 1.\n"}
+,{"stream_name":"stderr","time":206.967398837,"data":"/tmp/ipykernel_16/3587178081.py:37: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -\u003e 0.5. Treat confidence from the affected entries as uncalibrated.\n"}
+,{"stream_name":"stderr","time":206.967449185,"data":"  enc = laya.Agent(\"convaiinnovations/laya\")\n"}
+,{"stream_name":"stderr","time":206.967457449,"data":"\n"}
+,{"stream_name":"stderr","time":206.967462681,"data":"/tmp/ipykernel_16/3587178081.py:37: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -\u003e 0.5. Treat confidence from the affected entries as uncalibrated.\n"}
+,{"stream_name":"stderr","time":206.96746906,"data":"  enc = laya.Agent(\"convaiinnovations/laya\")\n"}
+,{"stream_name":"stdout","time":211.366757484,"data":"  encoder 0/60 (35s)\n"}
+,{"stream_name":"stdout","time":312.529947409,"data":"  encoder 20/60 (136s)\n"}
+,{"stream_name":"stdout","time":421.242645368,"data":"  encoder 40/60 (245s)\n"}
+,{"stream_name":"stdout","time":523.602498173,"data":"[encoder] gold@1 24/60 (347s)\n"}
+,{"stream_name":"stdout","time":525.76335249,"data":"vega: 2 torch threads on CPU, torch's default. The best value here belongs to the reader: on the shipped Qwen3.5 readers one thread measured 4.9x faster than four, with identical answers, while a plain-transformer reader preferred four. Pass threads=N to vegaml.load(); bench/cpu_path.py sweeps it on this box.\n"}
+,{"stream_name":"stdout","time":544.523366428,"data":"[vega] fitting on 140 rows...\n"}
+,{"stream_name":"stdout","time":544.525038881,"data":"[vega] UNAVAILABLE: ValueError: a choice gold must be one of the question's options ['Positions'], got 'Rankings'\n"}
+,{"stream_name":"stdout","time":544.580056831,"data":"{\n"}
+,{"stream_name":"stdout","time":544.580095783,"data":" \"startlux\": {\n"}
+,{"stream_name":"stdout","time":544.58010181,"data":"  \"n\": 0,\n"}
+,{"stream_name":"stdout","time":544.580106772,"data":"  \"gold_at_1\": 0,\n"}
+,{"stream_name":"stdout","time":544.580111661,"data":"  \"acc\": null,\n"}
+,{"stream_name":"stdout","time":544.580160998,"data":"  \"status\": \"unavailable\"\n"}
+,{"stream_name":"stdout","time":544.58016464,"data":" },\n"}
+,{"stream_name":"stdout","time":544.580167063,"data":" \"laya_encoder_zeroshot\": {\n"}
+,{"stream_name":"stdout","time":544.580169514,"data":"  \"n\": 60,\n"}
+,{"stream_name":"stdout","time":544.580173099,"data":"  \"gold_at_1\": 24,\n"}
+,{"stream_name":"stdout","time":544.58017667,"data":"  \"acc\": 0.4,\n"}
+,{"stream_name":"stdout","time":544.580180587,"data":"  \"brier\": 0.4597186321666667,\n"}
+,{"stream_name":"stdout","time":544.5801843,"data":"  \"ece\": 0.49237833333333325,\n"}
+,{"stream_name":"stdout","time":544.580188299,"data":"  \"risk_coverage\": {\n"}
+,{"stream_name":"stdout","time":544.580191957,"data":"   \"acc@50pct_cov\": 0.36666666666666664,\n"}
+,{"stream_name":"stdout","time":544.580195779,"data":"   \"acc@70pct_cov\": 0.4523809523809524,\n"}
+,{"stream_name":"stdout","time":544.580199359,"data":"   \"acc@90pct_cov\": 0.4444444444444444,\n"}
+,{"stream_name":"stdout","time":544.580203201,"data":"   \"acc@100pct_cov\": 0.4\n"}
+,{"stream_name":"stdout","time":544.580207127,"data":"  },\n"}
+,{"stream_name":"stdout","time":544.58021068,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":544.580214603,"data":" },\n"}
+,{"stream_name":"stdout","time":544.580218226,"data":" \"laya_vega_fitted\": {\n"}
+,{"stream_name":"stdout","time":544.580222088,"data":"  \"n\": 0,\n"}
+,{"stream_name":"stdout","time":544.580225854,"data":"  \"gold_at_1\": 0,\n"}
+,{"stream_name":"stdout","time":544.580229713,"data":"  \"acc\": 0.0,\n"}
+,{"stream_name":"stdout","time":544.580233813,"data":"  \"brier\": null,\n"}
+,{"stream_name":"stdout","time":544.580237674,"data":"  \"ece\": null,\n"}
+,{"stream_name":"stdout","time":544.580241511,"data":"  \"risk_coverage\": {},\n"}
+,{"stream_name":"stdout","time":544.580245403,"data":"  \"errors\": 0\n"}
+,{"stream_name":"stdout","time":544.580249244,"data":" }\n"}
+,{"stream_name":"stdout","time":544.580252789,"data":"}\n"}
+,{"stream_name":"stdout","time":544.580276445,"data":"{\n"}
+,{"stream_name":"stdout","time":544.580280467,"data":" \"encoder_vs_vega\": {\n"}
+,{"stream_name":"stdout","time":544.5802845,"data":"  \"shared_n\": 0,\n"}
+,{"stream_name":"stdout","time":544.580288398,"data":"  \"both_right\": 0,\n"}
+,{"stream_name":"stdout","time":544.580292275,"data":"  \"encoder_only_right\": 0,\n"}
+,{"stream_name":"stdout","time":544.580296153,"data":"  \"vega_only_right\": 0,\n"}
+,{"stream_name":"stdout","time":544.580299999,"data":"  \"both_wrong\": 0,\n"}
+,{"stream_name":"stdout","time":544.580304445,"data":"  \"sign_test_z\": null\n"}
+,{"stream_name":"stdout","time":544.580308933,"data":" }\n"}
+,{"stream_name":"stdout","time":544.580312661,"data":"}\n"}
+,{"stream_name":"stdout","time":544.611747095,"data":"artifacts.zip: ['StartLux-0.8B', '__notebook__.ipynb', 'artifacts.zip', 'headtohead_metrics.json', 'items.json', 'laya_encoder_eval.json', 'laya_headtohead.json', 'laya_vega_eval.json', 'run_status.json', 'startlux_results.json']\n"}
+,{"stream_name":"stderr","time":551.573597545,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":551.573638031,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":551.81735777,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":551.817411766,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":552.794635342,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":552.927468437,"data":"[NbConvertApp] Writing 250483 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":556.277884201,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":557.110071148,"data":"[NbConvertApp] Writing 553749 bytes to __results__.html\n"}
+]

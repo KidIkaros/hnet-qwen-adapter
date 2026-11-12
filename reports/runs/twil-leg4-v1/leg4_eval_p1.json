@@ -1,0 +1,201 @@
+{
+ "results": [
+  {
+   "domain": "nemotron_terminal",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": NaN,
+   "n_preds": 4059,
+   "input_cov": 0.0,
+   "target_cov": 0.9912087912087912
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": NaN,
+   "n_preds": 4008,
+   "input_cov": 0.0,
+   "target_cov": 0.9787545787545787
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": NaN,
+   "n_preds": 4082,
+   "input_cov": 0.0,
+   "target_cov": 0.9968253968253968
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": NaN,
+   "n_preds": 719,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": NaN,
+   "n_preds": 678,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": NaN,
+   "n_preds": 1204,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": NaN,
+   "n_preds": 974,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": NaN,
+   "n_preds": 3127,
+   "input_cov": 0.0,
+   "target_cov": 0.7636141636141636
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": NaN,
+   "n_preds": 3981,
+   "input_cov": 0.0,
+   "target_cov": 0.9721611721611721
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": NaN,
+   "n_preds": 4093,
+   "input_cov": 0.0,
+   "target_cov": 0.9995115995115995
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": NaN,
+   "n_preds": 4093,
+   "input_cov": 0.0,
+   "target_cov": 0.9995115995115995
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": NaN,
+   "n_preds": 4093,
+   "input_cov": 0.0,
+   "target_cov": 0.9995115995115995
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": NaN,
+   "n_preds": 4092,
+   "input_cov": 0.0,
+   "target_cov": 0.9992673992673993
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": NaN,
+   "n_preds": 4091,
+   "input_cov": 0.0,
+   "target_cov": 0.999023199023199
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": NaN,
+   "n_preds": 4085,
+   "input_cov": 0.0,
+   "target_cov": 0.9975579975579976
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": NaN,
+   "n_preds": 4084,
+   "input_cov": 0.0,
+   "target_cov": 0.9973137973137973
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": NaN,
+   "n_preds": 4093,
+   "input_cov": 0.0,
+   "target_cov": 0.9995115995115995
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": NaN,
+   "n_preds": 4091,
+   "input_cov": 0.0,
+   "target_cov": 0.999023199023199
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": NaN,
+   "n_preds": 4095,
+   "input_cov": 0.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": NaN,
+   "n_preds": 4089,
+   "input_cov": 0.0,
+   "target_cov": 0.9985347985347985
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": NaN,
+   "n_preds": 4094,
+   "input_cov": 0.0,
+   "target_cov": 0.9997557997557998
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": NaN,
+   "n_preds": 4088,
+   "input_cov": 0.0,
+   "target_cov": 0.9982905982905983
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": NaN,
+   "n_preds": 4089,
+   "input_cov": 0.0,
+   "target_cov": 0.9985347985347985
+  }
+ ],
+ "overall": NaN
+}

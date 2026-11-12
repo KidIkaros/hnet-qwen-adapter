@@ -1,0 +1,74 @@
+{
+ "kernel": "twil-leg3",
+ "lane": "gpu-2xt4",
+ "elapsed_h": 5.29,
+ "legs": {
+  "load": "ok",
+  "baseline": "done",
+  "armA_p2": "done",
+  "armB_p1": "aborted",
+  "eval": "done"
+ },
+ "errors": [],
+ "verdict": {
+  "armA_p2": {
+   "learned": 3.618,
+   "base": 6.9644,
+   "delta": 3.3464,
+   "curve": [
+    {
+     "step": 0,
+     "bpb": 7.001406163403926,
+     "n_docs": 8
+    },
+    {
+     "step": 50,
+     "bpb": 6.762652272332005,
+     "n_docs": 8
+    },
+    {
+     "step": 250,
+     "bpb": 6.821341810837838,
+     "n_docs": 8
+    },
+    {
+     "step": 750,
+     "bpb": 6.617800538359336,
+     "n_docs": 8
+    },
+    {
+     "step": 1500,
+     "bpb": 5.512094230067284,
+     "n_docs": 8
+    },
+    {
+     "step": 3000,
+     "bpb": 3.9078561030752668,
+     "n_docs": 8
+    }
+   ]
+  },
+  "armB_p1": {
+   "learned": NaN,
+   "base": 3.8803,
+   "delta": NaN,
+   "curve": [
+    {
+     "step": 0,
+     "bpb": 3.97414575869552,
+     "n_docs": 8
+    },
+    {
+     "step": "final",
+     "bpb": NaN,
+     "n_docs": 8
+    }
+   ]
+  },
+  "effective_sanity": {
+   "nemotron_terminal/v0": 4.927823369793419,
+   "nemotron_terminal/learned": 3.0998386489661343
+  },
+  "beats_leg2_delta_0_579": true
+ }
+}

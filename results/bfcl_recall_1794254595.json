@@ -1,0 +1,636 @@
+{
+ "args": 676,
+ "parsed": 674,
+ "recovered": 535,
+ "verbatim": 226,
+ "items": 160,
+ "schema_ok": 160,
+ "req_total": 560,
+ "req_hit": 472,
+ "opt_total": 114,
+ "opt_hit": 63,
+ "abstain_ok": 53,
+ "recall_parsed": 0.7938,
+ "baseline_verbatim": 0.3353,
+ "parse_rate": 0.997,
+ "recall_required": 0.8429,
+ "recall_optional": 0.5526,
+ "misses": [
+  {
+   "cat": "simple",
+   "tool": "calculate_derivative",
+   "arg": "function",
+   "gold": "['3x**2 + 2x - 1', 'lambda x: 3x**2 + 2x - 1']",
+   "type": "string"
+  },
+  {
+   "cat": "simple",
+   "tool": "calculate_final_velocity",
+   "arg": "initial_velocity",
+   "gold": "[0]",
+   "type": "integer"
+  },
+  {
+   "cat": "simple",
+   "tool": "calculate_final_speed",
+   "arg": "initial_velocity",
+   "gold": "[0]",
+   "type": "integer"
+  },
+  {
+   "cat": "simple",
+   "tool": "vegan_restaurant.find_nearby",
+   "arg": "location",
+   "gold": "['New York, NY']",
+   "type": "string"
+  },
+  {
+   "cat": "multiple",
+   "tool": "weather.get_by_coordinates_date",
+   "arg": "coordinates",
+   "gold": "[[46.603354, 1.888334]]",
+   "type": "tuple"
+  },
+  {
+   "cat": "multiple",
+   "tool": "weather.get_by_coordinates_date",
+   "arg": "date",
+   "gold": "['2019-12-13']",
+   "type": "string"
+  },
+  {
+   "cat": "multiple",
+   "tool": "wildlife_population.assess_growth",
+   "arg": "duration",
+   "gold": "[10]",
+   "type": "integer"
+  },
+  {
+   "cat": "multiple",
+   "tool": "realestate.find_properties",
+   "arg": "budget",
+   "gold": "[{'min': [300000], 'max': [400000]}]",
+   "type": "object"
+  },
+  {
+   "cat": "multiple",
+   "tool": "calculate_average",
+   "arg": "gradeDict",
+   "gold": "[{'math': [90], 'science': [75], 'history': [82], 'music': [",
+   "type": "object"
+  },
+  {
+   "cat": "multiple",
+   "tool": "database.modify_columns",
+   "arg": "columns",
+   "gold": "[['email', 'ssn'], ['ssn', 'email'], ['email', 'social_secur",
+   "type": "array"
+  },
+  {
+   "cat": "multiple",
+   "tool": "corporate_finance.calculate_YOY_growth_rate",
+   "arg": "year1_revenue",
+   "gold": "[1000000]",
+   "type": "integer"
+  },
+  {
+   "cat": "multiple",
+   "tool": "corporate_finance.calculate_YOY_growth_rate",
+   "arg": "year2_revenue",
+   "gold": "[1200000]",
+   "type": "integer"
+  },
+  {
+   "cat": "multiple",
+   "tool": "finance.property_depreciation",
+   "arg": "initial_cost",
+   "gold": "[200000]",
+   "type": "integer"
+  },
+  {
+   "cat": "multiple",
+   "tool": "religion_history.get_schisms",
+   "arg": "count",
+   "gold": "[3]",
+   "type": "integer"
+  },
+  {
+   "cat": "multiple",
+   "tool": "basketball.player_stats.get",
+   "arg": "stats_fields",
+   "gold": "[['points per game', 'assists', 'minutes per game'], ['point",
+   "type": "array"
+  },
+  {
+   "cat": "multiple",
+   "tool": "functions.intersect",
+   "arg": "function1",
+   "gold": "['3x + 2', 'lambda x: 3x + 2']",
+   "type": "string"
+  },
+  {
+   "cat": "multiple",
+   "tool": "functions.intersect",
+   "arg": "function2",
+   "gold": "['2x + 3', 'lambda x: 2x + 3']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel",
+   "tool": "streaming_services.shows_list_and_ratings",
+   "arg": "show_list",
+   "gold": "[['Friends']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "streaming_services.shows_list_and_ratings",
+   "arg": "show_list",
+   "gold": "[['The Office', 'Stranger Things'], ['Stranger Things', 'The",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "database_us_census.get_population",
+   "arg": "type",
+   "gold": "['country']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel",
+   "tool": "find_movie_showing",
+   "arg": "movie",
+   "gold": "[['Tenet']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "find_movie_showing",
+   "arg": "time",
+   "gold": "[['5 pm'], ['17:00']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "find_movie_showing",
+   "arg": "movie",
+   "gold": "[['No Time To Die']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "find_movie_showing",
+   "arg": "time",
+   "gold": "[['7:30 pm'], ['19:30']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_present_value",
+   "arg": "interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_present_value",
+   "arg": "interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_present_value",
+   "arg": "interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_return_on_investment",
+   "arg": "gain_loss",
+   "gold": "[-1000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "symbol",
+   "gold": "['AAPL']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "data_points",
+   "gold": "[['price', 'volume'], ['volume', 'price']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "symbol",
+   "gold": "['GOOG', 'GOOGL']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "data_points",
+   "gold": "[['price', 'volume'], ['volume', 'price']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "symbol",
+   "gold": "['MSFT']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_stock_data",
+   "arg": "data_points",
+   "gold": "[['price', 'volume'], ['volume', 'price']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "financials.calculate_future_value",
+   "arg": "annual_interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "financials.calculate_future_value",
+   "arg": "annual_interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "financials.calculate_future_value",
+   "arg": "annual_interest_rate",
+   "gold": "[0.05]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "loan_amount",
+   "gold": "[400000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "interest_rate",
+   "gold": "[0.04]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "loan_amount",
+   "gold": "[400000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "interest_rate",
+   "gold": "[0.04]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "loan_amount",
+   "gold": "[400000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "calculate_mortgage_payment",
+   "arg": "interest_rate",
+   "gold": "[0.04]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel",
+   "tool": "loan_eligibility_check",
+   "arg": "loan_amount",
+   "gold": "[500000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "loan_eligibility_check",
+   "arg": "annual_income",
+   "gold": "[100000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "loan_eligibility_check",
+   "arg": "loan_amount",
+   "gold": "[700000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "loan_eligibility_check",
+   "arg": "annual_income",
+   "gold": "[120000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "alimony_calculator.ca.calculate",
+   "arg": "payor_income",
+   "gold": "[10000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "alimony_calculator.ca.calculate",
+   "arg": "recipient_income",
+   "gold": "[3000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "alimony_calculator.ca.calculate",
+   "arg": "payor_income",
+   "gold": "[10000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "alimony_calculator.ca.calculate",
+   "arg": "recipient_income",
+   "gold": "[3000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "court_case.find",
+   "arg": "case_number",
+   "gold": "[['67813']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "court_case.find",
+   "arg": "case_number",
+   "gold": "[['71249']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "court_case.find",
+   "arg": "case_number",
+   "gold": "[['67813']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "court_case.find",
+   "arg": "case_number",
+   "gold": "[['71249']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "nature_reserve.find_nearby",
+   "arg": "amenities",
+   "gold": "[['Picnic Tables', 'Public Restrooms'], ['Public Restrooms',",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "nature_reserve.find_nearby",
+   "arg": "amenities",
+   "gold": "[['Playgrounds', 'Biking Trails'], ['Biking Trails', 'Playgr",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_current_and_future_temperature",
+   "arg": "hours",
+   "gold": "[3]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "get_current_and_future_temperature",
+   "arg": "hours",
+   "gold": "[3]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel",
+   "tool": "waste_calculation.calculate",
+   "arg": "population",
+   "gold": "[{'adults': [2], 'children': [2], 'singles': [0]}]",
+   "type": "object"
+  },
+  {
+   "cat": "parallel",
+   "tool": "waste_calculation.calculate",
+   "arg": "population",
+   "gold": "[{'adults': [0], 'children': [0], 'singles': [1]}]",
+   "type": "object"
+  },
+  {
+   "cat": "parallel",
+   "tool": "color_converter.get_color_info",
+   "arg": "conversion_type",
+   "gold": "[['RGB', 'HEX'], ['HEX', 'RGB']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "color_converter.get_color_info",
+   "arg": "conversion_type",
+   "gold": "[['RGB', 'HEX'], ['HEX', 'RGB']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "color_converter.get_color_info",
+   "arg": "conversion_type",
+   "gold": "[['RGB', 'HEX'], ['HEX', 'RGB']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "museum_info.get_info",
+   "arg": "details",
+   "gold": "[['Opening hours', 'Adult tickets', 'Child tickets'], ['Open",
+   "type": "array"
+  },
+  {
+   "cat": "parallel",
+   "tool": "museum_info.get_info",
+   "arg": "details",
+   "gold": "[['Opening hours', 'Adult tickets', 'Child tickets'], ['Open",
+   "type": "array"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "integral",
+   "arg": "function",
+   "gold": "['x**2', 'lambda x : x**2']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "derivative",
+   "arg": "function",
+   "gold": "['x**2', 'lambda x : x**2']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "musical_ticket.buy",
+   "arg": "date",
+   "gold": "['2023-06-30']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "train_ticket.buy",
+   "arg": "date",
+   "gold": "['2023-06-30']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "restaurant.search",
+   "arg": "location",
+   "gold": "['New York, NY']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "restaurant.search",
+   "arg": "location",
+   "gold": "['Los Angeles, CA']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "currency_conversion",
+   "arg": "from_currency",
+   "gold": "['USD', 'United States Dollar']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "currency_conversion",
+   "arg": "to_currency",
+   "gold": "['EUR', 'Euro']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "math.gaussian_integral",
+   "arg": "function",
+   "gold": "['exp(-x**2)', 'lambda x: exp(-x**2)']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "math.definite_integral",
+   "arg": "function",
+   "gold": "['sin(x)', 'lambda x: sin(x)']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "linear_regression_fit",
+   "arg": "x",
+   "gold": "[\"data['sales']\"]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "linear_regression_fit",
+   "arg": "y",
+   "gold": "[\"data['future_sales']\"]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "financial_ratio.net_profit_margin",
+   "arg": "net_income",
+   "gold": "[20000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "financial_ratio.net_profit_margin",
+   "arg": "total_revenue",
+   "gold": "[100000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "financial_ratio.debt_ratio",
+   "arg": "total_liabilities",
+   "gold": "[10000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "financial_ratio.debt_ratio",
+   "arg": "total_assets",
+   "gold": "[30000]",
+   "type": "integer"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "stock_invest.calculate_investment_cost",
+   "arg": "company",
+   "gold": "['Apple', 'AAPL']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "bank_account.calculate_interest",
+   "arg": "rate",
+   "gold": "[0.03]",
+   "type": "number"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "supermarket.find_in_city",
+   "arg": "state",
+   "gold": "['California', 'CA']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "sightseeing.popular_in_city",
+   "arg": "state",
+   "gold": "['Florida', 'FL']",
+   "type": "string"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "euro_history.battle_details",
+   "arg": "specific_info",
+   "gold": "[['overview']]",
+   "type": "array"
+  },
+  {
+   "cat": "parallel_multiple",
+   "tool": "euro_history.treaty_info",
+   "arg": "info_requested",
+   "gold": "[['overview']]",
+   "type": "array"
+  }
+ ]
+}

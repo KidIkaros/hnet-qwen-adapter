@@ -1,0 +1,9 @@
+{
+ "inputs_embeds": "ok",
+ "logits_to_keep": "ok",
+ "probe_logits_shape": [
+  1,
+  4,
+  100352
+ ]
+}

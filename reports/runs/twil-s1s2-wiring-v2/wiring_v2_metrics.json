@@ -1,0 +1,37 @@
+{
+ "metrics": {
+  "n_items": 40,
+  "SL_CPU": true,
+  "s1_acc_all": 0.75,
+  "s1_acc_ans": 1.0,
+  "s1_mean_gen_s": 10.50725,
+  "route_auto_n": 21,
+  "route_auto_s1_acc": 0.8571428571428571,
+  "route_review_n": 16,
+  "route_review_s1_acc": 0.625,
+  "route_escalate_n": 3,
+  "route_escalate_s1_acc": 0.6666666666666666,
+  "verify_n": 19,
+  "verify_acc_final": 0.42105263157894735,
+  "verify_acc_ans": 0.6666666666666666,
+  "s1_acc_on_verified": 0.631578947368421,
+  "switch_n": 0,
+  "switch_precision": null,
+  "confirm_rate": 0.7368421052631579,
+  "abstain_rate": 0.0,
+  "verdict_none_rate": 0.2631578947368421,
+  "verify_mean_gen_s": 36.06315789473685,
+  "recovery_on_s1_wrong": 0.0,
+  "breakage_on_s1_right": 0.3333333333333333,
+  "abstain_on_unanswerable": 0.0,
+  "e2e_P1_ans": 0.8666666666666667,
+  "e2e_P2_ans": 0.9666666666666667,
+  "route_counts": {
+   "auto": 21,
+   "review": 16,
+   "escalate": 3,
+   "error": 0
+  },
+  "wiring_v2_pass": false
+ }
+}

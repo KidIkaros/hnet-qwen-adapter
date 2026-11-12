@@ -1,0 +1,64 @@
+{
+ "int4": {
+  "mmlu": {
+   "right": 932,
+   "n": 1140,
+   "acc": 0.8175,
+   "worst_subj": {
+    "college_chemistry": "9/20",
+    "global_facts": "9/20",
+    "moral_scenarios": "10/20",
+    "professional_accounting": "10/20",
+    "abstract_algebra": "12/20"
+   }
+  },
+  "humaneval": {
+   "pass": 67,
+   "n": 164,
+   "acc": 0.4085
+  },
+  "ppl": {
+   "nll": 1.77,
+   "ppl": 5.871,
+   "tokens": 16383
+  },
+  "toolace40": {
+   "right": 27,
+   "declared": 27,
+   "decl_right": 27,
+   "none": 3,
+   "n": 40
+  }
+ },
+ "bf16": {
+  "mmlu": {
+   "right": 959,
+   "n": 1140,
+   "acc": 0.8412,
+   "worst_subj": {
+    "global_facts": "9/20",
+    "moral_scenarios": "10/20",
+    "college_chemistry": "12/20",
+    "virology": "12/20",
+    "high_school_mathematics": "13/20"
+   }
+  },
+  "humaneval": {
+   "pass": 104,
+   "n": 164,
+   "acc": 0.6341
+  },
+  "ppl": {
+   "nll": 1.7367,
+   "ppl": 5.679,
+   "tokens": 16383
+  },
+  "toolace40": {
+   "right": 27,
+   "declared": 27,
+   "decl_right": 27,
+   "none": 3,
+   "n": 40
+  }
+ }
+}

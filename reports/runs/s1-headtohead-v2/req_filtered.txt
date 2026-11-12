@@ -1,0 +1,11 @@
+transformers>=5.8
+
+huggingface_hub>=0.34
+
+safetensors>=0.4
+
+pillow>=10
+
+peft>=0.20
+
+pyarrow>=15

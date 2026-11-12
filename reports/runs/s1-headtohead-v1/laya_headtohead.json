@@ -1,0 +1,12 @@
+{
+ "encoder_zero_shot": {
+  "status": "ok",
+  "n": 60,
+  "gold_at_1": 24,
+  "acc": 0.4
+ },
+ "vega": {
+  "status": "unavailable",
+  "error": "ValueError: a choice gold must be one of the question's options ['Positions'], got 'Rankings'"
+ }
+}

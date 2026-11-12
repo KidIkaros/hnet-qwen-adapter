@@ -1,0 +1,238 @@
+{
+ "results": [
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 6.208800757752434,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 6.027370323970521,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 6.437225262032692,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "nemotron_terminal",
+   "bpb": 5.904208277398106,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 5.803260638741803,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 5.248542700750861,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 6.061296690550368,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "open_swe_traces",
+   "bpb": 6.03379491964976,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "toolace",
+   "bpb": 6.396850735812947,
+   "n_preds": 345,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": 6.020046423955504,
+   "n_preds": 203,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": 6.813798739629633,
+   "n_preds": 204,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "toolace",
+   "bpb": 6.867217473719152,
+   "n_preds": 223,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 8.021843160054345,
+   "n_preds": 1874,
+   "input_cov": 1.0,
+   "target_cov": 0.9154860771861261
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 7.6501080828450645,
+   "n_preds": 1837,
+   "input_cov": 1.0,
+   "target_cov": 0.8974108451392281
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 7.316169857889324,
+   "n_preds": 1998,
+   "input_cov": 1.0,
+   "target_cov": 0.9760625305324866
+  },
+  {
+   "domain": "stack_edu",
+   "bpb": 8.02417901909915,
+   "n_preds": 1713,
+   "input_cov": 1.0,
+   "target_cov": 0.8368343917928676
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 6.330989425589659,
+   "n_preds": 2040,
+   "input_cov": 1.0,
+   "target_cov": 0.9965803615046409
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 6.516763492114933,
+   "n_preds": 2043,
+   "input_cov": 1.0,
+   "target_cov": 0.9980459208597948
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 6.54961682425443,
+   "n_preds": 2045,
+   "input_cov": 1.0,
+   "target_cov": 0.9990229604298974
+  },
+  {
+   "domain": "proofpile_arxiv",
+   "bpb": 6.445071389982115,
+   "n_preds": 2031,
+   "input_cov": 1.0,
+   "target_cov": 0.9921836834391793
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 6.013205999432975,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 5.942885808089796,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 6.000657928939208,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "common_crawl",
+   "bpb": 5.984056161666533,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 6.12979089253867,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 6.204212733173883,
+   "n_preds": 2046,
+   "input_cov": 1.0,
+   "target_cov": 0.9995114802149487
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 6.201950263615987,
+   "n_preds": 2047,
+   "input_cov": 1.0,
+   "target_cov": 1.0
+  },
+  {
+   "domain": "dolma_wiki",
+   "bpb": 6.074383997917176,
+   "n_preds": 2040,
+   "input_cov": 1.0,
+   "target_cov": 0.9965803615046409
+  }
+ ],
+ "summary": {
+  "nemotron_terminal": 6.1444,
+  "open_swe_traces": 5.7867,
+  "toolace": 6.5245,
+  "stack_edu": 7.7531,
+  "proofpile_arxiv": 6.4606,
+  "common_crawl": 5.9852,
+  "dolma_wiki": 6.1526
+ },
+ "overall": 6.401,
+ "verdict": {
+  "learned_overall": 6.401,
+  "base_overall": 6.9802,
+  "delta": 0.5792,
+  "learned_summary": {
+   "nemotron_terminal": 6.1444,
+   "open_swe_traces": 5.7867,
+   "toolace": 6.5245,
+   "stack_edu": 7.7531,
+   "proofpile_arxiv": 6.4606,
+   "common_crawl": 5.9852,
+   "dolma_wiki": 6.1526
+  },
+  "base_summary": {
+   "nemotron_terminal": 6.6254,
+   "open_swe_traces": 5.9168,
+   "toolace": 7.1334,
+   "stack_edu": 7.9967,
+   "proofpile_arxiv": 7.0004,
+   "common_crawl": 6.8172,
+   "dolma_wiki": 7.3716
+  },
+  "effective_sanity": {
+   "nemotron_terminal/v0": 5.427157214540581,
+   "nemotron_terminal/learned": 5.0546811916673455
+  },
+  "pass": true
+ }
+}

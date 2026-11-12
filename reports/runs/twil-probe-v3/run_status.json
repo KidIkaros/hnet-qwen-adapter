@@ -1,0 +1,69 @@
+{
+ "kernel": "twil-probe-v1",
+ "lane": "gpu-2xt4",
+ "legs": {
+  "A": "interface",
+  "B": "byte-bpb",
+  "C": "toolcall",
+  "D": "lsa-stubbed"
+ },
+ "errors": [],
+ "legB": {
+  "markdown": {
+   "bytes": 11190,
+   "first_byte_bpb": 6.736746776968944,
+   "n_chunk_preds": 1864,
+   "input_coverage": 1.0,
+   "target_coverage": 1.0,
+   "native_token_bpb": 0.035460470154541825,
+   "n_token_ids": 3239,
+   "elapsed_s": 38.1
+  },
+  "prose": {
+   "bytes": 15330,
+   "first_byte_bpb": 6.559843090589661,
+   "n_chunk_preds": 2554,
+   "input_coverage": 1.0,
+   "target_coverage": 1.0,
+   "native_token_bpb": 0.021096657716621624,
+   "n_token_ids": 2549,
+   "elapsed_s": 38.9
+  },
+  "code": {
+   "bytes": 13500,
+   "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 660.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 226.81 MiB is free. Including non-PyTorch memory, this process has 14.34 GiB memory in use. Of the allocated memory 13.91 GiB is allocated by PyTorch, and 309.29 MiB is reserved by PyTorch but unalloca"
+  },
+  "effective_markdown": {
+   "effective_bpb": 2.4055113626342495,
+   "doc": "markdown",
+   "bytes": 4096,
+   "elapsed_s": 41.7
+  }
+ },
+ "legC": {
+  "S1_format_valid": 1.0,
+  "S1_name_acc": 1.0,
+  "S1_mean_gen_s": 5.783333333333334,
+  "S2_format_valid": 0.9166666666666666,
+  "S2_name_acc": 0.9166666666666666,
+  "S2_mean_gen_s": 18.758333333333333,
+  "S2_think_rate": 1.0
+ },
+ "legA_interface": {
+  "inputs_embeds": "ok",
+  "logits_to_keep": "ok",
+  "probe_logits_shape": [
+   1,
+   4,
+   100352
+  ]
+ },
+ "legA_coverage": {
+  "byte_coverage": 207,
+  "missing_printable": []
+ },
+ "gpus": [
+  "Tesla T4",
+  "Tesla T4"
+ ]
+}

@@ -420,3 +420,258 @@ saved by compress_trunk SAVE_DIR; manifest written).
   with bf16 embeddings ~17.7GB; <10GB enters unverified quality regime
 - NEXT: 500-item big_exam on packed-dequant resident (optional deeper
   gate); H-Net refit -> separate artifact; generative arg composition
+
+### Modal Phase A+B complete (2026-11-09) — eval gate + first 27B training
+- hnet-eval general-quality gate (int4-dequant vs fresh bf16, identical
+  battery, greedy):
+    MMLU-5shot   int4 932/1140=81.75%   bf16 959/1140=84.12%   Δ-2.37pp
+    HumanEval@1  int4 67/164=40.85%     bf16 104/164=63.41%   Δ-22.56pp
+    wikitext-2   int4 ppl 5.871         bf16 ppl 5.679        Δ+0.19
+    toolace40    identical both: 27/27 declared, 27 right, 3 none
+  VERDICT REVISION: "GPTQ-4bit behaviorally lossless" held ONLY for
+  selection/scoring metrics (names, args, MMLU-ish). Open-ended
+  generation shows a real regression concentrated in code — 37/164
+  pass->fail flips, ~6σ vs binomial noise. Mechanism candidates: GPTQ
+  Hessian calibrated on ToolACE prompts under-weights code directions;
+  pass@1 all-or-nothing sensitivity to 4-bit noise; Heretic-tune
+  fragility. IMPLICATIONS: (a) HF repo card's lossless framing needs
+  scoping to selection tasks; (b) H-Net trains fine on the int4 host
+  (adapter learns around frozen weights) but generative downstreams
+  (arg composition!) inherit the bf16-vs-int4 gap; (c) if code
+  capability matters, recalibrate GPTQ Hessian on mixed-domain corpus
+  or raise to int8 for lm-critical linears.
+  Receipt: results/eval_gate_modal_1794249369.json
+- hnet-train27b Phase B (first gradient training on the 27B trunk):
+    enc4+dec4 DeltaNet slices + dechunk/boundary/w_sup = 3.119B
+    trainable; ridge adapters (w_in/w_out/w_main/w_enc) frozen; int4
+    trunk frozen. N_TRAIN=1000 dolma-mix docs, doc_cap 4096B, lr 1e-4
+    AdamW wd .01 clip 1.0, eval every 100 steps.
+    1000 steps in 2629s (~2.6s/step H200). held(bpb, 3-doc mean)
+    3.407->2.794; enwik8-test(50KB) 3.641->3.142 (best 3.115@900,
+    final-step uptick to 3.142@1000). Still descending at budget end —
+    no plateau, more legs/data warranted.
+    vs Phase A untrained enc6/dec8: enwik8 8.81->3.14, held 9.35->2.79.
+    vs 2B trained ref enwik8-test 1.4317: gap remains (~2.2x) but this
+    is leg-1 of a fresh lineage on a 13.5x larger trunk, 1000 docs vs
+    the 2B's multi-leg corpus.
+    CAVEATS: held here = mean over held_docs[:3] (Phase A used 8 docs);
+    best==latest (held improved at final eval) — duplicate weights,
+    ~12.4GB total on hnet-artifacts volume. Next: longer run or
+    multi-leg resume; consider eval_every smaller early for curve shape.
+    Receipt: results/hnet27b_train_1794249369.json
+
+### Parallel CPU lane on Colab (2026-11-09, session `hpar`) — arg composition + next-leg mix
+- Colab capacity check: A100/H100 rejected (no entitlement), T4 Service
+  Unavailable, **CPU runtime READY** — so the parallel lane is a remote
+  CPU VM (nothing runs on the laptop). Balance still 0.00 compute units.
+- **kernel/arg_compose.py** (new): schema-aware candidate composition,
+  deterministic + model-free. `arg_specs` parses per-property type/enum/
+  desc/items/props/required from the tool JSON; `arg_prior` gives
+  deterministic arg-name bonuses (required, lexically grounded, enum-hit);
+  `value_candidates` widens the literal set (quoted literals, enum members,
+  booleans, dates, numbers+".0", entity runs, spans, composed JSON for
+  object/array args, ranges).
+- **kernel/arg_recall.py** (new): the model-free gate. Streams the same
+  pinned slice (skip=2500, n=40) and separates declared / parsed /
+  recovered, with the extractive baseline recomputed on the SAME subset.
+- RESULT: 65 gold args = 46 declared + **19 undeclared-gold** (gold tool
+  absent from the prompt — the natural Noul set, not a composer miss).
+  Schema parse: **46/46**. Candidate recall **35/46 = 76.1%** vs extractive
+  **28/46 = 60.9%** → **+15.2pp**. Receipt: results/arg_recall_1794252019.json
+- Parse bug found and fixed: ToolACE uses Python-style types ("int",
+  "dict", "list") and tools whose properties include a field named "name"
+  truncated the block splitter → 19/65 args lost. Now top-level brace
+  matching + type normalization.
+- Remaining 11 misses, classified: 5 nested-JSON composition (arrays of
+  objects: launch_parameters, activities, submission_details,
+  clickSequence, clauseCategories), 3 normalization (2023-12, 2020-2021,
+  Asia/Tokyo), 1 integer form, 1 verbatim-but-dropped (careerGoal —
+  ordering of span candidates).
+- **src/factory.py**: added `DOLMA3_SOURCES` + `NEXT_MIX` +
+  `corpus_stream_next` (weighted multi-source streaming; `DOLMA3_REPO`
+  env override for smoke tests). Shard layout verified on the Hub:
+  `data/<source>[-<subset>]/shard_*.jsonl.zst`. All 8 sources stream OK
+  (6 dolma3_mix + Nemotron-Terminal `skill_based_mixed` + Open-SWE `v2.0`/
+  `claudecode`). `_text_of` now joins `conversations`/`messages` lists —
+  without it the agentic corpora yielded 36 bytes of metadata instead of
+  48KB/80KB of trajectory text.
+- Not yet run: the composer's GPU eval (needs the 27B scorer; Modal H200
+  after the weakness probes) and a full next-leg stream (only 10-doc smoke).
+
+### BFCL candidate-recall — the composer on real, verified golds (2026-11-09, `hpar`)
+- **kernel/bfcl_recall.py** (new): same model-free gate on BFCL v3
+  (gorilla-llm/Berkeley-Function-Calling-Leaderboard), categories
+  simple/multiple/parallel/parallel_multiple, 40 items each.
+- RESULT: 676 gold args, schema parse **674/676 = 99.7%**; candidate
+  recall **522/674 = 77.4%** vs verbatim baseline **43.3%** →
+  **+34.1pp**. Receipt: results/bfcl_recall_1794252306.json
+- vs ToolACE (+15.2pp): the lift is 2.2× larger because BFCL golds are
+  often NOT verbatim (43% vs 61%), i.e. real schemas demand exactly the
+  normalization/composition the composer adds. Recall itself is
+  comparable (77.4% vs 76.1%) — the composer is not overfit to ToolACE.
+- Remaining 152 misses skew to integer/array in `parallel` categories
+  (multi-call items where per-call value binding is ambiguous from a
+  single user turn) — the next lever, not a recall-cap problem.
+- **Metric correction:** BFCL's acceptable sets include `''`/defaults when
+  an argument may be omitted — 54 of the "misses" were legitimate
+  abstains, not composer failures. Corrected receipt
+  (results/bfcl_recall_1794252374.json): required-subset recall
+  **468/620 = 75.5%**, true misses **100** (string 31, array 29,
+  integer 25, number 10, object 4). Verbatim baseline on the same
+  required subset is 33.5% → **+42pp**.
+- **Composer fixes (miss-dump driven):** the 100 misses decomposed into
+  mechanical classes — `^`→`**` notation, edge-stripped periods on
+  abbreviations (Washington D.C.), punctuation-bearing values (New York,
+  NY), parenthesized coordinate pairs, and ranges with variable binding
+  (`x=1 to x=3`). Added `_spans_raw` (punctuation-preserving n-grams),
+  `_COORD`/`_RANGE2` extractors, abbreviation period preservation, and
+  `^`→`**` variants. Re-measured (results/bfcl_recall_1794253868.json):
+  required-subset recall **481/621 = 77.6%** (was 75.5%), true misses
+  **88** (was 100). Semantic defaults (initial_velocity=0 from "started
+  from rest") remain — inference, not extraction.
+- **probe_int4.json WAS on the volume** (earlier "missing" was a stale
+  check). Both probe arms now complete — full comparison:
+  HumanEval bf16 103/164 (0.628) vs int4 67/164 (0.4085); GSM8K bf16
+  95/100 vs int4 93/100 (0.93). **The int4 regression is syntax-
+  specific**: fail_kinds syntax 35→78 (more than doubled) while assert
+  fails stayed flat (21→16) and reasoning is preserved. Selection
+  (MMLU −2.4pp) and math (GSM8K −2pp) are near-lossless; only code
+  *emission precision* collapses. Weight-error map shows uniform rel-L2
+  ~0.154 across all projections — no localized code-direction damage.
+  Interpretation: GPTQ preserves capability but degrades fine-grained
+  token emission needed for syntactically valid code; fix candidates
+  are mixed-domain Hessian recalibration or int8 on emission-critical
+  linears, not broad retraining.
+- **Flip taxonomy** (results/probe_{bf16,int4}.json): both_pass 59,
+  bf16→int4 regressions **44** (syntax 37, assert 5, ValueError 2),
+  int4→bf16 improvements 8, both_fail 53. Net −36 ≈ observed −36.
+  **84% of regressions are syntax**, not wrong logic — int4 makes the
+  model emit malformed code, not incorrect code. Small per-layer weight
+  errors compound autoregressively into broken tokens; consistent with
+  uniform error map. Mitigations ranked: (a) grammar/constrained
+  decoding at emit time (free, inference-side), (b) int8 on
+  emission-critical linears, (c) code-weighted Hessian recalibration.
+- **METRIC CORRECTION:** the old `recall_required` formula
+  ((recovered−abstain_ok)/(parsed−abstain_ok)) was not a true
+  required-subset recall. Both harnesses now track explicit
+  req_total/req_hit/opt_total/opt_hit buckets. Corrected base-cat
+  numbers (results/bfcl_recall_1794254595.json): **required recall
+  472/560 = 84.3%**, optional recall 63/114 = 55.3%, parsed recall
+  535/674 = 79.4%. Prior "77.6%" understated required recall.
+- **BFCL breadth (Kaggle CPU kernel mauricew/bfcl-breadth, N=100/cat,
+  results/bfcl_breadth_1794254424.json):** live_simple 167/278=60.1%,
+  live_multiple 222/310=71.6%, live_parallel 70/109=64.2%,
+  live_parallel_multiple 99/145=68.3% (recall_parsed; includes
+  optionals). Schemas parse 100% on live APIs. **irrelevance**: 100/100
+  schema parse, mean 45.6 candidates/arg slot — quantified
+  hallucination surface for the abstain path. **multi_turn_base**:
+  items carry no `function` field (schemas live in involved_classes/
+  initial_config) — needs a different harness; deferred to end-to-end.
+- VERDICT: **move the eval substrate to BFCL.** ToolACE's golds are
+  measurably noisy (19/65 gold args name undeclared tools), its schema
+  dialect needed a parser workaround, and BFCL is the leaderboard-
+  comparable substrate.
+
+### Next-leg data candidates + Modal platform notes (2026-11-09)
+- Weakness probe IN FLIGHT: modal/hnet_probe27b.py — weight_map (per-tensor
+  int4-vs-bf16 rel-L2 by proj/depth) + probe_arm{int4,bf16} rerunning
+  HumanEval-164 w/ per-item dumps+failure classes and GSM8K-100 4-shot.
+  App hnet-probe27b; receipts -> /artifacts/{weight_error_27b,probe_*}.
+- DATA (recency-biased HF scan, verified ungated unless noted):
+  * allenai/dolma3_mix-6T — THE Olmo3-32B pretrain mix (63.9k jsonl.zst
+    shards, ODC-BY). Sources addressable via data_files globs:
+    common_crawl-* (36.9k), olmocr_science_pdfs-* (24.8k),
+    stack_edu-{Python,C,...} (1.98k), finemath-3plus,
+    rpj-proofpile-arxiv, dolma1_7-wiki-en. Needs zstandard (have it).
+    dolma3_mix-150B-1025 = same mix small-sample for smoke tests.
+  * Dolmino anneal pool (moltherm1/olmo-mirror-dolma3-dolmino-mix-100b-1125,
+    ODC-BY, arxiv 2512.13961) — Olmo3 stage-2 high-quality 100B: math/
+    code/QA/thinking-traces/instruction/science-PDFs/STEM-crawl. Built
+    for mid-training anneal = exactly our leg shape.
+  * nvidia/Nemotron-Terminal-Corpus (ungated, 366k terminal-agent trajs,
+    Terminal-Bench proven) — agentic/tool lineage data.
+  * nvidia/Open-SWE-Traces (ungated, EMNLP'26) — SWE agent traces across
+    claudecode/opencode/openhands/sweagent/minisweagent; v1.2+ includes
+    qwen38_27b + qwen38_flash_next self-family rollouts.
+  * nvidia/Nemotron-Pretraining-Specialized-v1 (ungated, 332 shards,
+    domain-specialized CPT) ; nvidia/Nemotron-CC-Code-v1 = GATED(manual)
+    100M-1B code rows — needs license acceptance before use.
+  * jordangong/the-stack-v2-smollm3 (ungated, 200k dl) — permissive
+    stack-v2 subset SmolLM3 trained on; cleaner than raw the-stack-v2.
+- MIX IDEA for next leg: keep dolma3.5_pool backbone, swap weak configs
+  toward dolma3_mix stack_edu (code — HumanEval gap) + olmocr science +
+  finemath-3plus; add small Nemotron-Terminal/Open-SWE slices for agentic.
+- MODAL PLATFORM (verified 2026-11-09):
+  * function timeout 1s–24h (we use 4-8h); timeout is per-attempt,
+    retries restart it. startup_timeout separate knob.
+  * spawn/async inputs durable: survive client disconnect, results kept
+    7d, ~1M queue cap, 1500/s rate — detached pattern is correct.
+  * PREEMPTION IS REAL on cpu functions: weight_map container was killed
+    mid-run and auto-restarted same input (no checkpoint -> redo).
+    GPU functions (H200) ran 45min-1.5h w/o preemption so far, but code
+    for long jobs should commit partial state (we do via art.commit()).
+  * default cpu request 0.125 cores; request more explicitly. soft cpu
+    limit = request+16 cores.
+  * causal_conv1d NOT in image -> linear_attn falls back to slow torch
+    path; adding causal_conv1d would speed every 27B forward/generate.
+- **host_profile.py** (src/): per-host registry for geometry/taps/
+  thresholds. qwen2b marked retired; unknown hosts raise KeyError.
+  27B tap slots pending re-derivation (glial gate prerequisite).
+- **bfcl_synth parser fix**: verify path now uses emit_eval.parse_call
+  (quote/bracket-aware _split_top) — naive comma-split corrupted nested
+  JSON/array arg values. Verified on {"x":1,"y":2}, [1,2,3], lambda.
+- **bfcl_synth Modal run**: first attempt killed by client disconnect
+  (modal run foreground). Redeployed as app bfcl-synth27b + spawned
+  detached fc-01M70ZN1R6NH3G9RVY2SRSKT6E — survives disconnects.
+  Receipt -> /artifacts/bfcl_synth_int4.json.
+- **hnet_train27b_l2.py** (modal/): leg-2 driver DEPLOYED (not run).
+  Resumes hnet27b_latest_* ckpts, NEXT_MIX data via corpus_stream_next,
+  l2 ckpt/receipt names. Knobs: N_TRAIN=4000, LR=5e-5, RESUME,
+  RESUME_PREFIX, DATA_MIX. Fire only after synth+eval gate.
+- **HF checkpoint mirror**: leg-1 trained weights pushed volume->HF via
+  modal/hf_checkpoint_push.py -> KidIkaros/hnet27b-leg1 (12.5GB: 6 ckpts
+  best+latest x glue/enc/dec + receipts). Survives volume loss; leg-2
+  resume can pull from HF instead of the volume.
+- Compression artifacts already on HF: KidIkaros/qwen27b-int4-toolace
+  (packed safetensors + INT4_MANIFEST) and qwen27b-gptq4-toolace
+  (safetensors + QUANT_MANIFEST). No improved int4 exists yet — the
+  syntax-regression fix (constrained decoding / int8 / recalibration)
+  is still a pending decision.
+- **bfcl_synth int4 run KILLED 2026-11-09 ~18:10 EST**: stalled ~70min on
+  parallel_multiple items 21-30 (last print 20/40 @5350s). Deployed code
+  predated checkpointing fix -> all in-memory rows lost; nothing on
+  volume to salvage. Modal workspace then PAUSED (budget). RESUME
+  TOMORROW: local kernel/bfcl_synth.py + modal/bfcl_synth27b.py now
+  have incremental receipts (CKPT_EVERY=10, on_ckpt=art.commit) +
+  parse_call fix — redeploy and rerun; consider N_PER_CAT=20 scope or
+  OFFSET support to bound runtime. Leg-2 driver (hnet_train27b_l2)
+  remains deployed/idle.
+- **HF repos revamped to proper model cards** (all private):
+  qwen27b-int4-toolace + int4_loader.py (self-contained dequant loader),
+  qwen27b-gptq4-toolace (corrected the stale "behaviorally lossless"
+  claim — now documents the HumanEval syntax regression honestly),
+  hnet27b-leg1 (first README: ckpt contents, recipe, bpb results,
+  resume instructions, limitations).
+- **bfcl_synth hardened for resume** (2026-11-10): env knobs
+  CATS/N_PER_CAT/OFFSET/MAX_CALLS/MAX_ARGS/VALUE_TOPK/CKPT_EVERY on both
+  kernel and Modal entrypoint; per-item item_s + SLOW(>120s) logging;
+  incremental receipts every CKPT_EVERY items w/ volume commit.
+  DEPLOY BLOCKED: Modal workspace ac-xQk5rq816TPkgP8tS0M1GF PAUSED
+  (billing: $43.49 metered, $30 credits, $12.47 billed — likely a
+  spending-limit pause; needs owner action in Modal dashboard).
+  RESUME COMMAND once unpaused:
+    N_PER_CAT=20 VALUE_TOPK=64 modal run --detach modal/bfcl_synth27b.py
+  (N=20 x 4 cats = 80 items; items 21-30 of parallel_multiple — the
+  stall range — are excluded by the slice; OFFSET=20 can pick them up
+  in a second scoped leg if wanted)
+
+## 2026-11-12 — TRUNK/SUBSTRATE DECISION (ADR-0001, proposed)
+- Trunk = TwIL-8B: the one-mind is built on it now. Route A proven (+3.35 bpb,
+  leg-3 Arm A); HF-transformers native, native S1/S2 operating-point toggle,
+  byte-compatible 207/256. Spark is GGUF-only -> disqualified as substrate.
+- Substrate = the byte H-Net line (hnet-kaggle), endgame: owned all-256-byte
+  table, S1/S2 anatomy native, learned boundaries, 1.42-1.49 bpb measured.
+  No from-scratch training on the one-mind critical path.
+- Path A's adapter result stands as the proven byte-input mechanism.
+- Open problem on both: outcome channel (tool success/failure, user correction) —
+  no run has seen one yet.

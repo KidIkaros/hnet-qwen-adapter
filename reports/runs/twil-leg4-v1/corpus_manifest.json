@@ -1,0 +1,52 @@
+{
+ "mix": {
+  "nemotron_terminal": 0.15,
+  "open_swe_traces": 0.15,
+  "toolace": 0.1,
+  "stack_edu": 0.25,
+  "finemath_3plus": 0.12,
+  "proofpile_arxiv": 0.08,
+  "common_crawl": 0.1,
+  "dolma_wiki": 0.05
+ },
+ "manifest": {
+  "nemotron_terminal": {
+   "train": 960,
+   "eval": 4
+  },
+  "open_swe_traces": {
+   "train": 960,
+   "eval": 4
+  },
+  "toolace": {
+   "train": 325,
+   "eval": 4,
+   "rows_from": 5000
+  },
+  "stack_edu": {
+   "train": 1600,
+   "eval": 4
+  },
+  "finemath_3plus": {
+   "error": "CastError: Couldn't cast\nid: string\ntext: string\nsource: string\noriginal_metadata: struct<warc_record_offset: int64, fetch_time: double, language: string, conten"
+  },
+  "proofpile_arxiv": {
+   "train": 512,
+   "eval": 4
+  },
+  "common_crawl": {
+   "train": 640,
+   "eval": 4
+  },
+  "dolma_wiki": {
+   "train": 320,
+   "eval": 4
+  }
+ },
+ "n_train": 5317,
+ "n_eval": 28,
+ "caps": {
+  "train": 512,
+  "eval": 4096
+ }
+}

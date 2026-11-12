@@ -1,0 +1,73 @@
+[{"stream_name":"stderr","time":7.062446297,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":7.062500573,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":8.129609733,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.129643833,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.129649483,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.129653882,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.88037577,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.880416419,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.880422502,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.880427079,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":10.13339099,"data":"installing huggingface_hub...\n"}
+,{"stream_name":"stdout","time":17.185664996,"data":"image torch: 2.11.0+cpu\n"}
+,{"stream_name":"stdout","time":22.526591523,"data":"torch 2.11.0+cpu | datasets ok\n"}
+,{"stream_name":"stderr","time":22.789271577,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":22.789317626,"data":"\n"}
+,{"stream_name":"stderr","time":22.789324226,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":27.017185994,"data":"[data] 160 new items (pos 200-359); answerable 120/160\n"}
+,{"stream_name":"stdout","time":27.053903261,"data":"downloading StartLux-Decision-v1-0.8B...\n"}
+,{"stream_name":"stderr","time":65.715402517,"data":"[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":65.715462367,"data":"\n"}
+,{"stream_name":"stderr","time":65.715468558,"data":"[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":65.876198069,"data":"[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n"}
+,{"stream_name":"stderr","time":65.876266827,"data":"\n"}
+,{"stream_name":"stderr","time":65.876275559,"data":"[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n"}
+,{"stream_name":"stdout","time":121.646532489,"data":"  startlux 0/160 (57s)\n"}
+,{"stream_name":"stdout","time":753.452240841,"data":"  startlux 20/160 (689s)\n"}
+,{"stream_name":"stdout","time":1714.618666843,"data":"  startlux 40/160 (1650s)\n"}
+,{"stream_name":"stdout","time":2412.495099447,"data":"  startlux 60/160 (2348s)\n"}
+,{"stream_name":"stdout","time":3297.236759195,"data":"  startlux 80/160 (3232s)\n"}
+,{"stream_name":"stdout","time":4146.569569236,"data":"  startlux 100/160 (4082s)\n"}
+,{"stream_name":"stdout","time":4930.131036513,"data":"  startlux 120/160 (4865s)\n"}
+,{"stream_name":"stdout","time":5647.65734028,"data":"  startlux 140/160 (5583s)\n"}
+,{"stream_name":"stdout","time":6342.470915476,"data":"[startlux] gold@1 113/160 (6277.6s)\n"}
+,{"stream_name":"stdout","time":6891.700273592,"data":"  none-probe 10 (549s)\n"}
+,{"stream_name":"stdout","time":7427.314690294,"data":"  none-probe 20 (1085s)\n"}
+,{"stream_name":"stdout","time":7962.643385379,"data":"  none-probe 30 (1620s)\n"}
+,{"stream_name":"stdout","time":8534.116346931,"data":"  none-probe 40 (2192s)\n"}
+,{"stream_name":"stdout","time":8534.118048782,"data":"[none] probes=40 | p_none unans=0.151 ans=0.138 | chose_none unans=0/8 ans=0/32\n"}
+,{"stream_name":"stdout","time":8534.143771561,"data":"{\n"}
+,{"stream_name":"stdout","time":8534.143830351,"data":" \"n\": 160,\n"}
+,{"stream_name":"stdout","time":8534.143840658,"data":" \"errors\": 0,\n"}
+,{"stream_name":"stdout","time":8534.143846932,"data":" \"gold_at_1\": 113,\n"}
+,{"stream_name":"stdout","time":8534.143853265,"data":" \"mean_gen_s\": 39.23,\n"}
+,{"stream_name":"stdout","time":8534.143859321,"data":" \"acc_all\": 0.70625,\n"}
+,{"stream_name":"stdout","time":8534.143865649,"data":" \"acc_answerable\": 0.9416666666666667,\n"}
+,{"stream_name":"stdout","time":8534.143871039,"data":" \"acc_unanswerable\": 0.0,\n"}
+,{"stream_name":"stdout","time":8534.14387625,"data":" \"n_answerable\": 120,\n"}
+,{"stream_name":"stdout","time":8534.143881456,"data":" \"margin_bands\": {\n"}
+,{"stream_name":"stdout","time":8534.143886838,"data":"  \"m[0.5,9)\": {\n"}
+,{"stream_name":"stdout","time":8534.143899517,"data":"   \"n\": 139,\n"}
+,{"stream_name":"stdout","time":8534.14390368,"data":"   \"acc\": 0.755\n"}
+,{"stream_name":"stdout","time":8534.14390731,"data":"  },\n"}
+,{"stream_name":"stdout","time":8534.143910953,"data":"  \"m[0.2,0.5)\": {\n"}
+,{"stream_name":"stdout","time":8534.143914633,"data":"   \"n\": 13,\n"}
+,{"stream_name":"stdout","time":8534.143918284,"data":"   \"acc\": 0.462\n"}
+,{"stream_name":"stdout","time":8534.143921908,"data":"  },\n"}
+,{"stream_name":"stdout","time":8534.143925531,"data":"  \"m[0.0,0.2)\": {\n"}
+,{"stream_name":"stdout","time":8534.143929234,"data":"   \"n\": 8,\n"}
+,{"stream_name":"stdout","time":8534.143932829,"data":"   \"acc\": 0.25\n"}
+,{"stream_name":"stdout","time":8534.143936503,"data":"  }\n"}
+,{"stream_name":"stdout","time":8534.143940945,"data":" },\n"}
+,{"stream_name":"stdout","time":8534.143944839,"data":" \"meta_keys_seen\": []\n"}
+,{"stream_name":"stdout","time":8534.143967351,"data":"}\n"}
+,{"stream_name":"stdout","time":8534.164332402,"data":"artifacts.zip: ['StartLux-0.8B', '__notebook__.ipynb', 'artifacts.zip', 'cal_items.json', 'cal_summary.json', 'none_probe_results.json', 'req_filtered.txt', 'run_status.json', 'startlux_cal_results.json']\n"}
+,{"stream_name":"stderr","time":8540.646763172,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":8540.646825512,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":8540.876743421,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":8540.876773502,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":8541.872454168,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":8541.977441682,"data":"[NbConvertApp] Writing 80782 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":8545.074238478,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":8545.80256852,"data":"[NbConvertApp] Writing 392750 bytes to __results__.html\n"}
+]

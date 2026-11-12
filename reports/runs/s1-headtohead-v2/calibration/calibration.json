@@ -1,0 +1,34 @@
+{
+  "alpha": 0.1,
+  "band": {
+    "default": null,
+    "questions": {},
+    "report": {
+      "note": "thresholds chosen on these examples; held_out in the report is the same rule scored on rows it did not choose on",
+      "targeted": {
+        "confidence": 0.95,
+        "max_review_rate": 1.0,
+        "target_precision": 0.95
+      }
+    }
+  },
+  "checksum": "4929bf82c353527259541021cf6de6042598f23046398b3754359415b1b999b0",
+  "provenance": {
+    "engine_sha256": "78f96be7c6a06abb873e573fcf9e43ef467010a30c72cd6cac32538cd7078db8",
+    "fitted_at": "2026-11-10T21:44:39+00:00",
+    "max_len": 73728,
+    "reader": "Qwen3.5-0.8B",
+    "readout": "auto",
+    "vegaml": "0.16.1"
+  },
+  "questions": {},
+  "reference": {},
+  "report": {
+    "tool": {
+      "calibrated": false,
+      "examples": 0,
+      "reason": "label(s) 'Get Cat Breeds' in the examples are not options of this question, whose options are ['Get Hashtag Reels Feed', 'Get DM Conversations', 'Random Quote API', 'Get Instagram Post Details', 'Get Specified Users Activity', 'Get Random Conversation Starter']"
+    }
+  },
+  "version": "4929bf82c353"
+}

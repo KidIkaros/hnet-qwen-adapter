@@ -1,0 +1,48 @@
+{
+ "fit_answerable": {
+  "margin_auto": 0.0,
+  "margin_escalate": null,
+  "n": 76
+ },
+ "cal_answerable": {
+  "set_delta90": 0.0,
+  "n": 44
+ },
+ "eval_config": {
+  "margin_auto": 0.5,
+  "margin_escalate": 0.2,
+  "set_delta": 0.0
+ },
+ "eval_all": {
+  "routes": {
+   "auto": 31,
+   "review": 19,
+   "escalate": 10
+  },
+  "route_acc": {
+   "auto": 0.9032258064516129,
+   "review": 0.5789473684210527,
+   "escalate": 0.2
+  },
+  "conformal_coverage": 0.6833333333333333,
+  "conformal_mean_set": 1.0
+ },
+ "eval_answerable": {
+  "routes": {
+   "auto": 28,
+   "escalate": 9,
+   "review": 12
+  },
+  "route_acc": {
+   "auto": 1.0,
+   "escalate": 0.2222222222222222,
+   "review": 0.9166666666666666
+  },
+  "conformal_coverage": 0.8367346938775511,
+  "conformal_mean_set": 1.0
+ },
+ "none_probe": {
+  "auc": 0.582,
+  "verdict": "NEGATIVE - head ignores synthetic none-candidate"
+ }
+}

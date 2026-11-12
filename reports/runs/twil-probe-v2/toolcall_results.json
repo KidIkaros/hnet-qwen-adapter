@@ -1,0 +1,456 @@
+{
+ "metrics": {
+  "S1_format_valid": 1.0,
+  "S1_name_acc": 1.0,
+  "S1_mean_gen_s": 5.6000000000000005,
+  "S2_format_valid": 0.9166666666666666,
+  "S2_name_acc": 0.9166666666666666,
+  "S2_mean_gen_s": 18.466666666666665,
+  "S2_think_rate": 0.0
+ },
+ "rows": [
+  {
+   "i": 0,
+   "mode": "S1",
+   "gen_s": 5.6,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "get_weather",
+     "args": {
+      "city": "Paris",
+      "units": "c"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 0,
+   "mode": "S2",
+   "gen_s": 15.0,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "get_weather",
+     "args": {
+      "city": "Paris",
+      "units": "c"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 1,
+   "mode": "S1",
+   "gen_s": 4.5,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "search_docs",
+     "args": {
+      "query": "reset password"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 1,
+   "mode": "S2",
+   "gen_s": 8.4,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "search_docs",
+     "args": {
+      "query": "reset password"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 2,
+   "mode": "S1",
+   "gen_s": 6.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "create_event",
+     "args": {
+      "date": "Friday",
+      "time": "2pm",
+      "title": "Team Sync"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 2,
+   "mode": "S2",
+   "gen_s": 26.7,
+   "format_valid": false,
+   "name_ok": false,
+   "n_calls": 0,
+   "has_think": false,
+   "calls": [],
+   "tail": "t. The safest approach is to request the exact date from the user to ensure accuracy.\n</think>\nThe user mentioned \"Friday\" as the date, but the exact date (e.g., \"2023-10-13\") is required for the calendar event. Please provide the specific date for the event.\n\n<need-more-info>\nPlease provide the exact date (e.g., \"2023-10-13\") for the 'Team Sync' event on Friday at 2pm.\n</need-more-info><|im_end|>"
+  },
+  {
+   "i": 3,
+   "mode": "S1",
+   "gen_s": 7.2,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "send_email",
+     "args": {
+      "to": "alice@example.com",
+      "subject": "Report Ready",
+      "body": "The report is ready."
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 3,
+   "mode": "S2",
+   "gen_s": 21.3,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "send_email",
+     "args": {
+      "to": "alice@example.com",
+      "subject": "Report is Ready",
+      "body": "the report is ready"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 4,
+   "mode": "S1",
+   "gen_s": 4.5,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "get_price",
+     "args": {
+      "symbol": "AAPL"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 4,
+   "mode": "S2",
+   "gen_s": 10.0,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "get_price",
+     "args": {
+      "symbol": "AAPL"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 5,
+   "mode": "S1",
+   "gen_s": 5.5,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "translate",
+     "args": {
+      "target_lang": "es",
+      "text": "good morning"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 5,
+   "mode": "S2",
+   "gen_s": 15.2,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "translate",
+     "args": {
+      "target_lang": "Spanish",
+      "text": "good morning"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 6,
+   "mode": "S1",
+   "gen_s": 6.8,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "book_flight",
+     "args": {
+      "date": "June 3rd",
+      "origin": "NYC",
+      "destination": "London"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 6,
+   "mode": "S2",
+   "gen_s": 23.1,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "book_flight",
+     "args": {
+      "date": "June 3rd",
+      "destination": "London",
+      "origin": "NYC"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 7,
+   "mode": "S1",
+   "gen_s": 4.4,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "set_timer",
+     "args": {
+      "minutes": "10"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 7,
+   "mode": "S2",
+   "gen_s": 11.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "set_timer",
+     "args": {
+      "minutes": "10"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 8,
+   "mode": "S1",
+   "gen_s": 5.2,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "add_to_list",
+     "args": {
+      "items": "[\"milk\", \"eggs\"]"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 8,
+   "mode": "S2",
+   "gen_s": 11.4,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "add_to_list",
+     "args": {
+      "items": "[\"milk\", \"eggs\"]"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 9,
+   "mode": "S1",
+   "gen_s": 4.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "calculate",
+     "args": {
+      "expression": "0.15 * 240"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 9,
+   "mode": "S2",
+   "gen_s": 19.4,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "calculate",
+     "args": {
+      "expression": "0.15 * 240"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 10,
+   "mode": "S1",
+   "gen_s": 6.4,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "set_reminder",
+     "args": {
+      "text": "call mom",
+      "datetime": "2023-10-25T09:00:00"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 10,
+   "mode": "S2",
+   "gen_s": 48.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "set_reminder",
+     "args": {
+      "text": "call mom",
+      "datetime": "tomorrow at 9am"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 11,
+   "mode": "S1",
+   "gen_s": 5.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "control_device",
+     "args": {
+      "device": "living room lights",
+      "action": "turn off"
+     }
+    }
+   ],
+   "tail": ""
+  },
+  {
+   "i": 11,
+   "mode": "S2",
+   "gen_s": 10.7,
+   "format_valid": true,
+   "name_ok": true,
+   "n_calls": 1,
+   "has_think": false,
+   "calls": [
+    {
+     "name": "control_device",
+     "args": {
+      "device": "living room lights",
+      "action": "turn off"
+     }
+    }
+   ],
+   "tail": ""
+  }
+ ]
+}

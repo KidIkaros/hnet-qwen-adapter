@@ -1,0 +1,114 @@
+{
+ "engines": {
+  "startlux": {
+   "n": 60,
+   "gold_at_1": 41,
+   "acc": 0.6833333333333333,
+   "status": "loaded"
+  },
+  "laya_encoder_zeroshot": {
+   "n": 60,
+   "gold_at_1": 29,
+   "acc": 0.48333333333333334,
+   "brier": 0.2765602363333333,
+   "ece": 0.20590333333333338,
+   "risk_coverage": {
+    "acc@50pct_cov": 0.6333333333333333,
+    "acc@70pct_cov": 0.5952380952380952,
+    "acc@90pct_cov": 0.5185185185185185,
+    "acc@100pct_cov": 0.48333333333333334
+   },
+   "errors": 0
+  },
+  "laya_encoder_answerable": {
+   "n": 49,
+   "gold_at_1": 29,
+   "acc": 0.5918367346938775,
+   "brier": 0.16808946530612245,
+   "ece": 0.12171020408163268,
+   "risk_coverage": {
+    "acc@50pct_cov": 0.875,
+    "acc@70pct_cov": 0.7352941176470589,
+    "acc@90pct_cov": 0.6363636363636364,
+    "acc@100pct_cov": 0.5918367346938775
+   },
+   "errors": 0
+  },
+  "laya_vega_fitted": {
+   "n": 60,
+   "gold_at_1": 31,
+   "acc": 0.5166666666666667,
+   "brier": 0.26830772861981667,
+   "ece": 0.23548635000000004,
+   "risk_coverage": {
+    "acc@50pct_cov": 0.6666666666666666,
+    "acc@70pct_cov": 0.6428571428571429,
+    "acc@90pct_cov": 0.5555555555555556,
+    "acc@100pct_cov": 0.5166666666666667
+   },
+   "errors": 0
+  },
+  "laya_vega_answerable": {
+   "n": 49,
+   "gold_at_1": 31,
+   "acc": 0.6326530612244898,
+   "brier": 0.15236186240785715,
+   "ece": 0.10674406122448982,
+   "risk_coverage": {
+    "acc@50pct_cov": 0.9166666666666666,
+    "acc@70pct_cov": 0.7941176470588235,
+    "acc@90pct_cov": 0.7045454545454546,
+    "acc@100pct_cov": 0.6326530612244898
+   },
+   "errors": 0
+  },
+  "startlux_detail": {
+   "n": 60,
+   "gold_at_1": 41,
+   "acc": 0.6833333333333333
+  },
+  "startlux_answerable": {
+   "n": 49,
+   "gold_at_1": 41,
+   "acc": 0.8367346938775511
+  }
+ },
+ "paired": {
+  "startlux_vs_encoder": {
+   "shared_n": 60,
+   "both_right": 26,
+   "startlux_only_right": 15,
+   "encoder_only_right": 3,
+   "both_wrong": 16,
+   "sign_test_z": 2.593
+  },
+  "startlux_vs_vega": {
+   "shared_n": 60,
+   "both_right": 28,
+   "startlux_only_right": 13,
+   "vega_only_right": 3,
+   "both_wrong": 16,
+   "sign_test_z": 2.25
+  },
+  "encoder_vs_vega": {
+   "shared_n": 60,
+   "both_right": 24,
+   "encoder_only_right": 5,
+   "vega_only_right": 7,
+   "both_wrong": 24,
+   "sign_test_z": 0.289
+  }
+ },
+ "vega_extras": {
+  "conformal_gold_coverage": 0.65,
+  "conformal_mean_setsize": 1.4,
+  "route_counts": {
+   "review": 29,
+   "auto": 31
+  },
+  "auto_acc": 0.6451612903225806,
+  "ready_brier": 0.32145105606583335,
+  "ready_ece": 0.24640909999999994
+ },
+ "answerable_eval_n": 49
+}

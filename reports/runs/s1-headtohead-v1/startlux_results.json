@@ -1,0 +1,1 @@
+{"engine": {"status": "unavailable", "error": "CalledProcessError: Command '['/usr/bin/python3', '-m', 'pip', 'install', '-q', '-r', '/kaggle/working/StartLux-0.8B/requirements.txt']' returned non-zero exit status 1."}, "rows": []}

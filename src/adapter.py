@@ -319,7 +319,12 @@ def qwen_byte_bpb(model, tok, data, device="cuda"):
     ids = tok.encode(data.decode("latin-1"), add_special_tokens=False)
     x = torch.tensor(ids, device=device)[None]
     with torch.no_grad():
-        logits = model(input_ids=x).logits[0].float()       # (L, V)
-    ce = F.cross_entropy(logits[:-1], x[0, 1:], reduction="none")
+        logits = model(input_ids=x).logits[0]               # (L, V) — lands on lm_head's device
+    tgt = x[0, 1:].to(logits.device)                        # under device_map that is NOT `device`
+    ce = torch.empty(len(tgt), device=logits.device)
+    B = 1024                                                # bound the fp32 softmax temporaries
+    for i in range(0, len(tgt), B):
+        j = min(i + B, len(tgt))
+        ce[i:j] = F.cross_entropy(logits[i:j].float(), tgt[i:j], reduction="none")
     nbytes = len(data) - len(tok.decode([ids[0]]).encode("latin-1"))
     return float(ce.sum().item() / math.log(2) / nbytes), len(ids), nbytes

@@ -1,0 +1,10 @@
+{
+ "kernel": "startlux-gate-cal",
+ "lane": "cpu",
+ "legs": {
+  "data": "positions-200-359",
+  "startlux": "loaded",
+  "none_probe": "subset-every-4th"
+ },
+ "errors": []
+}

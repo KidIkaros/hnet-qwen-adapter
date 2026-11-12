@@ -551,3 +551,41 @@
   breakage_C <= 0.10 AND C > B; think_is_depth = recovery_B >= 0.3;
   both fail -> think-mode is length not depth -> H-Net middle required
 - ~2h expected; per-arm wall guards 45/55min; session self-terminates
+
+## 2026-11-12 — twil-depth-probe v1 COMPLETE (Arm C bug diagnosed) -> v2 BUILT + GATED
+- v1 results (reports/runs/twil-depth-probe-v1/, ~1.7h):
+  * Arm A (S1 fast scoring): 100/100 done, 0 errors. s1_acc_all=0.46,
+    s1_acc_ans=0.613 (vs StartLux 0.837 on comparable slices — peripheral
+    head confirmed stronger closed-set decider than trunk prefix scoring).
+  * Arm B (S2 unconditioned): 61/100 completed in 45m budget (44.4s/item),
+    0 errors; 26/61 emitted valid calls (69.2% acc among emitted, 29.5%
+    overall); b_recovery=0.129 (4/31 S1-wrong), b_breakage=0.533 (16/30
+    S1-right); e2e_v1_style_b=0.25 vs S1-only 0.613. Third confirmation
+    that unconditioned deliberation is net-negative on tool choice.
+  * Arm C (S2 conditioned): 0/100 — every row failed with `RuntimeError:
+    Expected tensor for argument #1 'indices' to have Long/Int; got
+    CUDABFloat16Type`. Root cause: `twil.generate(model_input, **kw)`
+    passed `inputs_embeds` positionally; in transformers 5.x positional
+    `inputs` defaults to `main_input_name="input_ids"` unless
+    `inputs_embeds=` is passed as a keyword.
+- v2 fixes (kernel/depth_probe.py + tests/test_depth_probe.py):
+  1. Split into explicit `s2_generate_ids(input_ids)` and
+     `s2_generate_embeds(inputs_embeds, attn)` passing `inputs_embeds=`
+     by keyword, with dtype/shape assertions.
+  2. Leg-0 smoke gate runs 2-token generation through BOTH paths on the
+     loaded TwIL model before any arm loop starts (fails in 10s, not 80m).
+  3. Bundles v1's `items.json` (100), `s1_rows.json` (100), and
+     `b_rows.json` (61) directly in the notebook (129KB zlib+b64):
+     - Eliminates HF streaming drift/network risk.
+     - Reconstructs all 100 `FAST_STATE` vectors in 100 single forwards
+       (~2.5m instead of 25m) after an item-0 full-candidate parity gate,
+       and saves `fast_states.pt` in `artifacts.zip`.
+     - Runs Arm C FIRST (65m budget, k=0..99 so k=0..60 pair 1-to-1 with
+       v1's 61 B rows), then resumes Arm B on remaining C-completed items.
+  4. Fixed `arm_stats` reporting bug exposed by dry-run (`b_n` was counting
+     only call-emitting rows `len(ok)=26` instead of `len(done)=61`,
+     falsely marking 61-row arms as `partial`).
+  5. Added `tests/test_depth_probe.py`: executes the built notebook's
+     `s2_generate_embeds`, `s2_generate_ids`, bundle writer, and metrics
+     cell against a synthetic `GraniteForCausalLM` (60/60 pytest pass,
+     preflight 0 issues).

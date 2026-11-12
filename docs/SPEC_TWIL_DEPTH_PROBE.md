@@ -55,6 +55,10 @@ wiring v2 (460–559), and the leg corpus (5000+). Same parser as wiring v2
 
 ## Pre-registered verdict
 
+Verdicts are evaluated on the **paired intersection** of items completed by
+both B and C (`c_vs_b_on_s1_wrong` / `c_vs_b_on_s1_right`), so differing wall-
+clock completion counts cannot bias `C > B`:
+
 - `depth_pass` = recovery_C ≥ 0.5 AND breakage_C ≤ 0.10 AND recovery_C >
   recovery_B — the one-mind loop is real and the fast state is the ingredient.
 - `think_is_depth` = recovery_B ≥ 0.3 — think-mode alone recovers; the gate
@@ -62,21 +66,31 @@ wiring v2 (460–559), and the leg corpus (5000+). Same parser as wiring v2
 - **Both fail** → assumption 1 dies (think-mode is length, not depth); the
   required mechanism is the H-Net middle (full attention over compressed
   chunks), and the probe's result redirects the build there.
-- `conditioning_neutral` = recovery_C ≈ recovery_B — the fast state adds
-  nothing; the trained (action-preserving) version is the next question, not
-  a bigger untrained injection.
+- `conditioning_neutral` = `|recovery_C − recovery_B| < 0.05` — the fast state
+  adds nothing; the trained (action-preserving) version is the next question,
+  not a bigger untrained injection.
 
-## Guards
+## Guards & v2 execution protocol
 
 - Per-item try/except everywhere; error rows recorded, legs continue.
+- **Leg-0 smoke gate**: immediately after loading TwIL-8B, runs a 2-token
+  generation through both `s2_generate_ids` (`input_ids=`) and
+  `s2_generate_embeds` (`inputs_embeds=`, `attention_mask=`) on item 0.
+- **Pinned v1 bundle**: v1 completed `items.json` (100 items, slice 560–659),
+  `s1_rows.json` (100/100 rows, 0 errors), and `b_rows.json` (61/61 rows,
+  `k=0..60`, 0 errors). v2 bundles these directly, verifies item-0 full-
+  candidate scoring parity against `s1_rows.json[0]`, reconstructs all 100
+  `FAST_STATE` vectors in 100 single forwards (~2.5 min), and saves
+  `fast_states.pt`.
+- **Execution order (C first)**: Arm C runs `k=0..99` first (65-min budget,
+  `C_WALL_S=3900`) so `k=0..60` pair immediately with v1's 61 B rows; Arm B
+  then resumes `k>=61` on C-completed items (30-min budget, `B_WALL_S=1800`).
 - TwIL generate OOM → `max_new_tokens` 768→512 for the remainder.
-- Wall-clock guards are **per-arm**: B stops starting new items after 45 min
-  of its own budget, C after 55 min — C is guaranteed its budget even if B
-  runs long. Skipped counts are written into `depth_metrics.json`
-  (`b_skipped`/`c_skipped`), not just the log.
+- Skipped counts written into `depth_metrics.json` (`b_skipped`/`c_skipped`).
 - S2 emits `<need-more-info>` → recorded as `clarify=True`, not wrong.
-- Artifacts: single `artifacts.zip` (items, s1_rows, b_rows, c_rows,
-  depth_metrics, run_status.json).
+- Artifacts: single `artifacts.zip` (`items.json`, `s1_rows.json`,
+  `b_rows.json`, `c_rows.json`, `fast_states.pt`, `depth_metrics.json`,
+  `run_status.json`).
 
 ## Cost
 

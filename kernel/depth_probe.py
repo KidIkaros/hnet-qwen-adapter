@@ -1,17 +1,31 @@
-"""Depth-recovery probe generator — does the trunk's deliberate mode, seeded
-by its fast pass, recover what the fast pass missed?
+"""Depth-recovery probe generator (v2) — does the trunk's deliberate mode,
+seeded by its fast pass, recover what the fast pass missed?
 
 Per docs/SPEC_TWIL_DEPTH_PROBE.md. Three arms on one trunk (TwIL-8B):
-A = fast constrained scoring (also captures the fast state),
-B = think unconditioned, C = think conditioned on the fast state.
-Owner approval required before push.
+A = fast constrained scoring (s1_rows.json archived in v1; v2 reconstructs
+    the 100 fast states in 100 single forwards + parity-checks item 0
+    and saves fast_states.pt),
+C = think conditioned on the fast state via inputs_embeds=..., runs FIRST,
+B = think unconditioned (61 rows archived from v1; v2 resumes k=61..99
+    on items C completed).
+
+Includes a Leg-0 smoke gate that exercises BOTH s2_generate_ids and
+s2_generate_embeds on the loaded trunk before any arm loop starts.
 """
+import base64
 import json
+import os
+import zlib
 
 OUT = "/tmp/twil_depth_probe.ipynb"
 REPO = "/home/ikaaros/Coding/Gold/hnet-qwen-adapter"
-SRC_FILES = ["src/__init__.py", "src/glial.py",
-             "src/toolcall.py"]
+V1_DIR = os.path.join(REPO, "reports/runs/twil-depth-probe-v1")
+SRC_FILES = ["src/__init__.py", "src/glial.py", "src/toolcall.py"]
+V1_ARTIFACTS = {
+    "items.json": "items.json",
+    "s1_rows.json": "s1_rows.json",
+    "b_rows.json": "b_rows_v1.json",
+}
 
 
 def md_cell(text):
@@ -26,8 +40,7 @@ def code_cell(text):
 
 
 def src_writer_cell():
-    import base64, os
-    parts = ["import os, base64\n",
+    parts = ["import os, base64, zlib\n",
              "os.makedirs('/kaggle/working/src', exist_ok=True)\n"]
     for rel in SRC_FILES:
         content = open(os.path.join(REPO, rel), "rb").read()
@@ -35,19 +48,29 @@ def src_writer_cell():
         parts.append(
             f"open('/kaggle/working/src/{os.path.basename(rel)}','wb')"
             f".write(base64.b64decode('{b64}'))\n")
+    for src_fn, dst_fn in V1_ARTIFACTS.items():
+        raw = open(os.path.join(V1_DIR, src_fn), "rb").read()
+        zb64 = base64.b64encode(zlib.compress(raw, 9)).decode()
+        parts.append(
+            f"open('/kaggle/working/{dst_fn}','wb')"
+            f".write(zlib.decompress(base64.b64decode('{zb64}')))\n")
     parts.append("import sys; sys.path.insert(0, '/kaggle/working')\n")
     parts.append("from src.glial import glial_gate\n")
-    parts.append("print('src bundle OK')\n")
+    parts.append("from src.toolcall import parse_calls, post_think\n")
+    parts.append("print('src + v1 artifacts bundle OK')\n")
     return code_cell("".join(parts))
 
 
 cells = [
-    md_cell("""# Depth-recovery probe — one trunk, two depths (2xT4)
+    md_cell("""# Depth-recovery probe v2 — one trunk, two depths (2xT4)
 
-Per `docs/SPEC_TWIL_DEPTH_PROBE.md`. The one-mind's core claim: the same
-trunk, running deeper **conditioned on its fast pass's compressed state**,
-recovers what the fast pass missed. Arms: A = fast scoring (+ fast state),
-B = think unconditioned, C = think conditioned."""),
+Per `docs/SPEC_TWIL_DEPTH_PROBE.md`. Tests whether TwIL-8B's deliberate mode,
+**conditioned on its fast pass's compressed state**, recovers what the fast
+pass missed. v2 fixes Arm C's `generate(inputs_embeds=...)` keyword call,
+adds a Leg-0 smoke gate for both generation paths, reconstructs the 100 fast
+states in 100 single forwards (~2 min) with an item-0 parity gate against
+v1's archived `s1_rows.json`, runs Arm C first, and resumes Arm B from v1's
+61 completed rows."""),
 
     code_cell("""# Cell 1: deps — torch>=2.8 check in fresh subprocess.
 import subprocess, sys, os, json, re, time
@@ -71,76 +94,14 @@ for i in range(2):
 
     src_writer_cell(),
 
-    code_cell("""# Cell 2: data — ToolACE qualifying items 560-659 (fresh slice;
-# disjoint from v2 eval 140-199, gate-cal 200-359, wiring v1 360-459,
-# wiring v2 460-559, leg corpus 5000+).
-from datasets import load_dataset
-
-SKIP = 2500
-NEED = 660
-N_TOOLS_MAX = 24
-
+    code_cell("""# Cell 2: data — load pinned ToolACE slice 560-659 from v1 bundle.
 def norm_name(s):
     return re.sub(r'[^a-z0-9]+', '', (s or '').lower())
 
-def parse_tools(sys_text):
-    i = sys_text.find('[{')
-    if i < 0:
-        return []
-    try:
-        arr, _ = json.JSONDecoder().raw_decode(sys_text[i:])
-    except Exception:
-        return []
-    out = []
-    for t in arr:
-        n = t.get('name')
-        if n:
-            out.append({'name': n,
-                        'description': (t.get('description') or '')[:400],
-                        'parameters': t.get('parameters') or
-                        {'type': 'object', 'properties': {}}})
-    return out
-
-def parse_gold(a):
-    m = re.search(r'\\[([^\\]]*)\\]', a or '')
-    if not m:
-        return None
-    calls = re.findall(r'([A-Za-z][A-Za-z0-9_ ]*?)\\s*\\(', m.group(1))
-    return calls[0].strip() if calls else None
-
-ds = load_dataset("Team-ACE/ToolACE", split="train", streaming=True)
-all_items = []
-for i, r in enumerate(ds):
-    if i < SKIP:
-        continue
-    conv = r.get("conversations") or []
-    u = next((c["value"] for c in conv if c.get("from") == "user"), None)
-    a = next((c["value"] for c in conv
-              if c.get("from") == "assistant"), None)
-    gold = parse_gold(a) if a else None
-    tools = parse_tools(r["system"])
-    if u and gold and tools:
-        gnorm = norm_name(gold)
-        gold_tool, answerable = None, False
-        for t in tools:
-            if norm_name(t['name']) == gnorm:
-                gold_tool, answerable = t['name'], True
-                break
-        sel = tools[:N_TOOLS_MAX]
-        if answerable and gold_tool not in {t['name'] for t in sel}:
-            gt = next(t for t in tools if t['name'] == gold_tool)
-            sel = tools[:N_TOOLS_MAX - 1] + [gt]
-        all_items.append({"sys": r["system"], "user": u,
-                          "gold": gold, "gold_tool": gold_tool or gold,
-                          "answerable": answerable, "tools": sel})
-    if len(all_items) >= NEED:
-        break
-
-items = all_items[560:660]
-assert len(items) >= 60, f"only {len(items)} items in slice"
+items = json.load(open("/kaggle/working/items.json"))
+assert len(items) == 100, f"expected 100 items, got {len(items)}"
 n_ans = sum(it["answerable"] for it in items)
-json.dump(items, open("/kaggle/working/items.json", "w"))
-print(f"[data] {len(items)} items (qualifying 560-659); "
+print(f"[data] {len(items)} pinned items (qualifying 560-659); "
       f"answerable {n_ans}/{len(items)}", flush=True)
 """),
 
@@ -167,11 +128,12 @@ for i in range(2):
 print(f"[leg0] {len(items)} items ready", flush=True)
 """),
 
-    code_cell("""# Cell 4: Arm A — S1 fast pass: constrained prefix-scoring over the
-# declared tools. One forward per candidate; softmax over per-candidate
-# mean-token logprobs = the gate's distribution (constructed, recorded as
-# such). The predicted candidate's forward also yields the FAST STATE:
-# final hidden state at its last position — what the fast mind held.
+    code_cell("""# Cell 4: S2 helpers + Leg-0 smoke gate on BOTH generate paths.
+from src.toolcall import parse_calls, post_think
+
+N_SOFT = 4
+MAX_NEW = [768]
+
 def twil_tools(it):
     return [{"type": "function",
              "function": {"name": t["name"],
@@ -179,81 +141,54 @@ def twil_tools(it):
                           "parameters": t["parameters"]}}
             for t in it["tools"]]
 
-def fast_prompt(it):
+def chat_prompt(it, thinking):
     msgs = [{"role": "user", "content": it["user"][:3000]}]
     return tok.apply_chat_template(msgs, tools=twil_tools(it),
                                    tokenize=False,
                                    add_generation_prompt=True,
-                                   enable_thinking=False)
+                                   enable_thinking=thinking)
 
-S1_ROWS, FAST_STATE = [], {}
-for k, it in enumerate(items):
-    row = {"i": k, "gold": it["gold_tool"], "answerable": it["answerable"]}
-    try:
-        t0 = time.time()
-        ctx = tok(fast_prompt(it), return_tensors="pt").input_ids[0].tolist()
-        scores, states = {}, {}
-        for t in it["tools"]:
-            cd = tok(f"{t['name']}(", add_special_tokens=False).input_ids
-            ids = torch.tensor([ctx + cd], device="cuda:0")
-            with torch.no_grad():
-                out = twil(ids, output_hidden_states=True)
-            logits = out.logits[0].float()
-            s = len(ctx) - 1
-            lp = torch.log_softmax(logits[s:s + len(cd)], -1)
-            sc = float(sum(lp[i, cd[i]].item()
-                           for i in range(len(cd)))) / len(cd)
-            scores[t["name"]] = sc
-            states[t["name"]] = out.hidden_states[-1][0, -1].float().cpu()
-        names = sorted(scores, key=lambda n: -scores[n])
-        vals = torch.tensor([scores[n] for n in names])
-        probs = torch.softmax(vals, 0)
-        pred = names[0]
-        row.update({"pred": pred, "conf": float(probs[0]),
-                    "margin": (float(probs[0] - probs[1])
-                               if len(probs) > 1 else 1.0),
-                    "probs": {n: float(p) for n, p in zip(names, probs)},
-                    "gen_s": round(time.time() - t0, 2),
-                    "ok": norm_name(pred) == norm_name(it["gold_tool"])})
-        FAST_STATE[k] = states[pred]
-    except Exception as e:
-        row["error"] = f"{type(e).__name__}: {str(e)[:150]}"
-    S1_ROWS.append(row)
-    if (k + 1) % 10 == 0:
-        print(f"[s1] {k+1}/{len(items)}", flush=True)
-
-json.dump(S1_ROWS, open("/kaggle/working/s1_rows.json", "w"))
-ok = sum(r.get("ok", False) for r in S1_ROWS if "error" not in r)
-print(f"[s1] done: acc {ok}/{len(S1_ROWS)}; fast states {len(FAST_STATE)}",
-      flush=True)
-"""),
-
-    code_cell("""# Cell 4b: S2 helpers — call parsing, think prompt, generation.
-from src.toolcall import parse_calls, post_think
+def fast_prompt(it):
+    return chat_prompt(it, False)
 
 def think_prompt(it):
-    msgs = [{"role": "user", "content": it["user"][:3000]}]
-    return tok.apply_chat_template(msgs, tools=twil_tools(it),
-                                   tokenize=False,
-                                   add_generation_prompt=True,
-                                   enable_thinking=True)
+    return chat_prompt(it, True)
 
-MAX_NEW = [768]
-
-def s2_generate(model_input, attn=None):
+def _run_generate(gen_kw, max_new=None):
     t0 = time.time()
-    kw = {"max_new_tokens": MAX_NEW[0], "do_sample": False,
-          "pad_token_id": PAD_ID}
-    if attn is not None:
-        kw["attention_mask"] = attn
+    kw = {"max_new_tokens": max_new or MAX_NEW[0], "do_sample": False,
+          "pad_token_id": PAD_ID, **gen_kw}
     try:
-        out = twil.generate(model_input, **kw)
+        with torch.no_grad():
+            out = twil.generate(**kw)
     except torch.cuda.OutOfMemoryError:
         torch.cuda.empty_cache()
-        MAX_NEW[0] = 512
-        kw["max_new_tokens"] = MAX_NEW[0]
-        out = twil.generate(model_input, **kw)
+        if max_new is None:
+            MAX_NEW[0] = 512
+        kw["max_new_tokens"] = max_new or MAX_NEW[0]
+        with torch.no_grad():
+            out = twil.generate(**kw)
     return out, time.time() - t0
+
+def s2_generate_ids(input_ids, max_new=None):
+    assert input_ids.dtype in (torch.int64, torch.int32), input_ids.dtype
+    out, dt = _run_generate({"input_ids": input_ids}, max_new=max_new)
+    return out[0, input_ids.shape[1]:], dt
+
+def s2_generate_embeds(inputs_embeds, attn, max_new=None):
+    assert inputs_embeds.dtype == EMB.weight.dtype, inputs_embeds.dtype
+    assert inputs_embeds.ndim == 3 and attn.shape == inputs_embeds.shape[:2]
+    out, dt = _run_generate({"inputs_embeds": inputs_embeds,
+                             "attention_mask": attn}, max_new=max_new)
+    return out[0], dt
+
+def build_conditioned_embeds(pids, state_vec):
+    soft = state_vec.to(device=EMB.weight.device, dtype=EMB.weight.dtype)
+    soft = soft[None, None].expand(1, N_SOFT, -1)
+    inputs_embeds = torch.cat([soft, EMB(pids)], dim=1)
+    attn = torch.ones(1, N_SOFT + pids.shape[1], device=pids.device,
+                      dtype=torch.long)
+    return inputs_embeds, attn
 
 def judge(text, it):
     calls = parse_calls(post_think(text))
@@ -266,40 +201,76 @@ def judge(text, it):
             norm_name(name) == norm_name(it["gold_tool"]),
             "text": text[-1500:]}
 
-print("[leg0] helpers ready", flush=True)
+# Leg-0 smoke gate: verify BOTH generate paths before spending GPU hours
+_smoke_ids = tok(think_prompt(items[0]),
+                 return_tensors="pt").input_ids[:, :32].to("cuda:0")
+_tok_b, _ = s2_generate_ids(_smoke_ids, max_new=2)
+_dummy_state = torch.zeros(EMB.weight.shape[1], dtype=torch.float32)
+_emb_c, _attn_c = build_conditioned_embeds(_smoke_ids, _dummy_state)
+_tok_c, _ = s2_generate_embeds(_emb_c, _attn_c, max_new=2)
+assert _tok_b.ndim == 1 and _tok_b.numel() >= 1, f"bad B smoke: {_tok_b.shape}"
+assert _tok_c.ndim == 1 and _tok_c.numel() >= 1, f"bad C smoke: {_tok_c.shape}"
+print(f"[leg0] smoke PASS: ids->{tuple(_tok_b.shape)}, "
+      f"inputs_embeds->{tuple(_tok_c.shape)}", flush=True)
 """),
 
-    code_cell("""# Cell 5: Arm B — S2 unconditioned (think from the prompt alone).
-B_ROWS = []
-B_WALL_S = 2700
-tb, b_skipped = time.time(), 0
+    code_cell("""# Cell 5: Arm A — verify item-0 parity with archived S1_ROWS, then
+# reconstruct all 100 FAST_STATE vectors (1 forward/item, ~2 min total)
+# and persist /kaggle/working/fast_states.pt.
+S1_ROWS = json.load(open("/kaggle/working/s1_rows.json"))
+assert len(S1_ROWS) == len(items), f"s1 len mismatch: {len(S1_ROWS)}"
+
+# Item-0 full candidate scoring parity gate
+it0 = items[0]
+ctx0 = tok(fast_prompt(it0), return_tensors="pt").input_ids[0].tolist()
+sc0 = {}
+for t in it0["tools"]:
+    cd = tok(f"{t['name']}(", add_special_tokens=False).input_ids
+    ids = torch.tensor([ctx0 + cd], device="cuda:0")
+    with torch.no_grad():
+        out = twil(ids)
+    logits = out.logits[0].float()
+    s = len(ctx0) - 1
+    lp = torch.log_softmax(logits[s:s + len(cd)], -1)
+    sc0[t["name"]] = float(sum(lp[i, cd[i]].item()
+                               for i in range(len(cd)))) / len(cd)
+names0 = sorted(sc0, key=lambda n: -sc0[n])
+probs0 = torch.softmax(torch.tensor([sc0[n] for n in names0]), 0)
+assert names0[0] == S1_ROWS[0]["pred"], (
+    f"item-0 parity fail: {names0[0]} vs {S1_ROWS[0]['pred']}")
+assert abs(float(probs0[0]) - S1_ROWS[0]["conf"]) < 1e-2, (
+    f"item-0 conf drift: {float(probs0[0]):.4f} vs {S1_ROWS[0]['conf']:.4f}")
+print(f"[s1] item-0 parity PASS: pred={names0[0]} conf={float(probs0[0]):.4f}",
+      flush=True)
+
+FAST_STATE = {}
+t_s1 = time.time()
 for k, it in enumerate(items):
-    if time.time() - tb > B_WALL_S:
-        b_skipped += 1
+    pred = S1_ROWS[k].get("pred")
+    if not pred or "error" in S1_ROWS[k]:
         continue
-    row = {"i": k, "gold": it["gold_tool"], "answerable": it["answerable"],
-           "s1_pred": S1_ROWS[k].get("pred"), "s1_ok": S1_ROWS[k].get("ok")}
-    try:
-        ids = tok(think_prompt(it), return_tensors="pt").input_ids.to("cuda:0")
-        out, dt = s2_generate(ids)
-        gen = tok.decode(out[0, ids.shape[1]:],
-                         skip_special_tokens=False)
-        row.update({"gen_s": round(dt, 1), **judge(gen, it)})
-    except Exception as e:
-        row["error"] = f"{type(e).__name__}: {str(e)[:150]}"
-    B_ROWS.append(row)
-    if len(B_ROWS) % 10 == 0:
-        print(f"[B] {len(B_ROWS)} done", flush=True)
+    ctx = tok(fast_prompt(it), return_tensors="pt").input_ids[0].tolist()
+    cd = tok(f"{pred}(", add_special_tokens=False).input_ids
+    ids = torch.tensor([ctx + cd], device="cuda:0")
+    with torch.no_grad():
+        out = twil(ids, output_hidden_states=True)
+    FAST_STATE[k] = out.hidden_states[-1][0, -1].float().cpu()
+    if (k + 1) % 25 == 0:
+        print(f"[s1] fast_state {k+1}/{len(items)} ({time.time()-t_s1:.0f}s)",
+              flush=True)
 
-json.dump(B_ROWS, open("/kaggle/working/b_rows.json", "w"))
-print(f"[B] done {len(B_ROWS)}, skipped {b_skipped}", flush=True)
+torch.save(FAST_STATE, "/kaggle/working/fast_states.pt")
+ok = sum(r.get("ok", False) for r in S1_ROWS if "error" not in r)
+print(f"[s1] done: acc {ok}/{len(S1_ROWS)}; "
+      f"saved {len(FAST_STATE)} fast states in {time.time()-t_s1:.0f}s",
+      flush=True)
 """),
 
-    code_cell("""# Cell 6: Arm C — S2 conditioned on the fast state.
+    code_cell("""# Cell 6: Arm C (RUNS FIRST) — S2 conditioned on the fast state.
 # 4 soft prefix tokens = the fast pass's final hidden state (identity
-# projection, v0). The deliberate pass starts from what the fast mind held.
-N_SOFT = 4
-C_WALL_S = 3300
+# projection, v0). Runs k=0..99 in order so k=0..60 pair immediately
+# with v1's 61 completed Arm B rows.
+C_WALL_S = 3900                      # 65 min budget for Arm C
 
 C_ROWS = []
 tc, c_skipped = time.time(), 0
@@ -315,25 +286,63 @@ for k, it in enumerate(items):
         continue
     try:
         pids = tok(think_prompt(it), return_tensors="pt").input_ids.to("cuda:0")
-        soft = FAST_STATE[k].to("cuda", dtype=EMB.weight.dtype)
-        soft = soft[None, None].expand(1, N_SOFT, -1)
-        inputs_embeds = torch.cat([soft, EMB(pids)], dim=1)
-        attn = torch.ones(1, N_SOFT + pids.shape[1], device="cuda:0",
-                          dtype=torch.long)
-        out, dt = s2_generate(inputs_embeds, attn=attn)
-        row.update({"gen_s": round(dt, 1), **judge(tok.decode(
-            out[0], skip_special_tokens=False), it)})
+        inputs_embeds, attn = build_conditioned_embeds(pids, FAST_STATE[k])
+        new_toks, dt = s2_generate_embeds(inputs_embeds, attn)
+        gen = tok.decode(new_toks, skip_special_tokens=False)
+        row.update({"gen_s": round(dt, 1), **judge(gen, it)})
     except Exception as e:
         row["error"] = f"{type(e).__name__}: {str(e)[:150]}"
     C_ROWS.append(row)
     if len(C_ROWS) % 10 == 0:
-        print(f"[C] {len(C_ROWS)} done", flush=True)
+        json.dump(C_ROWS, open("/kaggle/working/c_rows.json", "w"))
+        c_err = sum(1 for r in C_ROWS if "error" in r)
+        print(f"[C] {len(C_ROWS)} done (errors={c_err}, "
+              f"elapsed={time.time()-tc:.0f}s)", flush=True)
 
 json.dump(C_ROWS, open("/kaggle/working/c_rows.json", "w"))
-print(f"[C] done {len(C_ROWS)}, skipped {c_skipped}", flush=True)
+c_err = sum(1 for r in C_ROWS if "error" in r)
+print(f"[C] done {len(C_ROWS)} (errors={c_err}), skipped {c_skipped}",
+      flush=True)
 """),
 
-    code_cell("""# Cell 7: metrics, verdict, artifacts.
+    code_cell("""# Cell 7: Arm B — resume from v1's 61 archived rows (k=0..60).
+# Only runs remaining indices k>=61 that Arm C also completed, so every
+# minute spent increases paired B-vs-C coverage.
+B_ROWS = [r for r in json.load(open("/kaggle/working/b_rows_v1.json"))
+          if "error" not in r]
+done_b_idx = {r["i"] for r in B_ROWS}
+done_c_idx = {r["i"] for r in C_ROWS if "error" not in r}
+todo_b = sorted(done_c_idx - done_b_idx)
+print(f"[B] loaded {len(B_ROWS)} v1 rows; {len(todo_b)} C-matched items to run",
+      flush=True)
+
+B_WALL_S = 1800                      # up to 30 min to top up B
+tb, b_skipped = time.time(), 0
+for k in todo_b:
+    if time.time() - tb > B_WALL_S:
+        b_skipped += 1
+        continue
+    it = items[k]
+    row = {"i": k, "gold": it["gold_tool"], "answerable": it["answerable"],
+           "s1_pred": S1_ROWS[k].get("pred"), "s1_ok": S1_ROWS[k].get("ok")}
+    try:
+        ids = tok(think_prompt(it), return_tensors="pt").input_ids.to("cuda:0")
+        new_toks, dt = s2_generate_ids(ids)
+        gen = tok.decode(new_toks, skip_special_tokens=False)
+        row.update({"gen_s": round(dt, 1), **judge(gen, it)})
+    except Exception as e:
+        row["error"] = f"{type(e).__name__}: {str(e)[:150]}"
+    B_ROWS.append(row)
+    if len(B_ROWS) % 10 == 0:
+        json.dump(B_ROWS, open("/kaggle/working/b_rows.json", "w"))
+        print(f"[B] {len(B_ROWS)} total", flush=True)
+
+B_ROWS.sort(key=lambda r: r["i"])
+json.dump(B_ROWS, open("/kaggle/working/b_rows.json", "w"))
+print(f"[B] done {len(B_ROWS)}, skipped {b_skipped}", flush=True)
+"""),
+
+    code_cell("""# Cell 8: metrics, verdict, artifacts.
 import zipfile
 
 M = {"n_items": len(items)}
@@ -361,10 +370,15 @@ M["routes"] = routes
 
 def arm_stats(rows, tag):
     done = [r for r in rows if "error" not in r]
-    a, n = acc(done)
+    emitted_acc, emitted_n = acc(done)
     s1_wrong = [r for r in done if r.get("s1_ok") is False]
     s1_right = [r for r in done if r.get("s1_ok") is True]
-    M[tag + "_acc"], M[tag + "_n"] = a, n
+    M[tag + "_n"] = len(done)
+    M[tag + "_emitted_n"] = emitted_n
+    M[tag + "_acc"] = (sum(bool(r.get("ok")) for r in done)
+                       / max(len(done), 1))
+    M[tag + "_acc_emitted"] = emitted_acc
+    M[tag + "_errors"] = sum(1 for r in rows if "error" in r)
     M[tag + "_recovery"] = ((sum(r["ok"] for r in s1_wrong)
                              / len(s1_wrong)) if s1_wrong else None)
     M[tag + "_recovery_n"] = len(s1_wrong)
@@ -403,17 +417,16 @@ M["e2e_c"], M["e2e_c_n"] = e2e(C_ROWS)
 # the wiring runs' definition, so cross-session numbers are quotable.
 def e2e_v1(rows):
     by_i = {r["i"]: r for r in rows if "error" not in r}
+    ans_s1 = [r for r in s1_done if items[r["i"]]["answerable"]]
     correct = 0
-    for r in s1_done:
+    for r in ans_s1:
         k = r["i"]
-        if not items[k]["answerable"]:
-            continue
         route = GATE.get(k, {}).get("route", "escalate")
         if route == "auto":
             correct += bool(r.get("ok"))
         elif k in by_i and by_i[k].get("pred"):
             correct += bool(by_i[k].get("ok"))
-    return round(correct / max(len(s1_done), 1), 4)
+    return round(correct / max(len(ans_s1), 1), 4)
 
 M["e2e_v1_style_b"] = e2e_v1(B_ROWS)
 M["e2e_v1_style_c"] = e2e_v1(C_ROWS)
@@ -422,23 +435,34 @@ M["e2e_semantics"] = ("e2e_b/e2e_c: emitted-only denominator, all "
                       "non-emission counts wrong (wiring-run "
                       "comparable)")
 
-# C vs B directly: paired outcome counts on S1-wrong items both arms did.
+# C vs B directly: paired outcome counts on S1-wrong and S1-right items
 b_by_i = {r["i"]: r for r in B_ROWS if "error" not in r}
 c_by_i = {r["i"]: r for r in C_ROWS if "error" not in r}
-both = [k for k in b_by_i if k in c_by_i
-        and b_by_i[k].get("s1_ok") is False]
+paired_idx = sorted(set(b_by_i) & set(c_by_i))
+both_wrong = [k for k in paired_idx if b_by_i[k].get("s1_ok") is False]
+both_right = [k for k in paired_idx if b_by_i[k].get("s1_ok") is True]
+M["paired_n"] = len(paired_idx)
 M["c_vs_b_on_s1_wrong"] = {
-    "n": len(both),
+    "n": len(both_wrong),
+    "b_recovery_paired": (sum(b_by_i[k]["ok"] for k in both_wrong)
+                          / max(len(both_wrong), 1)) if both_wrong else None,
+    "c_recovery_paired": (sum(c_by_i[k]["ok"] for k in both_wrong)
+                          / max(len(both_wrong), 1)) if both_wrong else None,
     "both_recover": sum(b_by_i[k]["ok"] and c_by_i[k]["ok"]
-                        for k in both),
+                        for k in both_wrong),
     "c_only": sum(not b_by_i[k]["ok"] and c_by_i[k]["ok"]
-                  for k in both),
+                  for k in both_wrong),
     "b_only": sum(b_by_i[k]["ok"] and not c_by_i[k]["ok"]
-                  for k in both),
+                  for k in both_wrong),
     "neither": sum(not b_by_i[k]["ok"] and not c_by_i[k]["ok"]
-                   for k in both)}
+                   for k in both_wrong)}
+M["c_vs_b_on_s1_right"] = {
+    "n": len(both_right),
+    "b_breakage_paired": (sum(not b_by_i[k]["ok"] for k in both_right)
+                          / max(len(both_right), 1)) if both_right else None,
+    "c_breakage_paired": (sum(not c_by_i[k]["ok"] for k in both_right)
+                          / max(len(both_right), 1)) if both_right else None}
 
-# margin distribution (quartiles) + the uncalibrated-gate caveat.
 mgs = sorted(r["margin"] for r in s1_done if "margin" in r)
 if mgs:
     M["margin_quartiles"] = [round(mgs[int(q * (len(mgs) - 1))], 4)
@@ -447,35 +471,42 @@ M["gate_caveat"] = ("trunk-score margins UNCALIBRATED; 0.50/0.30 "
                     "bands provisional (StartLux-calibrated, not "
                     "re-fit here)")
 
+# Verdict flags use PAIRED recovery/breakage on the items both B and C
+# completed (falls back to marginal only if paired set is empty).
+_c_rec = (M["c_vs_b_on_s1_wrong"]["c_recovery_paired"]
+          if M["c_vs_b_on_s1_wrong"]["n"] else M.get("c_recovery"))
+_b_rec = (M["c_vs_b_on_s1_wrong"]["b_recovery_paired"]
+          if M["c_vs_b_on_s1_wrong"]["n"] else M.get("b_recovery"))
+_c_brk = (M["c_vs_b_on_s1_right"]["c_breakage_paired"]
+          if M["c_vs_b_on_s1_right"]["n"] else M.get("c_breakage"))
 M["depth_pass"] = bool(
-    (M.get("c_recovery") or 0) >= 0.5
-    and not ((M.get("c_breakage") or 1) > 0.10)
-    and (M.get("c_recovery") or 0) > (M.get("b_recovery") or 0))
-M["think_is_depth"] = bool((M.get("b_recovery") or 0) >= 0.3)
+    (_c_rec or 0) >= 0.5
+    and not ((_c_brk or 1) > 0.10)
+    and (_c_rec or 0) > (_b_rec or 0))
+M["think_is_depth"] = bool((_b_rec or 0) >= 0.3)
 M["conditioning_neutral"] = bool(
-    0.05 > abs((M.get("c_recovery") or 0)
-               - (M.get("b_recovery") or 0)))
+    0.05 > abs((_c_rec or 0) - (_b_rec or 0)))
 print(json.dumps({k: v for k, v in M.items() if not k.endswith("_n")},
                  indent=1), flush=True)
 
-json.dump(M, open("/kaggle/working/depth_metrics.json", "w"))
 M["b_skipped"], M["c_skipped"] = b_skipped, c_skipped
-status = {"run": "twil-depth-probe v1",
+json.dump(M, open("/kaggle/working/depth_metrics.json", "w"))
+status = {"run": "twil-depth-probe v2",
           "arms": {"s1": "done" if M["s1_n"] >= 60 else "partial",
                    "b": "done" if M.get("b_n", 0) >= 60 else "partial",
                    "c": "done" if M.get("c_n", 0) >= 60 else "partial"},
           "depth_pass": M["depth_pass"],
-          "think_is_depth": M["think_is_depth"]}
+          "think_is_depth": M["think_is_depth"],
+          "conditioning_neutral": M["conditioning_neutral"]}
 json.dump(status, open("/kaggle/working/run_status.json", "w"), indent=1)
 with zipfile.ZipFile("/kaggle/working/artifacts.zip", "w") as z:
     for fn in ["items.json", "s1_rows.json", "b_rows.json", "c_rows.json",
-               "depth_metrics.json", "run_status.json"]:
+               "fast_states.pt", "depth_metrics.json", "run_status.json"]:
         p = "/kaggle/working/" + fn
         if os.path.exists(p):
             z.write(p, fn)
 print("artifacts.zip written; run_status:", status, flush=True)
 """),
-
 ]
 
 nb = {

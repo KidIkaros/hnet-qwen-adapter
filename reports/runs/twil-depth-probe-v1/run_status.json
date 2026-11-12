@@ -1,0 +1,10 @@
+{
+ "run": "twil-depth-probe v1",
+ "arms": {
+  "s1": "done",
+  "b": "partial",
+  "c": "partial"
+ },
+ "depth_pass": false,
+ "think_is_depth": false
+}

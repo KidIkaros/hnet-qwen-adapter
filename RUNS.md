@@ -527,3 +527,27 @@
   (leg3 T_START/time), T-budget (leg1 OOM), dataset readiness (leg4
   mount), glob fallback requirement. Must PASS before every push.
 - kernel: mauricew/twil-leg4 v2 — RUNNING
+
+## 2026-11-12 — twil-depth-probe v1 PUSHED RUNNING (2xT4, owner-approved)
+- spec: docs/SPEC_TWIL_DEPTH_PROBE.md — the one-mind's core untested claim:
+  the SAME trunk's deliberate mode, conditioned on the fast pass's
+  compressed state, recovers what the fast pass missed
+- arms: A = constrained prefix-scoring over declared tools (also captures
+  the fast state = final hidden state at the predicted candidate's last
+  position); B = think unconditioned; C = think + 4 soft prefix tokens =
+  the fast state via inputs_embeds (identity projection v0)
+- items: ToolACE qualifying 560-659 (disjoint from all prior slices)
+- review: two-axis subagents + clean-code/clean-architecture/
+  functional-design passes. RUN-KILLER caught: CALL_RE required </step>
+  but TwIL emits the tool_call wrapper — every B/C row would have parsed
+  empty. Fixed to the proven wiring-v1 pattern + extracted to
+  src/toolcall.py with 6 regression tests (real-format fixtures).
+  Spec-axis fixes: gate_caveat, skipped counts, margin quartiles,
+  e2e_v1_style (wiring-comparable), c_vs_b_on_s1_wrong paired counts,
+  None-when-empty recovery. Arm B prompt-decode slice fixed.
+- preflight PASSED (0 issues); parser verified end-to-end against the
+  real emission format by executing the built cell
+- verdict bands (pre-registered): depth_pass = recovery_C >= 0.5 AND
+  breakage_C <= 0.10 AND C > B; think_is_depth = recovery_B >= 0.3;
+  both fail -> think-mode is length not depth -> H-Net middle required
+- ~2h expected; per-arm wall guards 45/55min; session self-terminates

@@ -30,9 +30,9 @@ os.chdir(REPO)
 import torch                                                     # noqa: E402
 import numpy as np                                               # noqa: E402
 import glob                                                      # noqa: E402
-from src.factory import (DOLMA_MIX, build_hnet, corpus_stream,    # noqa: E402
-                         doc_bpb, enwik8, fit_adapters, load_trunk,
-                         periodic)
+from src.factory import (build_hnet, doc_bpb, enwik8, fit_adapters,  # noqa: E402
+                         load_trunk, periodic)
+from src.corpus_stream import DOLMA_MIX, corpus_stream              # noqa: E402
 
 P = 6
 trunk = load_trunk(os.environ.get("MODEL", "Qwen/Qwen3.5-2B-Base"))

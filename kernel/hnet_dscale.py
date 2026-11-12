@@ -34,7 +34,7 @@ from huggingface_hub import snapshot_download                    # noqa: E402
 from transformers import AutoModelForCausalLM, AutoTokenizer     # noqa: E402
 from src.corpus import byte_token_map                             # noqa: E402
 from src.adapter import ByteHead                                  # noqa: E402
-from src.hnet import HNetQwen                                     # noqa: E402
+from src.hnet import HNetConfig, HNetQwen                         # noqa: E402
 from src.construct import ridge_to_bpe                            # noqa: E402
 
 src = snapshot_download("Qwen/Qwen3.5-0.8B")
@@ -149,8 +149,10 @@ def eval_bpb(byte_ids):
     T = len(byte_ids)
     b6 = torch.zeros(T, device="cuda"); b6[::P] = 1.0
     with torch.no_grad():
-        bp, _, _ = hn(byte_ids, boundaries=b6, ctx="retrieve", n_ctx=1,
-                      head_first=head.first)
+        out = hn(byte_ids, boundaries=b6,
+                 cfg=HNetConfig(ctx="retrieve", n_ctx=1),
+                 head_first=head.first)
+    bp = out.byte_logprobs
     nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
     return float(nll.sum()) / np.log(2) / (T - 1)
 

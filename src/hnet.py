@@ -18,6 +18,35 @@ everything else is the checkpoint's own weights, rerouted.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class HNetConfig:
+    """Processing modes for one H-Net forward.
+
+    Bundling them keeps the call site to one object instead of four knobs:
+    ``sparse`` is the LSA-style mask, ``ctx`` is the dechunk mode, and
+    ``n_ctx``/``super_k`` size the retrieval pass and the superchunk stage.
+    """
+
+    sparse: tuple | None = None          # (window, stride, sinks)
+    ctx: str = "prev"                    # "prev" | "own" | "retrieve"
+    n_ctx: int = 1
+    super_k: int = 1
+
+
+@dataclass
+class HNetOutput:
+    """Everything one forward produces — logits OR byte log-probs, plus the
+    boundary decision and its probabilities (formerly the ``last_p`` side
+    effect, which only existed in train mode)."""
+
+    logits: torch.Tensor | None          # (1, T, V) unless head_first
+    byte_logprobs: torch.Tensor | None   # (1, T, 256) when head_first given
+    boundaries: torch.Tensor             # (T,) 0/1
+    spans: list                          # [(start, stop), ...]
+    boundary_p: torch.Tensor             # (T,) boundary probabilities
 
 
 class BoundaryHeads(nn.Module):
@@ -147,14 +176,14 @@ class HNetQwen(nn.Module):
         return list(zip(starts.tolist(), stops.tolist()))
 
     # ---- the H-Net forward --------------------------------------------------
-    def forward(self, byte_ids, boundaries=None, sparse=None, ctx="prev",
-                head_first=None, n_ctx=1, super_k=1):
-        """byte_ids (T,) -> (logits, boundaries, spans).
+    def forward(self, byte_ids, boundaries=None, cfg=None, head_first=None):
+        """byte_ids (T,) -> HNetOutput.
 
-        sparse=(w, stride, sinks): LSA-style mask on the main attention stack.
-        ctx: "prev" = dechunk broadcast of previous chunk (baseline);
-             "retrieve" = ZHA-style — bytes attend to ALL past chunk states
-             through one checkpoint attention layer."""
+        ``cfg`` bundles the processing modes; ``head_first`` requests byte
+        log-probs instead of vocab logits. The boundary probabilities are
+        returned, never stashed on the module.
+        """
+        cfg = cfg or HNetConfig()
         T = len(byte_ids)
         hs = self.emb(self._byte_lut[byte_ids.long()])[None]  # (1, T, D)
         hs_enc = hs
@@ -162,7 +191,7 @@ class HNetQwen(nn.Module):
             hs_enc = layer(hs_enc, position_embeddings=None,
                            attention_mask=None, position_ids=None)
         enc = hs_enc[0]                                       # (T, D)
-        self.last_p = self.boundary.probs(enc) if self.training else None
+        boundary_p = self.boundary.probs(enc)                 # (T,)
         if boundaries is None:
             boundaries = self.boundary.route(enc, hard=True)  # (T,)
         starts = boundaries.nonzero().flatten()               # chunk start indices
@@ -173,31 +202,32 @@ class HNetQwen(nn.Module):
         patch = enc[stops - 1][None]                          # (1, C, D)
         if self.w_main is not None:
             patch = self.w_main(patch)
-        glob = self.run_stack(self.main, patch, sparse=sparse)[0]  # (C, D)
-        if super_k > 1:
+        glob = self.run_stack(self.main, patch, sparse=cfg.sparse)[0]  # (C, D)
+        if cfg.super_k > 1 and len(glob) >= cfg.super_k:
             # two-stage recursion: pool chunks -> superchunks -> second main
             # pass; each chunk receives the PREVIOUS superchunk's state only
             # (strict causality — no future chunk info within the group)
-            n_sup = max(len(glob) // super_k, 1)
-            sup_states = glob[:n_sup * super_k].view(n_sup, super_k, -1).mean(1)
+            n_sup = max(len(glob) // cfg.super_k, 1)
+            sup_states = glob[:n_sup * cfg.super_k].view(
+                n_sup, cfg.super_k, -1).mean(1)
             sup_states = self.run_stack(self.main, sup_states[None],
-                                        sparse=sparse)[0]
+                                        sparse=cfg.sparse)[0]
             grp_idx = torch.div(torch.arange(len(glob), device=glob.device),
-                                super_k, rounding_mode="floor")
+                                cfg.super_k, rounding_mode="floor")
             prev_sup = (grp_idx - 1).clamp(min=0)
             has_sup = (grp_idx > 0)[:, None].to(glob.dtype)
             glob = glob + self.w_sup(sup_states)[prev_sup] * has_sup
         ctx_v = self.dechunk(glob)                            # (C, D)
         # encoder-state residual — H-Net residual_proj: byte-local detail
         # crosses the chunk bottleneck into the decoder input
-        if ctx not in ("prev", "own", "retrieve"):
-            raise ValueError(f"unknown ctx mode {ctx!r}")
+        if cfg.ctx not in ("prev", "own", "retrieve"):
+            raise ValueError(f"unknown ctx mode {cfg.ctx!r}")
         x = hs.clone() if self.w_enc is None else hs + self.w_enc(enc[None])
-        if ctx == "retrieve":
+        if cfg.ctx == "retrieve":
             # bytes attend past-chunk ctx with their OWN queries — no broadcast
-            x = x + self.decoder_attn_pass(x, ctx_v, chunk_of, n_ctx)
+            x = x + self.decoder_attn_pass(x, ctx_v, chunk_of, cfg.n_ctx)
         else:
-            src = chunk_of if ctx == "own" else (chunk_of - 1)
+            src = chunk_of if cfg.ctx == "own" else (chunk_of - 1)
             valid = src >= 0
             gather = src.clamp(min=0)
             x[0, valid] += ctx_v[gather[valid]]               # vectorized dechunk
@@ -214,6 +244,6 @@ class HNetQwen(nn.Module):
             bp = torch.cat([byte_logprobs(self.lm_head(
                 out[:, i:i + 2048]).float()[0], head_first)
                 for i in range(0, T, 2048)])
-            return bp[None], boundaries, spans
-        logits = self.lm_head(out)                            # (1, T, V)
-        return logits, boundaries, spans
+            return HNetOutput(None, bp[None], boundaries, spans, boundary_p)
+        return HNetOutput(self.lm_head(out), None, boundaries, spans,
+                          boundary_p)

@@ -55,6 +55,7 @@ if not LIVE:
     os.chdir(REPO)
     from src.factory import (build_hnet, enwik8, fit_adapters,    # noqa: E402
                              load_trunk, periodic)
+    from src.hnet import HNetConfig                               # noqa: E402
 
     trunk = load_trunk(os.environ.get("MODEL", "Qwen/Qwen3.5-2B-Base"))
     hn, meta = build_hnet(trunk, enc_layers=6, dec_layers=8)
@@ -125,11 +126,13 @@ if not LIVE:
 
     def doc_loss(byte_ids):
         T = len(byte_ids)
-        bp, _, _ = hn(byte_ids, boundaries=periodic(T, P), ctx="retrieve",
-                      n_ctx=1, super_k=4, head_first=trunk["head"].first)
+        out = hn(byte_ids, boundaries=periodic(T, P),
+                 cfg=HNetConfig(ctx="retrieve", n_ctx=1, super_k=4),
+                 head_first=trunk["head"].first)
+        bp = out.byte_logprobs
         nll = -bp[0, :-1].gather(
             1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
-        aux = (hn.last_p.mean() - 1.0 / P) ** 2
+        aux = (out.boundary_p.mean() - 1.0 / P) ** 2
         return nll.mean() + 1.0 * aux
 
     def eval_bpb(byte_ids):

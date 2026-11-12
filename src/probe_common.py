@@ -74,11 +74,13 @@ def forward_bp(hn, trunk, ids, cap=CAP):
     """One forward pass; returns byte logits bp[0]."""
     import torch
     from src.factory import periodic
+    from src.hnet import HNetConfig
     x = torch.tensor(ids[-cap:], device="cuda")
     with torch.no_grad():
-        bp, _, _ = hn(x, boundaries=periodic(x.shape[0], P), ctx="retrieve",
-                      n_ctx=1, super_k=4, head_first=trunk["head"].first)
-    return bp
+        out = hn(x, boundaries=periodic(x.shape[0], P),
+                 cfg=HNetConfig(ctx="retrieve", n_ctx=1, super_k=4),
+                 head_first=trunk["head"].first)
+    return out.byte_logprobs[0]
 
 
 def cand_score(hn, trunk, pid, cand, cap=CAP):

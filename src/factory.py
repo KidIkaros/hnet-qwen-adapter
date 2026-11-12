@@ -17,7 +17,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from .adapter import ByteHead
 from .construct import ridge_to_bpe
 from .corpus import byte_token_map
-from .hnet import HNetQwen
+from .hnet import HNetConfig, HNetQwen
 
 
 def load_trunk(model_name="Qwen/Qwen3.5-0.8B", dtype=torch.bfloat16,
@@ -147,53 +147,12 @@ def doc_bpb(hn, byte_ids, head, boundaries, ctx="retrieve", n_ctx=1,
     """Held-out byte bpb on one doc — the shared scorer."""
     T = len(byte_ids)
     with torch.no_grad():
-        bp, _, _ = hn(byte_ids, boundaries=boundaries, ctx=ctx,
-                      head_first=head.first, n_ctx=n_ctx, super_k=super_k)
+        out = hn(byte_ids, boundaries=boundaries,
+                 cfg=HNetConfig(ctx=ctx, n_ctx=n_ctx, super_k=super_k),
+                 head_first=head.first)
+    bp = out.byte_logprobs
     nll = -bp[0, :-1].gather(1, byte_ids[1:].long().unsqueeze(1)).squeeze(1)
     return float(nll.sum()) / np.log(2) / (T - 1)
-
-
-def corpus_stream(mix, n_docs, cap=4096, seed=0):
-    """Weighted multi-config stream of dolma3.5_pool — the complete corpus.
-
-    mix: {config: weight}; docs interleaved round-robin by weight, capped
-    per config so the mix holds even if a config is small.  STREAMING only —
-    never snapshot the pool.
-    """
-    from datasets import load_dataset
-    import random
-    rng = random.Random(seed)
-    total_w = sum(mix.values())
-    quotas = {cfg: max(1, round(n_docs * w / total_w))
-              for cfg, w in mix.items()}
-    docs = []
-    for cfg, q in quotas.items():
-        ds = load_dataset("allenai/dolma3.5_pool", cfg, split="train",
-                          streaming=True)
-        buf, got = b"", 0
-        for row in ds:
-            text = row.get("text") or next(
-                (row[k] for k in row
-                 if isinstance(row[k], str) and len(row[k]) > 200), "")
-            buf += text.encode("utf-8")
-            while len(buf) >= cap and got < q:
-                docs.append(buf[:cap]); buf = buf[cap:]; got += 1
-            if got >= q:
-                break
-    rng.shuffle(docs)
-    return docs
-
-
-DOLMA_MIX = {   # rebalanced: code + multilingual up (domain evals were weak)
-    "cc_all_dressed": 0.25,
-    "common_pile_wiki": 0.10,
-    "common_pile_textbook": 0.10,
-    "dolma_code": 0.15,
-    "the-stack-v2": 0.15,
-    "finemath": 0.05,
-    "hplt": 0.15,
-    "cc_all_dressed_addons": 0.05,
-}
 
 
 def enwik8():

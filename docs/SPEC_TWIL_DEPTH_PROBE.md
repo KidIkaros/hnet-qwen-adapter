@@ -97,6 +97,52 @@ clock completion counts cannot bias `C > B`:
 ~2 h GPU: loads ~10 min, S1 scoring ~10–15 min (100 items × ~8 candidates,
 one forward each), B ~35–40 min, C ~35–40 min, metrics ~1 min.
 
+## v3 — Arm T: text-level conditioning (post-v2 follow-up)
+
+**v2 result:** the ids/embeds generate paths worked (Arm C: 51 items, 0
+errors), but every conditioned generation was degenerate repetition —
+0/51 emitted a call. Identity-projected hidden-state vectors are in
+activation space, not embedding space; the v0 interface is **destructive**,
+not neutral. The open question narrows to: *is the fast state's
+information useful at all?*
+
+**Arm T** answers it with zero training: the think prompt carries S1's
+chosen tool as words —
+
+> `[A fast tool-selection pass chose "{s1_pred}". Verify whether this
+> choice is correct; if it is not, select the correct tool.]`
+
+appended to the user message (`text_conditioned_prompt`). Execution
+protocol mirrors v2: T runs `k=0..99` first (`T_WALL_S=3300`, 55 min) so
+`k=0..60` pair immediately with v1's 61 archived B rows; B then tops up
+only T-completed items (`B_WALL_S=1200`, 20 min) to extend paired
+coverage. The FAST_STATE reconstruction cell is dropped (text
+conditioning needs no state vectors); `fast_states.pt` from v2 remains
+archived for the learned-interface leg if T shows signal.
+
+**Anchoring diagnostic** (`t_s1_agree`, `b_s1_agree` in metrics): if T
+merely echoes S1's pred, `t_s1_agree ≈ 1.0`, recovery ≈ 0 *and* breakage
+≈ 0 — a rubber-stamp signature. Genuine verification shows recovery
+movement without agreement collapse.
+
+### v3 pre-registered verdicts (paired B-vs-T intersection)
+
+- `text_conditioning_helps` = `t_recovery_paired ≥ b_recovery_paired + 0.10`
+  AND `t_breakage_paired ≤ b_breakage_paired + 0.05` → the fast state's
+  information is useful; build the learned soft-token interface (the real
+  mechanism).
+- `conditioning_info_dead` = `|Δrecovery| < 0.05` AND `|Δbreakage| < 0.05`
+  → fast-state conditioning is dead in any form; the H-Net compressed
+  full-attention middle becomes the S2 mechanism.
+- `think_is_depth` = `b_recovery_paired ≥ 0.3` (unchanged semantics).
+- `anchoring` = `t_s1_agree ≥ 0.9` — reported alongside; if it fires with
+  `text_conditioning_helps`, the "help" is rubber-stamping, not
+  verification.
+
+Artifacts: `t_rows.json` (replaces `c_rows.json`), `b_rows.json`,
+`items.json`, `s1_rows.json`, `depth_metrics.json`, `run_status.json`.
+~85 min GPU: load ~10 min, T ~55 min, B top-up ~20 min, metrics ~1 min.
+
 ## What this decides
 
 Whether the one-mind's S1→S2 loop exists *inside one trunk*. Positive → the

@@ -1,12 +1,13 @@
 """Regression tests for the depth-recovery probe notebook (kernel/depth_probe.py).
 
-Specifically guards against the v1 failure where passing `inputs_embeds`
-positionally into `twil.generate(...)` caused transformers 5.x to treat the
-bfloat16 embeddings tensor as `input_ids` (`RuntimeError: Expected tensor for
-argument #1 'indices' to have Long/Int; got BFloat16`).
+v1 failure guarded: passing `inputs_embeds` positionally into
+`twil.generate(...)` made transformers 5.x treat the bfloat16 tensor as
+`input_ids`. v3 drops the embeds path entirely (v2 showed identity
+injection is destructive) — Arm T conditions via `text_conditioned_prompt`.
 
 Tests execute the actual built notebook cell functions against a tiny
-synthetic `GraniteForCausalLM` (2 layers, dim=32, no downloaded weights).
+synthetic `GraniteForCausalLM` (2 layers, dim=32, no downloaded weights)
+and a FakeTok for the prompt builder.
 """
 import json
 import os
@@ -46,7 +47,7 @@ def _load_helpers_ns(built_nb, tiny_granite):
     for c in built_nb["cells"]:
         if c["cell_type"] == "code":
             s = "".join(c["source"])
-            if "def s2_generate_embeds" in s:
+            if "def s2_generate_ids" in s:
                 cell_src = s
                 break
     assert cell_src is not None, "helpers cell not found in built notebook"
@@ -65,18 +66,28 @@ def _load_helpers_ns(built_nb, tiny_granite):
     return ns
 
 
-def test_s2_generate_embeds_runs_on_granite(built_nb, tiny_granite):
+class FakeTok:
+    def apply_chat_template(self, msgs, **kw):
+        self.kw = kw
+        return msgs
+
+
+def test_text_conditioned_prompt_injects_decision(built_nb, tiny_granite):
     ns = _load_helpers_ns(built_nb, tiny_granite)
-    pids = torch.tensor([[10, 20, 30, 40, 50]], dtype=torch.long)
-    state_vec = torch.randn(32, dtype=torch.float32)
-    emb, attn = ns["build_conditioned_embeds"](pids, state_vec)
-    assert emb.shape == (1, ns["N_SOFT"] + 5, 32)
-    assert emb.dtype == torch.bfloat16
-    assert attn.shape == (1, ns["N_SOFT"] + 5)
-    new_toks, dt = ns["s2_generate_embeds"](emb, attn, max_new=4)
-    assert new_toks.ndim == 1 and new_toks.numel() == 4
-    assert new_toks.dtype == torch.long
-    assert dt >= 0.0
+    ft = FakeTok()
+    ns["tok"] = ft
+    it = {"user": "book me a flight to oslo",
+          "tools": [{"name": "book_flight", "description": "d",
+                     "parameters": {}}]}
+    msgs = ns["text_conditioned_prompt"](it, "book_flight")
+    assert ft.kw["enable_thinking"] is True
+    assert ft.kw["add_generation_prompt"] is True
+    content = msgs[0]["content"]
+    assert content.startswith("book me a flight to oslo")
+    assert 'chose "book_flight"' in content
+    assert "Verify" in content
+    msgs2 = ns["text_conditioned_prompt"](it, "cancel_flight")
+    assert 'chose "cancel_flight"' in msgs2[0]["content"]
 
 
 def test_s2_generate_ids_slices_prompt_and_rejects_floats(built_nb, tiny_granite):
@@ -91,23 +102,40 @@ def test_s2_generate_ids_slices_prompt_and_rejects_floats(built_nb, tiny_granite
 
 def test_bundle_and_metrics_cells_execute_end_to_end(built_nb, tmp_path):
     tmp = str(tmp_path)
-    c2 = "".join(built_nb["cells"][2]["source"]).replace("/kaggle/working", tmp)
-    exec(compile(c2, "cell2_bundle", "exec"), {})
+    cells = built_nb["cells"]
+    bundle_src = metrics_src = None
+    for c in cells:
+        if c["cell_type"] != "code":
+            continue
+        s = "".join(c["source"])
+        if "b_rows_v1.json" in s and "b64decode" in s:
+            bundle_src = s
+        if "t_vs_b_on_s1_wrong" in s:
+            metrics_src = s
+    assert bundle_src and metrics_src, "bundle or metrics cell not found"
+    exec(compile(bundle_src.replace("/kaggle/working", tmp),
+                 "bundle_cell", "exec"), {})
     items = json.load(open(f"{tmp}/items.json"))
     s1_rows = json.load(open(f"{tmp}/s1_rows.json"))
     b_rows = json.load(open(f"{tmp}/b_rows_v1.json"))
     assert len(items) == 100 and len(s1_rows) == 100 and len(b_rows) == 61
-    c_rows = [dict(r, ok=(not r["s1_ok"]) if i % 2 == 0 else r["ok"])
+    t_rows = [dict(r, ok=(not r["s1_ok"]) if i % 2 == 0 else r["ok"])
               for i, r in enumerate(b_rows)]
-    c9 = "".join(built_nb["cells"][9]["source"]).replace("/kaggle/working", tmp)
     ns = {"items": items, "S1_ROWS": s1_rows, "B_ROWS": b_rows,
-          "C_ROWS": c_rows, "b_skipped": 0, "c_skipped": 39,
-          "json": json, "os": os}
-    exec(compile(c9, "cell9_metrics", "exec"), ns)
+          "T_ROWS": t_rows, "b_skipped": 0, "t_skipped": 39,
+          "json": json, "os": os,
+          "norm_name": lambda s: re.sub(r"[^a-z0-9]+", "",
+                                        (s or "").lower())}
+    exec(compile(metrics_src.replace("/kaggle/working", tmp),
+                 "metrics_cell", "exec"), ns)
     m = json.load(open(f"{tmp}/depth_metrics.json"))
     st = json.load(open(f"{tmp}/run_status.json"))
     assert m["b_n"] == 61 and m["b_emitted_n"] == 26
-    assert m["c_n"] == 61 and m["paired_n"] == 61
-    assert st["arms"] == {"s1": "done", "b": "done", "c": "done"}
+    assert m["t_n"] == 61 and m["paired_n"] == 61
+    assert "t_s1_agree" in m and "t_vs_b_on_s1_wrong" in m
+    for f in ("think_is_depth", "text_conditioning_helps",
+              "conditioning_info_dead", "anchoring"):
+        assert f in m
+    assert st["arms"] == {"s1": "done", "b": "done", "t": "done"}
     assert os.path.exists(f"{tmp}/artifacts.zip")
 

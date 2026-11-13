@@ -693,3 +693,18 @@ saved by compress_trunk SAVE_DIR; manifest written).
   (a) text-level conditioning (fast decision as prompt words; no training,
       separates "info useless" from "interface broken");
   (b) learned soft-token projection h_fast -> e_soft (the real mechanism).
+
+## 2025-11-12 — twil-depth-probe v3 result (paired B/T, n=70)
+- Arm T (text-injected fast decision): t_recovery_paired 0.081 vs
+  b_recovery_paired 0.108, t_breakage_paired 0.455 vs 0.515,
+  t_s1_agree 0.867. text_conditioning_helps=False, anchoring=False.
+- Series verdict: enable_thinking is NOT an S2 operating point (5
+  independent confirmations). Fast-state information doesn't help
+  deliberation; raw state injection destroys it. Bottleneck is the
+  deliberate pass itself, not the conditioning interface.
+- Next per spec's "both fail" branch: S2 needs different computation
+  over a different representation — the H-Net compressed full-attention
+  middle. Options: (a) trained conditioning only if a new hypothesis
+  about WHY text info failed emerges; (b) redirect to H-Net middle as
+  the S2 mechanism; (c) accept StartLux+gate as the S1 layer and
+  reconsider what deliberation must compute.

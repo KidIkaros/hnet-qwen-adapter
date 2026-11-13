@@ -1,0 +1,12 @@
+{
+ "run": "twil-depth-probe v3",
+ "arms": {
+  "s1": "done",
+  "b": "done",
+  "t": "done"
+ },
+ "think_is_depth": false,
+ "text_conditioning_helps": false,
+ "conditioning_info_dead": false,
+ "anchoring": false
+}

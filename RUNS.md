@@ -619,3 +619,39 @@
   deliberation — the v0 probe tested a broken interface. Next probes:
   text-level conditioning (fast decision injected as prompt words, no
   training) vs a learned soft-token projection.
+
+## twil-depth-probe v3 — 2025-11-12 — verdict: fast-state INFO doesn't help either; enable_thinking is not S2 (5th confirm)
+
+- **Run:** `mauricew/twil-depth-probe` v3, ~80 min on 2xT4. Artifacts in
+  `reports/runs/twil-depth-probe-v3/`. T ran 70/100 (skipped 30 on
+  T_WALL_S=3300), 0 errors; B topped up to 70 (paired n=70, +9 vs v2).
+- **Arm T** = think prompt + S1's decision as text
+  (`[A fast tool-selection pass chose "{pred}". Verify ...]`). Think
+  traces show the hint is read and reasoned about (item 1: explicitly
+  checks the hinted tool, correctly overrides to timezone_calculator).
+- **Paired metrics (n=70; S1-wrong n=37, S1-right n=33):**
+  - `t_recovery_paired=0.081` vs `b_recovery_paired=0.108` — T is
+    *slightly worse* at recovering S1 errors (t_only=1, b_only=2).
+  - `t_breakage_paired=0.455` vs `b_breakage_paired=0.515` — T breaks
+    ~6pp fewer right answers (weak anchoring tilt).
+  - `t_s1_agree=0.867` vs `b_s1_agree=0.759` — the hint shifts agreement
+    +11pp but produces no real recovery.
+  - `text_conditioning_helps=False`, `anchoring=False`,
+    `conditioning_info_dead=False` (recovery delta inside the dead band;
+    breakage delta −0.061 just misses it — honest read: near-dead with
+    weak anchoring, definitely not helps).
+  - `think_is_depth=False` (b_recovery_paired 0.108) — FIFTH independent
+    confirmation unconditioned think is net-negative on tool choice.
+- **Conclusion for the series:** the fast state's decision, delivered
+  losslessly as text, does not improve the deliberate pass; raw state
+  vectors destroyed it (v2); unconditioned think is net-negative (v1, v2,
+  v3, wiring-v1, wiring-v2). The bottleneck is not the conditioning
+  interface — `enable_thinking` does not create a deeper operating point
+  in this dense trunk; the deliberate pass confirms-and-rambles rather
+  than re-examines (76% agreement with S1 even unconditioned, 51%
+  breakage of right answers). A trained soft-token interface for the same
+  information has no reason to do better.
+- **Implication:** S2 must be structurally different computation over a
+  different representation — the H-Net anatomy (full attention over
+  compressed learned chunks), not the same prompt run longer. This is
+  the spec's "both fail" branch, now with three-arm evidence.
